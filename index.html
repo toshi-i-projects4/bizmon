@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>マイページ</title>
   <style>
     body {
@@ -10,27 +10,46 @@
       font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif;
       background-color: #eef2f7;
       color: #333;
-      position: relative;
+      padding-top: 24px;
+    }
+
+    /* ここを flex → grid に変更 */
+    .top-bar {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: 160px 1fr 230px;
+      align-items: center;
+      column-gap: 16px;
+      min-height: 70px;
     }
 
     .page-logo {
-      position: absolute;
-      top: -80px;
-      left: 80px;
       width: 120px;
       height: auto;
+      display: block;
+    }
+
+    /* 追加：あいさつ */
+    .greeting-message {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #1f2937;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
     }
 
     .today-date {
-      position: absolute;
-      top: -60px;
-      right: 60px;
       background: rgba(255, 255, 255, 0.95);
       padding: 10px 14px;
       border-radius: 14px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       text-align: right;
       line-height: 1.4;
+      justify-self: end;
     }
 
     .today-date .date-top {
@@ -45,22 +64,9 @@
       font-weight: bold;
     }
 
-    .top-greeting {
-      max-width: 1400px;
-      margin: 10px auto 0;
-      padding: 0 20px;
-      box-sizing: border-box;
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      color: #1f2937;
-      min-height: 42px;
-      line-height: 1.4;
-    }
-
     .layout {
       max-width: 1400px;
-      margin: 80px auto 40px;
+      margin: 24px auto 40px;
       display: flex;
       gap: 24px;
       align-items: flex-start;
@@ -75,7 +81,6 @@
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.10);
       box-sizing: border-box;
-      transform: translateY(30px);
       color: white;
     }
 
@@ -97,7 +102,6 @@
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       box-sizing: border-box;
-      transform: translateY(30px);
       color: #374151;
     }
 
@@ -204,7 +208,7 @@
     }
 
     .almanac-item-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       color: #111827;
       margin-bottom: 6px;
@@ -218,6 +222,12 @@
     }
 
     @media (max-width: 1000px) {
+      .top-bar {
+        grid-template-columns: 1fr;
+        row-gap: 12px;
+        justify-items: center;
+      }
+
       .layout {
         flex-direction: column;
       }
@@ -226,37 +236,30 @@
       .main-content,
       .right-sidebar {
         width: 100%;
-        transform: none;
+      }
+
+      .greeting-message {
+        font-size: 24px;
       }
 
       .today-date {
-        position: static;
-        margin: 12px 20px 0 auto;
-        width: fit-content;
-      }
-
-      .page-logo {
-        position: static;
-        display: block;
-        margin: 16px 0 0 20px;
-      }
-
-      .top-greeting {
-        font-size: 24px;
-        margin-top: 12px;
+        justify-self: center;
       }
     }
   </style>
 </head>
 <body>
-  <img src="logo.png" alt="ロゴ" class="page-logo" />
+  <div class="top-bar">
+    <img src="logo.png" alt="ロゴ" class="page-logo">
 
-  <div id="todayDate" class="today-date">
-    <div class="date-top"></div>
-    <div class="date-bottom"></div>
+    <!-- 追加：あいさつ -->
+    <div id="greetingMessage" class="greeting-message"></div>
+
+    <div id="todayDate" class="today-date">
+      <div class="date-top"></div>
+      <div class="date-bottom"></div>
+    </div>
   </div>
-
-  <div id="greetingMessage" class="top-greeting"></div>
 
   <div class="layout">
     <div class="left-sidebar">
@@ -279,7 +282,7 @@
       <h1>マイページ</h1>
       <p class="guide-message">▼ 下のボタンから本日のクイズに進めます</p>
       <a href="question.html">
-        <img src="button_本日のクイズへ.png" alt="本日のクイズへ" class="quiz-button-image" />
+        <img src="button_本日のクイズへ.png" alt="本日のクイズへ" class="quiz-button-image">
       </a>
       <div id="userInfo" class="user-info"></div>
       <button class="logout-btn" onclick="logout()">ログアウト</button>
@@ -305,18 +308,28 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    function formatJapaneseDateTwoLines() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth() + 1;
-      const day = today.getDate();
-      const reiwaYear = year - 2018;
-      const reiwaText = reiwaYear === 1 ? "令和元年" : "令和" + reiwaYear + "年";
-
-      document.querySelector("#todayDate .date-top").textContent = `${year}年（${reiwaText}）`;
-      document.querySelector("#todayDate .date-bottom").textContent = `${month}月${day}日`;
+    function getTodayJstParts() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return {
+        key: `${y}-${m}-${d}`,
+        year: y,
+        month: Number(m),
+        day: Number(d)
+      };
     }
 
+    function formatJapaneseDateTwoLines() {
+      const today = getTodayJstParts();
+      const reiwaYear = today.year - 2018;
+      const reiwaText = reiwaYear === 1 ? "令和元年" : `令和${reiwaYear}年`;
+      document.querySelector("#todayDate .date-top").textContent = `${today.year}年（${reiwaText}）`;
+      document.querySelector("#todayDate .date-bottom").textContent = `${today.month}月${today.day}日`;
+    }
+
+    /* 追加：時間帯別あいさつ */
     function setGreetingMessage() {
       const now = new Date();
       const hour = now.getHours();
@@ -366,12 +379,7 @@
       const statusEl = document.getElementById("almanacStatus");
       const listEl = document.getElementById("almanacList");
       const titleEl = document.getElementById("almanacTitle");
-
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, "0");
-      const dd = String(now.getDate()).padStart(2, "0");
-      const todayKey = `${yyyy}-${mm}-${dd}`;
+      const today = getTodayJstParts();
 
       const labelMap = {
         holiday: "祝日",
@@ -392,9 +400,8 @@
           throw new Error("almanac.csv が見つかりません。");
         }
 
-        const text = (await res.text()).replace(/^﻿/, "");
-        const lines = text.split(/?
-/).filter(line => line.trim() !== "");
+        const text = (await res.text()).replace(/^\uFEFF/, "");
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
 
         if (lines.length <= 1) {
           statusEl.textContent = "almanac.csv にデータが入っていません。";
@@ -410,7 +417,7 @@
         }
 
         const rows = lines.slice(1).map(parseCsvLine);
-        const row = rows.find(cols => (cols[dateIndex] || "").trim() === todayKey);
+        const row = rows.find(cols => (cols[dateIndex] || "").trim() === today.key);
 
         if (!row) {
           titleEl.style.display = "none";
@@ -452,14 +459,12 @@
     }
 
     formatJapaneseDateTwoLines();
-    setGreetingMessage();
-
+    setGreetingMessage();   // ← 追加
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         location.href = "login.html";
         return;
       }
-
       document.getElementById("userInfo").textContent = `ログイン中：${user.email}`;
       loadAlmanac();
     });
