@@ -1,84 +1,38 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>解説</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif;
-      background-color: #eef2f7;
-      color: #333;
-      padding: 24px;
-      box-sizing: border-box;
-    }
-    .wrap {
-      max-width: 760px;
-      margin: 30px auto;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      padding: 32px;
-      box-sizing: border-box;
-    }
-    h1 { margin-top: 0; color: #111827; }
-    .result-box {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 14px;
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-    .save-status {
-      background: #eff6ff;
-      border-left: 4px solid #2563eb;
-      border-radius: 8px;
-      padding: 12px 14px;
-      margin: 18px 0;
-      font-size: 14px;
-      color: #1e3a8a;
-      white-space: pre-wrap;
-      font-weight: bold;
-    }
-    .auth-status {
-      background: #f0fdf4;
-      border-left: 4px solid #22c55e;
-      border-radius: 8px;
-      padding: 12px 14px;
-      margin: 18px 0;
-      font-size: 14px;
-      color: #166534;
-      white-space: pre-wrap;
-      font-weight: bold;
-    }
-    .top-btn {
-      margin-top: 16px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 10px;
-      background: #111827;
-      color: #ffffff;
-      cursor: pointer;
-      font-size: 14px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>解説</title>
+<style>
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:900px;margin:0 auto}.page-header{display:flex;align-items:center;justify-content:flex-start;margin-bottom:18px}.back-link{display:inline-block;color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px;line-height:1.4}.back-link:hover{text-decoration:underline;color:#1d4ed8}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}h1{margin:0 0 20px;font-size:28px;text-align:center}.result-mark{font-size:54px;font-weight:bold;line-height:1;text-align:center;margin:10px 0}.correct{color:#16a34a}.incorrect{color:#dc2626}.title{text-align:center;font-size:22px;font-weight:bold;margin-bottom:20px}.detail-grid{display:grid;grid-template-columns:180px 1fr;gap:12px 16px;align-items:start}.label{font-weight:bold;color:#374151;font-size:14px}.value{font-size:15px;line-height:1.7;white-space:pre-wrap;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:12px}.status{font-size:14px;line-height:1.7;white-space:pre-wrap;text-align:center;color:#166534}.status.error{color:#dc2626}@media(max-width:720px){body{padding:18px}.detail-grid{grid-template-columns:1fr}.page-header{margin-bottom:14px}.back-link{font-size:14px}}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>結果</h1>
-    <div id="question" class="result-box">結果表示準備中...</div>
-    <div id="result" class="result-box"></div>
-    <div id="detail" class="result-box"></div>
-    <div id="explanation" class="result-box"></div>
-    <div id="saveStatus" class="save-status">STEP2_V5：外部JavaScriptによる結果表示を確認中...</div>
-    <div id="authStatus" class="auth-status">STEP4：Firestore保存準備中...</div>
-    <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
+<div class="page">
+  <div class="page-header">
+    <a class="back-link" href="index.html">← マイページへ戻る</a>
   </div>
-
-  <script src="result_step2_display_v5.js?v=20260610-7" onerror="document.getElementById('saveStatus').textContent='STEP2_V5_ERROR：result_step2_display_v5.js の読み込みに失敗しました。';"></script>
-  <script type="module" src="result_step4_save.js?v=20260610-1"></script>
+  <div class="card">
+    <h1>解説</h1>
+    <div id="content"></div>
+    <div id="status" class="status"></div>
+  </div>
+</div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";import{getFirestore,doc,setDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",projectId:"bizmon-31ffc"};
+const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFirestore(app);const contentEl=document.getElementById("content");const statusEl=document.getElementById("status");
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+function todayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function getParam(names){const p=new URLSearchParams(location.search);for(const n of names){const v=p.get(n);if(v!==null&&String(v).trim()!=="")return v}return ""}
+function readJsonStorage(keys){for(const key of keys){try{const raw=sessionStorage.getItem(key)||localStorage.getItem(key);if(raw){const obj=JSON.parse(raw);if(obj&&typeof obj==="object")return obj}}catch(e){}}return {}}
+function readPlainStorage(keys){for(const key of keys){const v=sessionStorage.getItem(key)||localStorage.getItem(key);if(v&&String(v).trim()!=="")return v}return ""}
+function normalizeResult(value){const v=String(value==null?"":value).trim().toLowerCase();if(value===true||v==="true"||v==="correct"||v==="ok"||v==="success"||v==="right"||v==="seikai"||v==="正解"||v==="○"||v==="〇")return "correct";if(value===false||v==="false"||v==="incorrect"||v==="wrong"||v==="ng"||v==="fuseikai"||v==="不正解"||v==="×"||v==="x")return "incorrect";return ""}
+function buildResultData(){const stored=readJsonStorage(["lastQuizResult","quizResult","todayQuizResult","currentQuizResult"]);let rawResult=getParam(["result","r"]);if(!rawResult&&stored.result!==undefined)rawResult=stored.result;if(!rawResult&&stored.isCorrect!==undefined)rawResult=stored.isCorrect;const finalResult=normalizeResult(rawResult);return{date:getParam(["date"])||stored.date||todayKey(),result:finalResult||"",question:getParam(["question","q","questionText"])||stored.question||stored.questionText||readPlainStorage(["currentQuestion","questionText","todayQuestion"]),userAnswer:getParam(["userAnswer","selectedAnswer","answerText","selected"])||stored.userAnswer||stored.selectedAnswer||stored.answerText||readPlainStorage(["userAnswer","selectedAnswer","answerText"]),correctAnswer:getParam(["correctAnswer","correct","answer"])||stored.correctAnswer||stored.correct||stored.answer||readPlainStorage(["correctAnswer","correct","answer"]),explanation:getParam(["explanation","commentary","kaisetsu"])||stored.explanation||stored.commentary||stored.kaisetsu||readPlainStorage(["explanation","commentary","kaisetsu"])} }
+function render(data){const isCorrect=data.result==="correct";let html="";html+='<div class="result-mark '+(isCorrect?'correct':'incorrect')+'">'+(isCorrect?'○':'×')+'</div>';html+='<div class="title">'+(isCorrect?'正解':'不正解')+'</div>';html+='<div class="detail-grid">';html+='<div class="label">日付</div><div class="value">'+esc(data.date||todayKey())+'</div>';html+='<div class="label">設問</div><div class="value">'+esc(data.question||"取得できませんでした")+'</div>';html+='<div class="label">あなたの回答</div><div class="value">'+esc(data.userAnswer||"取得できませんでした")+'</div>';html+='<div class="label">解答</div><div class="value">'+esc(data.correctAnswer||"取得できませんでした")+'</div>';html+='<div class="label">解説</div><div class="value">'+esc(data.explanation||"取得できませんでした")+'</div>';html+='</div>';contentEl.innerHTML=html}
+async function save(user,data){try{const saveData={uid:user.uid,email:user.email||"",date:data.date||todayKey(),result:data.result||"",question:data.question||"",questionText:data.question||"",userAnswer:data.userAnswer||"",selectedAnswer:data.userAnswer||"",correctAnswer:data.correctAnswer||"",explanation:data.explanation||"",updatedAt:serverTimestamp()};await setDoc(doc(db,"quizResults",user.uid+"_"+saveData.date),saveData,{merge:true});statusEl.textContent="回答結果を保存しました。"}catch(error){console.error(error);statusEl.textContent="回答結果の保存に失敗しました。Firestoreのルールを確認してください。\n"+String(error.message||error);statusEl.className="status error"}}
+onAuthStateChanged(auth,function(user){if(!user){location.href="login.html";return}const data=buildResultData();render(data);save(user,data)});
+</script>
 </body>
 </html>
