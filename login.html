@@ -17,7 +17,7 @@
     }
     .login-card {
       width: 100%;
-      max-width: 420px;
+      max-width: 430px;
       background: #ffffff;
       border-radius: 18px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.10);
@@ -86,7 +86,7 @@
     }
     .login-btn {
       width: 100%;
-      margin-top: 24px;
+      margin-top: 22px;
       height: 48px;
       border: none;
       border-radius: 12px;
@@ -99,14 +99,46 @@
     .login-btn:hover {
       background: #1d4ed8;
     }
+    .forgot-row {
+      margin-top: 14px;
+      text-align: center;
+    }
+    .forgot-link {
+      border: none;
+      background: transparent;
+      color: #2563eb;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 6px 8px;
+    }
+    .forgot-link:hover {
+      color: #1d4ed8;
+    }
     .status-message {
       min-height: 22px;
       margin-top: 16px;
       font-size: 14px;
-      color: #dc2626;
       line-height: 1.5;
       white-space: pre-wrap;
       text-align: center;
+    }
+    .status-message.error {
+      color: #dc2626;
+    }
+    .status-message.ok {
+      color: #166534;
+    }
+    .note-box {
+      margin-top: 16px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -135,12 +167,21 @@
     </div>
 
     <button type="button" id="loginBtn" class="login-btn">ログイン</button>
+
+    <div class="forgot-row">
+      <button type="button" id="forgotPasswordBtn" class="forgot-link">パスワードを忘れた場合</button>
+    </div>
+
     <div id="statusMessage" class="status-message"></div>
+
+    <div class="note-box">
+      パスワードを忘れた場合は、メールアドレスを入力してから「パスワードを忘れた場合」を押してください。パスワード再設定用のメールが送信されます。
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
@@ -154,10 +195,16 @@
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const loginBtn = document.getElementById("loginBtn");
+    const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
     const statusMessage = document.getElementById("statusMessage");
     const togglePassword = document.getElementById("togglePassword");
     const eyeOpenIcon = document.getElementById("eyeOpenIcon");
     const eyeClosedIcon = document.getElementById("eyeClosedIcon");
+
+    function setStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = "status-message " + (type || "");
+    }
 
     togglePassword.addEventListener("click", function () {
       const isHidden = passwordInput.type === "password";
@@ -172,10 +219,10 @@
     async function login() {
       const email = emailInput.value.trim();
       const password = passwordInput.value;
-      statusMessage.textContent = "";
+      setStatus("", "");
 
       if (!email || !password) {
-        statusMessage.textContent = "メールアドレスとパスワードを入力してください。";
+        setStatus("メールアドレスとパスワードを入力してください。", "error");
         return;
       }
 
@@ -186,24 +233,57 @@
         location.href = "index.html";
       } catch (error) {
         console.error(error);
-        statusMessage.textContent = "ログインに失敗しました。メールアドレスまたはパスワードを確認してください。";
+        setStatus("ログインに失敗しました。メールアドレスまたはパスワードを確認してください。", "error");
       } finally {
         loginBtn.disabled = false;
         loginBtn.textContent = "ログイン";
       }
     }
 
-    loginBtn.addEventListener("click", login);
-    passwordInput.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        login();
+    async function sendResetMail() {
+      const email = emailInput.value.trim();
+      setStatus("", "");
+
+      if (!email) {
+        setStatus("パスワード再設定メールを送るには、メールアドレスを入力してください。", "error");
+        emailInput.focus();
+        return;
       }
+
+      try {
+        forgotPasswordBtn.disabled = true;
+        forgotPasswordBtn.textContent = "送信中...";
+        await sendPasswordResetEmail(auth, email);
+        setStatus("パスワード再設定用のメールを送信しました。メールをご確認ください。", "ok");
+      } catch (error) {
+        console.error(error);
+        let message = "パスワード再設定メールの送信に失敗しました。メールアドレスを確認してください。";
+        if (error.code === "auth/invalid-email") {
+          message = "メールアドレスの形式が正しくありません。";
+        }
+        if (error.code === "auth/user-not-found") {
+          message = "このメールアドレスのユーザーが見つかりません。";
+        }
+        setStatus(message, "error");
+      } finally {
+        forgotPasswordBtn.disabled = false;
+        forgotPasswordBtn.textContent = "パスワードを忘れた場合";
+      }
+    }
+
+    loginBtn.addEventListener("click", login);
+    forgotPasswordBtn.addEventListener("click", sendResetMail);
+
+    passwordInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") login();
+    });
+
+    emailInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") login();
     });
 
     onAuthStateChanged(auth, function (user) {
-      if (user) {
-        location.href = "index.html";
-      }
+      if (user) location.href = "index.html";
     });
   </script>
 </body>
