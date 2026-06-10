@@ -13,10 +13,7 @@
       padding: 28px;
       box-sizing: border-box;
     }
-    .page {
-      max-width: 920px;
-      margin: 0 auto;
-    }
+    .page { max-width: 920px; margin: 0 auto; }
     .header {
       display: flex;
       align-items: center;
@@ -24,17 +21,8 @@
       gap: 16px;
       margin-bottom: 20px;
     }
-    h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #111827;
-    }
-    .back-link {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 14px;
-    }
+    h1 { margin: 0; font-size: 28px; color: #111827; }
+    .back-link { color: #2563eb; text-decoration: none; font-weight: bold; font-size: 14px; }
     .card {
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -44,29 +32,15 @@
       box-sizing: border-box;
       margin-bottom: 18px;
     }
-    .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 0 0 14px;
-      color: #111827;
-    }
-    .description {
-      font-size: 14px;
-      line-height: 1.7;
-      color: #6b7280;
-      margin: 0 0 18px;
-    }
+    .section-title { font-size: 18px; font-weight: bold; margin: 0 0 14px; color: #111827; }
+    .description { font-size: 14px; line-height: 1.7; color: #6b7280; margin: 0 0 18px; }
     .form-grid {
       display: grid;
-      grid-template-columns: 180px 1fr;
+      grid-template-columns: 220px 1fr;
       gap: 16px 18px;
       align-items: center;
     }
-    .label {
-      font-size: 14px;
-      font-weight: bold;
-      color: #374151;
-    }
+    .label { font-size: 14px; font-weight: bold; color: #374151; }
     input[type="time"], select, textarea {
       width: 100%;
       border: 1px solid #d1d5db;
@@ -77,32 +51,15 @@
       background: #ffffff;
       color: #111827;
     }
-    textarea {
-      min-height: 82px;
-      resize: vertical;
-      line-height: 1.6;
-    }
+    textarea { min-height: 82px; resize: vertical; line-height: 1.6; }
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: #2563eb;
       box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
     }
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      font-weight: bold;
-    }
-    .toggle-row input {
-      width: 20px;
-      height: 20px;
-    }
-    .weekday-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .toggle-row { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: bold; }
+    .toggle-row input { width: 20px; height: 20px; }
+    .weekday-list { display: flex; flex-wrap: wrap; gap: 8px; }
     .weekday-item {
       display: inline-flex;
       align-items: center;
@@ -115,16 +72,9 @@
       cursor: pointer;
       user-select: none;
     }
-    .weekday-item input {
-      width: 16px;
-      height: 16px;
-    }
-    .button-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 22px;
-    }
+    .weekday-item input { width: 16px; height: 16px; }
+    .small-note { font-size: 13px; color: #6b7280; line-height: 1.6; margin-top: 6px; }
+    .button-row { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
     .primary-btn, .secondary-btn {
       border: none;
       border-radius: 12px;
@@ -133,17 +83,9 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .primary-btn {
-      background: #2563eb;
-      color: #ffffff;
-    }
-    .primary-btn:hover {
-      background: #1d4ed8;
-    }
-    .secondary-btn {
-      background: #f3f4f6;
-      color: #111827;
-    }
+    .primary-btn { background: #2563eb; color: #ffffff; }
+    .primary-btn:hover { background: #1d4ed8; }
+    .secondary-btn { background: #f3f4f6; color: #111827; }
     .preview-box {
       background: #eff6ff;
       border-left: 4px solid #2563eb;
@@ -173,6 +115,13 @@
       line-height: 1.7;
       margin-top: 16px;
     }
+    .sub-card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px;
+      margin-top: 18px;
+    }
     @media (max-width: 720px) {
       body { padding: 18px; }
       .header { flex-direction: column; align-items: flex-start; }
@@ -193,7 +142,7 @@
       <p class="section-title">リマインド条件</p>
       <p class="description">
         クイズ回答を忘れないように、通知したい曜日と時刻を設定できます。
-        まずは設定内容を保存する画面です。実際にメールやプッシュ通知を自動送信するには、後でサーバー側の送信処理を追加します。
+        今回は、本日のクイズに未回答の場合だけ送る「未回答リマインド時刻」も設定できます。
       </p>
 
       <div class="form-grid">
@@ -210,8 +159,11 @@
           <option value="custom">曜日を指定</option>
         </select>
 
-        <div class="label">通知時刻</div>
-        <input type="time" id="remindTime" value="08:00">
+        <div class="label">通常リマインド時刻</div>
+        <div>
+          <input type="time" id="remindTime" value="08:00">
+          <div class="small-note">例：毎日8:00、平日8:00など、通常の通知時刻です。</div>
+        </div>
 
         <div class="label">曜日指定</div>
         <div class="weekday-list" id="weekdayList">
@@ -223,7 +175,29 @@
           <label class="weekday-item"><input type="checkbox" value="6">土</label>
           <label class="weekday-item"><input type="checkbox" value="0">日</label>
         </div>
+      </div>
 
+      <div class="sub-card">
+        <p class="section-title">未回答時の追加リマインド</p>
+        <p class="description">
+          指定時刻になっても本日のクイズに回答していない場合だけ、追加でリマインドするための設定です。
+        </p>
+        <div class="form-grid">
+          <div class="label">未回答リマインド</div>
+          <label class="toggle-row">
+            <input type="checkbox" id="unansweredReminderEnabled">
+            未回答の場合のみ追加で送る
+          </label>
+
+          <div class="label">未回答リマインド時刻</div>
+          <div>
+            <input type="time" id="unansweredReminderTime" value="17:00">
+            <div class="small-note">例：17:00に本日の回答状況を確認し、未回答者だけに送る想定です。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top:18px;">
         <div class="label">メッセージ</div>
         <textarea id="messageText">本日のクイズの回答をお願いします。</textarea>
       </div>
@@ -239,7 +213,7 @@
       <p class="section-title">設定プレビュー</p>
       <div id="previewBox" class="preview-box">読み込み中...</div>
       <div class="warning">
-        注意：この画面では「いつ通知するか」の設定を保存します。実際に毎日8:00や平日8:00に通知を送るには、Firebase Cloud Functions、Google Apps Script、または別のサーバー処理を後で追加する必要があります。
+        注意：この画面では「いつ通知するか」の設定を保存します。実際に毎日8:00や未回答者への17:00通知を送るには、Firebase Cloud Functionsなどのサーバー側処理を後で追加する必要があります。
       </div>
     </div>
   </div>
@@ -264,6 +238,8 @@
     const enabledEl = document.getElementById("enabled");
     const scheduleTypeEl = document.getElementById("scheduleType");
     const remindTimeEl = document.getElementById("remindTime");
+    const unansweredReminderEnabledEl = document.getElementById("unansweredReminderEnabled");
+    const unansweredReminderTimeEl = document.getElementById("unansweredReminderTime");
     const messageTextEl = document.getElementById("messageText");
     const weekdayListEl = document.getElementById("weekdayList");
     const previewBoxEl = document.getElementById("previewBox");
@@ -321,6 +297,8 @@
         time: remindTimeEl.value || "08:00",
         weekdays: days,
         customWeekdays: customDays,
+        unansweredReminderEnabled: unansweredReminderEnabledEl.checked,
+        unansweredReminderTime: unansweredReminderTimeEl.value || "17:00",
         message: messageTextEl.value.trim() || "本日のクイズの回答をお願いします。",
         timezone: "Asia/Tokyo"
       };
@@ -330,12 +308,19 @@
       updateWeekdayDisabled();
       const settings = makeSettings();
       const enabledText = settings.enabled ? "有効" : "無効";
+      const unansweredText = settings.unansweredReminderEnabled ? "有効" : "無効";
       previewBoxEl.textContent =
         "状態：" + enabledText + "
 " +
         "頻度：" + getScheduleText(settings.scheduleType, settings.weekdays) + "
 " +
-        "時刻：" + settings.time + "
+        "通常リマインド時刻：" + settings.time + "
+" +
+        "未回答時の追加リマインド：" + unansweredText + "
+" +
+        "未回答リマインド時刻：" + settings.unansweredReminderTime + "
+" +
+        "判定条件：指定時刻時点で本日のクイズに未回答の場合のみ送信" + "
 " +
         "タイムゾーン：" + settings.timezone + "
 " +
@@ -353,6 +338,8 @@
           enabledEl.checked = !!data.enabled;
           scheduleTypeEl.value = data.scheduleType || "daily";
           remindTimeEl.value = data.time || "08:00";
+          unansweredReminderEnabledEl.checked = !!data.unansweredReminderEnabled;
+          unansweredReminderTimeEl.value = data.unansweredReminderTime || "17:00";
           messageTextEl.value = data.message || "本日のクイズの回答をお願いします。";
           setSelectedWeekdays(data.customWeekdays || data.weekdays || []);
           statusEl.textContent = "保存済みの設定を読み込みました。";
@@ -360,6 +347,8 @@
           enabledEl.checked = false;
           scheduleTypeEl.value = "daily";
           remindTimeEl.value = "08:00";
+          unansweredReminderEnabledEl.checked = false;
+          unansweredReminderTimeEl.value = "17:00";
           setSelectedWeekdays([1,2,3,4,5]);
           statusEl.textContent = "まだ保存済みの設定はありません。";
         }
@@ -391,6 +380,8 @@
           time: settings.time,
           weekdays: settings.weekdays,
           customWeekdays: settings.customWeekdays,
+          unansweredReminderEnabled: settings.unansweredReminderEnabled,
+          unansweredReminderTime: settings.unansweredReminderTime,
           message: settings.message,
           timezone: settings.timezone,
           updatedAt: serverTimestamp()
@@ -408,6 +399,8 @@
 
     scheduleTypeEl.addEventListener("change", updatePreview);
     remindTimeEl.addEventListener("change", updatePreview);
+    unansweredReminderEnabledEl.addEventListener("change", updatePreview);
+    unansweredReminderTimeEl.addEventListener("change", updatePreview);
     messageTextEl.addEventListener("input", updatePreview);
     enabledEl.addEventListener("change", updatePreview);
     weekdayListEl.addEventListener("change", updatePreview);
