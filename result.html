@@ -5,23 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>解説</title>
   <style>
-    body { margin: 0; font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif; background-color: #eef2f7; color: #333; padding: 24px; box-sizing: border-box; }
-    .wrap { max-width: 760px; margin: 30px auto; background: #ffffff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); padding: 32px; box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif;
+      background-color: #eef2f7;
+      color: #333;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .wrap {
+      max-width: 760px;
+      margin: 30px auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 32px;
+      box-sizing: border-box;
+    }
     h1 { margin-top: 0; color: #111827; }
-    .result-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; line-height: 1.7; white-space: pre-wrap; }
-    .save-status { background: #ecfdf5; border-left: 4px solid #10b981; border-radius: 8px; padding: 12px 14px; margin: 18px 0; font-size: 14px; color: #065f46; white-space: pre-wrap; font-weight: bold; }
-    .top-btn { margin-top: 16px; padding: 12px 24px; border: none; border-radius: 10px; background: #111827; color: #fff; cursor: pointer; font-size: 14px; }
+    .result-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    .save-status {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 18px 0;
+      font-size: 14px;
+      color: #1e3a8a;
+      white-space: pre-wrap;
+      font-weight: bold;
+    }
+    .top-btn {
+      margin-top: 16px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      background: #111827;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>結果</h1>
-    <div id="question" class="result-box">STEP0_STATIC：この result.html は差し替え確認用です。</div>
-    <div id="result" class="result-box">この表示が出れば、result.html の上書き反映は成功しています。</div>
-    <div id="detail" class="result-box">この確認用ファイルには JavaScript も Firebase も入れていません。</div>
-    <div id="explanation" class="result-box">次の段階で、結果表示と保存処理を順番に戻します。</div>
-    <div id="saveStatus" class="save-status">STEP0_STATIC_OK：result.html の差し替え確認に成功しています。</div>
+    <div id="question" class="result-box">結果表示準備中...</div>
+    <div id="result" class="result-box"></div>
+    <div id="detail" class="result-box"></div>
+    <div id="explanation" class="result-box"></div>
+    <div id="saveStatus" class="save-status">STEP1：結果表示スクリプト確認中...</div>
     <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
   </div>
+
+  <script>
+    (function () {
+      var questionText = localStorage.getItem("questionText") || "";
+      var resultText = localStorage.getItem("result") || "";
+      var selectedChoice = localStorage.getItem("selectedChoice") || "";
+      var correctChoice = localStorage.getItem("correctChoice") || "";
+      var explanationText = localStorage.getItem("explanation") || "";
+
+      document.getElementById("question").innerText = questionText ? "問題：" + questionText : "問題情報がありません。";
+      document.getElementById("result").innerText = resultText ? "判定：" + resultText : "判定結果がありません。";
+      document.getElementById("detail").innerText = (selectedChoice && correctChoice)
+        ? "あなたの回答：" + selectedChoice + " / 正解：" + correctChoice
+        : "回答情報がありません。";
+      document.getElementById("explanation").innerText = explanationText ? "解説：" + explanationText : "解説はありません。";
+
+      document.getElementById("saveStatus").textContent =
+        "STEP1_OK：結果表示スクリプトは正常に実行されています。
+" +
+        "この段階では、まだFirebase保存処理は入れていません。
+" +
+        "次の段階でFirebase認証確認を追加します。";
+    })();
+  </script>
 </body>
 </html>
