@@ -22,10 +22,7 @@
       padding: 32px;
       box-sizing: border-box;
     }
-    h1 {
-      margin-top: 0;
-      color: #111827;
-    }
+    h1 { margin-top: 0; color: #111827; }
     .result-box {
       background: #f9fafb;
       border: 1px solid #e5e7eb;
@@ -77,11 +74,11 @@
     <div id="detail" class="result-box"></div>
     <div id="explanation" class="result-box"></div>
     <div id="saveStatus" class="save-status">STEP2_V5：外部JavaScriptによる結果表示を確認中...</div>
-    <div id="authStatus" class="auth-status">STEP3：Firebase認証確認中...</div>
+    <div id="authStatus" class="auth-status">STEP4：Firestore保存準備中...</div>
     <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
   </div>
 
-  <script src="result_step2_display_v5.js?v=20260610-6" onerror="document.getElementById('saveStatus').textContent='STEP2_V5_ERROR：result_step2_display_v5.js の読み込みに失敗しました。';"></script>
-  <script type="module" src="result_step3_auth.js?v=20260610-1"></script>
+  <script src="result_step2_display_v5.js?v=20260610-7" onerror="document.getElementById('saveStatus').textContent='STEP2_V5_ERROR：result_step2_display_v5.js の読み込みに失敗しました。';"></script>
+  <script type="module" src="result_step4_save.js?v=20260610-1"></script>
 </body>
 </html>
