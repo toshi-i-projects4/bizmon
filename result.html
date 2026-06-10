@@ -62,35 +62,19 @@
     <div id="result" class="result-box"></div>
     <div id="detail" class="result-box"></div>
     <div id="explanation" class="result-box"></div>
-    <div id="saveStatus" class="save-status">STEP1_V2：結果表示スクリプト確認中...</div>
-    <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
-  </div>
+    <div id="saveStatus" class="save-status">STEP1_V3：HTML表示済み。script実行待ち...</div>
 
-  <script>
-    (function () {
+    <script>
       var saveStatus = document.getElementById("saveStatus");
-      saveStatus.textContent = "STEP1_V2起動：通常JavaScriptは実行開始しました。";
-
-      var questionText = "";
-      var resultText = "";
-      var selectedChoice = "";
-      var correctChoice = "";
-      var explanationText = "";
+      saveStatus.textContent = "STEP1_V3起動：scriptタグは実行されました。localStorage確認中...";
 
       try {
-        questionText = localStorage.getItem("questionText") || "";
-        resultText = localStorage.getItem("result") || "";
-        selectedChoice = localStorage.getItem("selectedChoice") || "";
-        correctChoice = localStorage.getItem("correctChoice") || "";
-        explanationText = localStorage.getItem("explanation") || "";
-      } catch (error) {
-        saveStatus.textContent = "STEP1_V2：localStorage の読み取りでエラーが発生しました。
-" +
-          "エラー内容：" + (error && error.message ? error.message : String(error));
-        return;
-      }
+        var questionText = localStorage.getItem("questionText") || "";
+        var resultText = localStorage.getItem("result") || "";
+        var selectedChoice = localStorage.getItem("selectedChoice") || "";
+        var correctChoice = localStorage.getItem("correctChoice") || "";
+        var explanationText = localStorage.getItem("explanation") || "";
 
-      try {
         document.getElementById("question").innerText = questionText ? "問題：" + questionText : "問題情報がありません。";
         document.getElementById("result").innerText = resultText ? "判定：" + resultText : "判定結果がありません。";
         document.getElementById("detail").innerText = (selectedChoice && correctChoice)
@@ -98,18 +82,19 @@
           : "回答情報がありません。";
         document.getElementById("explanation").innerText = explanationText ? "解説：" + explanationText : "解説はありません。";
 
-        saveStatus.textContent =
-          "STEP1_V2_OK：結果表示スクリプトは正常に実行されています。
+        saveStatus.textContent = "STEP1_V3_OK：結果表示スクリプトは正常に実行されました。
 " +
           "result=" + (resultText || "未取得") + " / selectedChoice=" + (selectedChoice || "未取得") + " / correctChoice=" + (correctChoice || "未取得") + "
 " +
-          "この段階では、まだFirebase保存処理は入れていません。";
+          "次の段階でFirebase認証確認を追加します。";
       } catch (error) {
-        saveStatus.textContent = "STEP1_V2：画面表示処理でエラーが発生しました。
+        saveStatus.textContent = "STEP1_V3_ERROR：scriptタグは実行されましたが、処理中にエラーが発生しました。
 " +
           "エラー内容：" + (error && error.message ? error.message : String(error));
       }
-    })();
-  </script>
+    </script>
+
+    <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
+  </div>
 </body>
 </html>
