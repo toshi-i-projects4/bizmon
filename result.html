@@ -32,6 +32,12 @@
       line-height: 1.7;
       white-space: pre-wrap;
     }
+    .choices-box {
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-left: 4px solid #2563eb;
+      color: #1f2937;
+    }
     .save-status {
       background: #eff6ff;
       border-left: 4px solid #2563eb;
@@ -67,6 +73,7 @@
   <div class="wrap">
     <h1>結果</h1>
     <div id="question" class="result-box">結果表示準備中...</div>
+    <div id="choices" class="result-box choices-box">選択肢表示準備中...</div>
     <div id="result" class="result-box"></div>
     <div id="detail" class="result-box"></div>
     <div id="explanation" class="result-box"></div>
@@ -75,6 +82,105 @@
     <a href="index.html" class="top-link">← マイページへ戻る</a>
   </div>
 
+  <script>
+    function parseCsvLineForResult(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',' && !inQuotes) {
+          result.push(current);
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    function displayChoicesOnResultPage(choiceA, choiceB, choiceC) {
+      const choicesEl = document.getElementById('choices');
+      if (!choicesEl) return;
+
+      const hasChoices = choiceA || choiceB || choiceC;
+      if (!hasChoices) {
+        choicesEl.textContent = '選択肢を取得できませんでした。';
+        return;
+      }
+
+      choicesEl.textContent =
+        '選択肢
+' +
+        'A：' + (choiceA || '') + '
+' +
+        'B：' + (choiceB || '') + '
+' +
+        'C：' + (choiceC || '');
+    }
+
+    async function loadChoicesForResultPage() {
+      const choicesEl = document.getElementById('choices');
+      if (!choicesEl) return;
+
+      const savedA = localStorage.getItem('choiceA') || localStorage.getItem('answerA') || '';
+      const savedB = localStorage.getItem('choiceB') || localStorage.getItem('answerB') || '';
+      const savedC = localStorage.getItem('choiceC') || localStorage.getItem('answerC') || '';
+
+      if (savedA || savedB || savedC) {
+        displayChoicesOnResultPage(savedA, savedB, savedC);
+        return;
+      }
+
+      try {
+        const questionText = localStorage.getItem('questionText') || '';
+        const res = await fetch('questions.csv?v=' + Date.now());
+        if (!res.ok) throw new Error('questions.csv が見つかりません。');
+
+        const text = await res.text();
+        const lines = text.split(/?
+/).filter(line => line.trim() !== '');
+        if (lines.length <= 1) throw new Error('questions.csv に問題データがありません。');
+
+        const header = parseCsvLineForResult(lines[0]).map(v => v.trim().toLowerCase());
+        const indexMap = {
+          question: header.indexOf('question'),
+          a: header.indexOf('a'),
+          b: header.indexOf('b'),
+          c: header.indexOf('c')
+        };
+
+        if (indexMap.question === -1 || indexMap.a === -1 || indexMap.b === -1 || indexMap.c === -1) {
+          throw new Error('CSVの見出しに question, a, b, c が必要です。');
+        }
+
+        const rows = lines.slice(1).map(parseCsvLineForResult);
+        const target = rows.find(cols => (cols[indexMap.question] || '').trim() === questionText.trim());
+
+        if (!target) throw new Error('該当する問題の選択肢を見つけられませんでした。');
+
+        displayChoicesOnResultPage(
+          target[indexMap.a] || '',
+          target[indexMap.b] || '',
+          target[indexMap.c] || ''
+        );
+      } catch (error) {
+        console.error(error);
+        choicesEl.textContent = '選択肢を取得できませんでした。';
+      }
+    }
+
+    loadChoicesForResultPage();
+  </script>
   <script src="result_step2_display_v5.js?v=20260610-7" onerror="document.getElementById('saveStatus').textContent='STEP2_V5_ERROR：result_step2_display_v5.js の読み込みに失敗しました。';"></script>
   <script type="module" src="result_step4_save.js?v=20260610-1"></script>
 </body>
