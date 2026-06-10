@@ -331,8 +331,162 @@
       <div id="almanacList" class="almanac-list"></div>
     </div>
 <script>
-  document.getElementById("almanacStatus").textContent = "暦情報スクリプト起動";
-</script> 
+  function parseCsvLineForAlmanac(line) {
+    var result = [];
+    var current = "";
+    var inQuotes = false;
+
+    for (var i = 0; i < line.length; i++) {
+      var ch = line[i];
+
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === "," && !inQuotes) {
+        result.push(current);
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+
+    result.push(current);
+    return result;
+  }
+
+  function loadAlmanacByXHR() {
+    var statusEl = document.getElementById("almanacStatus");
+    var listEl = document.getElementById("almanacList");
+    var titleEl = document.getElementById("almanacTitle");
+
+    if (!statusEl || !listEl || !titleEl) {
+      return;
+    }
+
+    statusEl.textContent = "CSV確認中...";
+
+    var now = new Date();
+    var y = now.getFullYear();
+    var m = String(now.getMonth() + 1).padStart(2, "0");
+    var d = String(now.getDate()).padStart(2, "0");
+    var todayKey = y + "-" + m + "-" + d;
+
+    var labelMap = {
+      holiday: "祝日",
+      rokuyo: "六曜",
+      gosekku: "五節句",
+      senjitsu: "選日",
+      nijushisekki: "二十四節気",
+      shichijunikou: "七十二候",
+      nikkanshi: "日干支",
+      tsukikanshi: "月干支",
+      nenkanshi: "年干支",
+      other: "その他"
+    };
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "almanac.csv?v=" + new Date().getTime(), true);
+    xhr.overrideMimeType("text/plain; charset=UTF-8");
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) {
+        return;
+      }
+
+      if (xhr.status !== 200) {
+        statusEl.textContent = "almanac.csv の取得に失敗しました。HTTP status=" + xhr.status;
+        return;
+      }
+
+      try {
+        var text = xhr.responseText.replace(/^\uFEFF/, "");
+        var lines = text.split(/\r?\n/).filter(function (line) {
+          return line.trim() !== "";
+        });
+
+        if (lines.length <= 1) {
+          statusEl.textContent = "almanac.csv にデータが入っていません。";
+          return;
+        }
+
+        var header = parseCsvLineForAlmanac(lines[0]).map(function (v) {
+          return v.trim().toLowerCase();
+        });
+
+        var dateIndex = header.indexOf("date");
+
+        if (dateIndex === -1) {
+          statusEl.textContent = "almanac.csv の1行目に date 列が必要です。";
+          return;
+        }
+
+        var rows = lines.slice(1).map(parseCsvLineForAlmanac);
+
+        var row = rows.find(function (cols) {
+          return String(cols[dateIndex] || "").trim() === todayKey;
+        });
+
+        if (!row) {
+          statusEl.textContent = "本日の暦情報が見つかりません。対象日：" + todayKey;
+          listEl.innerHTML = "";
+          return;
+        }
+
+        var items = [];
+
+        Object.keys(labelMap).forEach(function (key) {
+          var index = header.indexOf(key);
+
+          if (index !== -1) {
+            var value = String(row[index] || "").trim();
+
+            if (value && value.toLowerCase() !== "nan") {
+              items.push({
+                label: labelMap[key],
+                value: value
+              });
+            }
+          }
+        });
+
+        if (items.length === 0) {
+          statusEl.textContent = "";
+          listEl.innerHTML = "";
+          titleEl.style.display = "none";
+          return;
+        }
+
+        titleEl.style.display = "";
+        statusEl.textContent = "";
+
+        listEl.innerHTML = items.map(function (item) {
+          return (
+            '<div class="almanac-item">' +
+              '<div class="almanac-item-title">' + item.label + '</div>' +
+              '<div class="almanac-item-text">' + item.value + '</div>' +
+            '</div>'
+          );
+        }).join("");
+
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = "almanac.csv の解析中にエラーが発生しました。";
+      }
+    };
+
+    xhr.onerror = function () {
+      statusEl.textContent = "almanac.csv の通信に失敗しました。";
+    };
+
+    xhr.send();
+  }
+
+  loadAlmanacByXHR();
+</script>
   </div>
 
   <!-- 表示処理1：日付・あいさつ。FirebaseやCSVには依存しません。 -->
