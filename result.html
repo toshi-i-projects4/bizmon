@@ -9,7 +9,7 @@
     .wrap { max-width:760px; margin:30px auto; background:#fff; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,.08); padding:32px; box-sizing:border-box; }
     h1 { margin-top:0; color:#111827; }
     .result-box { background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:14px 16px; margin-bottom:14px; line-height:1.7; white-space:pre-wrap; }
-    .save-status { background:#eff6ff; border-left:4px solid #2563eb; border-radius:8px; padding:12px 14px; margin:18px 0; font-size:14px; color:#1e3a8a; white-space:pre-wrap; font-weight:bold; }
+    .save-status { background:#fff7ed; border-left:4px solid #f97316; border-radius:8px; padding:12px 14px; margin:18px 0; font-size:14px; color:#9a3412; white-space:pre-wrap; font-weight:bold; }
     .top-btn { margin-top:16px; padding:12px 24px; border:none; border-radius:10px; background:#111827; color:#fff; cursor:pointer; font-size:14px; }
   </style>
 </head>
@@ -20,36 +20,30 @@
     <div id="result" class="result-box"></div>
     <div id="detail" class="result-box"></div>
     <div id="explanation" class="result-box"></div>
-    <div id="saveStatus" class="save-status">STEP1_EXTERNAL_V2：外部JavaScript読込待ち...</div>
+    <div id="saveStatus" class="save-status">STEP1_EXTERNAL_V3：外部JavaScript実行テスト待ち...</div>
     <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
   </div>
 
   <script>
-    window.resultStep1Executed = false;
-    window.resultStep1Loaded = false;
-
-    function afterResultStep1Loaded() {
-      window.resultStep1Loaded = true;
+    window.resultStep1V3Executed = false;
+    function step1V3OnLoad() {
       setTimeout(function () {
         var el = document.getElementById("saveStatus");
         if (!el) return;
-
-        if (window.resultStep1Executed) {
-          // 外部JSが実行済みなら、外部JS側の表示を上書きしない
-          return;
+        if (window.resultStep1V3Executed) {
+          el.textContent = el.textContent + "
+ONLOAD確認：外部JSの実行フラグも確認できました。";
+        } else {
+          el.textContent = "STEP1_EXTERNAL_V3_ONLOAD_ONLY：外部JSファイルの読込は成功しましたが、外部JSの実行フラグが立っていません。
+原因候補：JSのMIME type不一致、CSP、または外部JS内の構文エラーです。";
         }
-
-        el.textContent = "STEP1_EXTERNAL_V2_ONLOAD_ONLY：外部JSファイルの読込は成功しましたが、JS内処理の実行確認が取れていません。";
-      }, 0);
+      }, 500);
     }
-
-    function afterResultStep1Error() {
+    function step1V3OnError() {
       var el = document.getElementById("saveStatus");
-      if (el) {
-        el.textContent = "STEP1_EXTERNAL_V2_ERROR：外部JSファイルの読込に失敗しました。result_step1_v2.js が同じ階層にあるか確認してください。";
-      }
+      if (el) el.textContent = "STEP1_EXTERNAL_V3_ERROR：外部JSファイルの読込に失敗しました。";
     }
   </script>
-  <script src="result_step1_v2.js?v=20260610-1" defer onload="afterResultStep1Loaded()" onerror="afterResultStep1Error()"></script>
+  <script src="result_step1_v3.js?v=20260610-1" onload="step1V3OnLoad()" onerror="step1V3OnError()"></script>
 </body>
 </html>
