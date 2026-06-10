@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6,68 +5,334 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>マイページ</title>
   <style>
-    body { margin: 0; font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif; background-color: #eef2f7; color: #333; padding-top: 24px; }
-    .top-bar { max-width: 1400px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; display: grid; grid-template-columns: 160px 1fr 230px; align-items: center; column-gap: 16px; min-height: 70px; }
-    .page-logo { width: 120px; height: auto; display: block; }
-    .greeting-message { text-align: center; font-size: 28px; font-weight: bold; color: #1f2937; line-height: 1.4; letter-spacing: 0.02em; }
-    .today-date { background: rgba(255,255,255,0.95); padding: 10px 14px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: right; line-height: 1.4; justify-self: end; }
-    .today-date .date-top { font-size: 15px; color: #4b5563; font-weight: bold; }
-    .today-date .date-bottom { font-size: 20px; color: #111827; font-weight: bold; }
-    .layout { max-width: 1400px; margin: 24px auto 40px; display: flex; gap: 24px; align-items: flex-start; padding: 0 20px; box-sizing: border-box; }
-    .left-sidebar { width: 240px; background: #2563eb; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.10); box-sizing: border-box; color: white; }
-    .main-content { flex: 1; background: #ffffff; padding: 32px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); box-sizing: border-box; text-align: center; min-height: 420px; }
-    .right-sidebar { width: 280px; background: #f3f4f6; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); box-sizing: border-box; color: #374151; }
-    h1 { margin-top: 0; font-size: 28px; color: #111827; }
-    .left-sidebar h2 { margin-top: 0; font-size: 20px; color: white; margin-bottom: 16px; }
-    .guide-message { background: #eff6ff; border-left: 4px solid #2563eb; padding: 12px 14px; border-radius: 8px; font-size: 14px; color: #1e3a8a; margin-bottom: 24px; text-align: left; }
-    .quiz-button-image { width: 140px; max-width: 100%; height: auto; cursor: pointer; display: inline-block; margin-bottom: 28px; }
-    .sidebar-box { background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.28); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
-    .sidebar-box-title { font-size: 14px; font-weight: bold; color: white; margin-bottom: 6px; }
-    .sidebar-box-text { font-size: 13px; color: #eaf2ff; line-height: 1.6; }
-    .logout-btn { margin-top: 20px; padding: 12px 24px; border: none; border-radius: 10px; background: #111827; color: #fff; cursor: pointer; font-size: 14px; }
-    .user-info { margin-top: 12px; font-size: 14px; color: #4b5563; }
-    .almanac-status { font-size: 13px; color: #6b7280; margin-bottom: 10px; white-space: pre-wrap; }
-    .almanac-list { display: grid; gap: 12px; }
-    .almanac-item { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px 14px; }
-    .almanac-item-title { font-size: 13px; font-weight: bold; color: #111827; margin-bottom: 6px; }
-    .almanac-item-text { font-size: 13px; color: #6b7280; line-height: 1.6; white-space: pre-wrap; }
-    .speech-title-wrap { margin-top: 0; margin-bottom: 16px; }
-    .speech-title { position: relative; display: inline-block; max-width: 100%; background: #ffffff; color: #111827; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 14px; font-size: 20px; font-weight: bold; line-height: 1.4; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .speech-title::after { content: ""; position: absolute; left: 18px; bottom: -10px; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #ffffff; }
-    .speech-title::before { content: ""; position: absolute; left: 17px; bottom: -12px; width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-top: 11px solid #d1d5db; z-index: -1; }
-    @media (max-width: 1000px) { .top-bar { grid-template-columns: 1fr; row-gap: 12px; justify-items: center; } .layout { flex-direction: column; } .left-sidebar, .main-content, .right-sidebar { width: 100%; } .greeting-message { font-size: 24px; } .today-date { justify-self: center; } }
+    body {
+      margin: 0;
+      font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif;
+      background-color: #eef2f7;
+      color: #333;
+      padding-top: 24px;
+    }
+
+    .top-bar {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: 160px 1fr 230px;
+      align-items: center;
+      column-gap: 16px;
+      min-height: 70px;
+    }
+
+    .page-logo {
+      width: 120px;
+      height: auto;
+      display: block;
+    }
+
+    .greeting-message {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #1f2937;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+    }
+
+    .today-date {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 10px 14px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      text-align: right;
+      line-height: 1.4;
+      justify-self: end;
+    }
+
+    .today-date .date-top {
+      font-size: 15px;
+      color: #4b5563;
+      font-weight: bold;
+    }
+
+    .today-date .date-bottom {
+      font-size: 20px;
+      color: #111827;
+      font-weight: bold;
+    }
+
+    .layout {
+      max-width: 1400px;
+      margin: 24px auto 40px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .left-sidebar {
+      width: 240px;
+      background: #2563eb;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+      box-sizing: border-box;
+      color: white;
+    }
+
+    .main-content {
+      flex: 1;
+      background: #ffffff;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-sizing: border-box;
+      text-align: center;
+      min-height: 420px;
+    }
+
+    .right-sidebar {
+      width: 280px;
+      background: #f3f4f6;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-sizing: border-box;
+      color: #374151;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+      color: #111827;
+    }
+
+    .left-sidebar h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .guide-message {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1e3a8a;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .quiz-button-image {
+      width: 140px;
+      max-width: 100%;
+      height: auto;
+      cursor: pointer;
+      display: inline-block;
+      margin-bottom: 28px;
+    }
+
+    .left-sidebar .sidebar-box {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+
+    .left-sidebar .sidebar-box-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .left-sidebar .sidebar-box-text {
+      font-size: 13px;
+      color: #eaf2ff;
+      line-height: 1.6;
+    }
+
+    .logout-btn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      background: #111827;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .user-info {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #4b5563;
+    }
+
+    .almanac-status {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+    }
+
+    .almanac-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .almanac-item {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .almanac-item-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .almanac-item-text {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .speech-title-wrap {
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    .speech-title {
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+      background: #ffffff;
+      color: #111827;
+      padding: 10px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 1.4;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .speech-title::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      bottom: -10px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #ffffff;
+    }
+
+    .speech-title::before {
+      content: "";
+      position: absolute;
+      left: 17px;
+      bottom: -12px;
+      width: 0;
+      height: 0;
+      border-left: 11px solid transparent;
+      border-right: 11px solid transparent;
+      border-top: 11px solid #d1d5db;
+      z-index: -1;
+    }
+
+    @media (max-width: 1000px) {
+      .top-bar {
+        grid-template-columns: 1fr;
+        row-gap: 12px;
+        justify-items: center;
+      }
+
+      .layout {
+        flex-direction: column;
+      }
+
+      .left-sidebar,
+      .main-content,
+      .right-sidebar {
+        width: 100%;
+      }
+
+      .greeting-message {
+        font-size: 24px;
+      }
+
+      .today-date {
+        justify-self: center;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="top-bar">
     <img src="logo.png" alt="ロゴ" class="page-logo">
+
     <div id="greetingMessage" class="greeting-message">表示準備中</div>
-    <div id="todayDate" class="today-date"><div class="date-top">日付準備中</div><div class="date-bottom"></div></div>
+
+    <div id="todayDate" class="today-date">
+      <div class="date-top">日付準備中</div>
+      <div class="date-bottom"></div>
+    </div>
   </div>
 
   <div class="layout">
     <div class="left-sidebar">
       <h2>サイドバー</h2>
-      <div class="sidebar-box"><div class="sidebar-box-title">お知らせ</div><div class="sidebar-box-text">ここにお知らせを表示できます。</div></div>
-      <div class="sidebar-box"><div class="sidebar-box-title">設定変更</div><div class="sidebar-box-text">通知設定や表示設定などを配置できます。</div></div>
-      <div class="sidebar-box"><div class="sidebar-box-title">メモ</div><div class="sidebar-box-text">自由に補足情報を入れられます。</div></div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-title">お知らせ</div>
+        <div class="sidebar-box-text">ここにお知らせを表示できます。</div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-title">設定変更</div>
+        <div class="sidebar-box-text">通知設定や表示設定などを配置できます。</div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-box-title">メモ</div>
+        <div class="sidebar-box-text">自由に補足情報を入れられます。</div>
+      </div>
     </div>
 
     <div class="main-content">
       <h1>マイページ</h1>
       <p class="guide-message">▼ 下のボタンから本日のクイズに進めます</p>
-      <a href="question.html"><img src="button_本日のクイズへ.png" alt="本日のクイズへ" class="quiz-button-image"></a>
+      <a href="question.html">
+        <img src="button_本日のクイズへ.png" alt="本日のクイズへ" class="quiz-button-image">
+      </a>
       <div id="userInfo" class="user-info"></div>
       <button class="logout-btn" id="logoutBtn">ログアウト</button>
     </div>
 
     <div class="right-sidebar">
-      <div class="speech-title-wrap"><div id="almanacTitle" class="speech-title">今日はこんな日</div></div>
+      <div class="speech-title-wrap">
+        <div id="almanacTitle" class="speech-title">今日はこんな日</div>
+      </div>
       <div id="almanacStatus" class="almanac-status">読み込み中...</div>
       <div id="almanacList" class="almanac-list"></div>
     </div>
   </div>
 
+  <!-- 表示処理1：日付・あいさつ。FirebaseやCSVには依存しません。 -->
   <script>
     (function () {
       try {
@@ -82,118 +347,220 @@
         var bottomEl = document.querySelector("#todayDate .date-bottom");
         var greetingEl = document.getElementById("greetingMessage");
         var message = "";
-        if (hour >= 5 && hour <= 10) message = "おはようございます";
-        else if (hour >= 11 && hour <= 15) message = "こんにちは";
-        else if (hour >= 16 && hour <= 17) message = "おつかれさまです";
-        else if (hour >= 18 && hour <= 21) message = "こんばんは";
-        else message = "おつかれさまです";
+
+        if (hour >= 5 && hour <= 10) {
+          message = "おはようございます";
+        } else if (hour >= 11 && hour <= 15) {
+          message = "こんにちは";
+        } else if (hour >= 16 && hour <= 17) {
+          message = "おつかれさまです";
+        } else if (hour >= 18 && hour <= 21) {
+          message = "こんばんは";
+        } else {
+          message = "おつかれさまです";
+        }
+
         if (topEl) topEl.textContent = year + "年（" + reiwaText + "）";
         if (bottomEl) bottomEl.textContent = month + "月" + day + "日";
         if (greetingEl) greetingEl.textContent = message;
-      } catch (e) {
-        console.error(e);
+      } catch (error) {
+        console.error(error);
       }
     })();
   </script>
 
+  <!-- 表示処理2：暦情報。fetchではなくXMLHttpRequestでCSVを読み込みます。Firebaseには依存しません。 -->
   <script>
-    async function loadAlmanacSeparatedSafe() {
+    function parseCsvLineForAlmanac(line) {
+      var result = [];
+      var current = "";
+      var inQuotes = false;
+
+      for (var i = 0; i < line.length; i++) {
+        var ch = line[i];
+
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === "," && !inQuotes) {
+          result.push(current);
+          current = "";
+        } else {
+          current += ch;
+        }
+      }
+
+      result.push(current);
+      return result;
+    }
+
+    function loadAlmanacByXHR() {
       var statusEl = document.getElementById("almanacStatus");
       var listEl = document.getElementById("almanacList");
       var titleEl = document.getElementById("almanacTitle");
-      var fallbackItems = [
-        { label: "六曜", value: "仏滅（ぶつめつ）" },
-        { label: "七十二候", value: "螳螂生（かまきりしょうず）" },
-        { label: "日干支", value: "乙卯（きのと・う）" },
-        { label: "月干支", value: "甲午（きのえ・うま）" },
-        { label: "年干支", value: "丙午（ひのえ・うま）" },
-        { label: "その他", value: "時の記念日（ときのきねんび）・商工会の日（しょうこうかいのひ）・路面電車の日（ろめんでんしゃのひ）" }
-      ];
-      function renderItems(items) {
-        titleEl.style.display = "";
-        statusEl.textContent = "";
-        listEl.innerHTML = items.map(function (item) {
-          return '<div class="almanac-item"><div class="almanac-item-title">' + item.label + '</div><div class="almanac-item-text">' + item.value + '</div></div>';
-        }).join("");
+
+      if (!statusEl || !listEl || !titleEl) {
+        return;
       }
-      function parseCsvLine(line) {
-        var result = [];
-        var current = "";
-        var inQuotes = false;
-        for (var i = 0; i < line.length; i++) {
-          var ch = line[i];
-          if (ch === '"') {
-            if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
-            else { inQuotes = !inQuotes; }
-          } else if (ch === "," && !inQuotes) {
-            result.push(current);
-            current = "";
-          } else {
-            current += ch;
-          }
+
+      statusEl.textContent = "CSV確認中...";
+
+      var now = new Date();
+      var y = now.getFullYear();
+      var m = String(now.getMonth() + 1).padStart(2, "0");
+      var d = String(now.getDate()).padStart(2, "0");
+      var todayKey = y + "-" + m + "-" + d;
+
+      var labelMap = {
+        holiday: "祝日",
+        rokuyo: "六曜",
+        gosekku: "五節句",
+        senjitsu: "選日",
+        nijushisekki: "二十四節気",
+        shichijunikou: "七十二候",
+        nikkanshi: "日干支",
+        tsukikanshi: "月干支",
+        nenkanshi: "年干支",
+        other: "その他"
+      };
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "almanac.csv?v=" + new Date().getTime(), true);
+      xhr.overrideMimeType("text/plain; charset=UTF-8");
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4) {
+          return;
         }
-        result.push(current);
-        return result;
-      }
-      try {
-        statusEl.textContent = "CSV確認中...";
-        var controller = new AbortController();
-        var timer = setTimeout(function () { controller.abort(); }, 5000);
-        var res = await fetch("almanac.csv?v=" + Date.now(), { cache: "no-store", signal: controller.signal });
-        clearTimeout(timer);
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        var text = (await res.text()).replace(/^﻿/, "");
-        var lines = text.split(/?
-/).filter(function (line) { return line.trim() !== ""; });
-        if (lines.length <= 1) throw new Error("CSVデータなし");
-        var header = parseCsvLine(lines[0]).map(function (v) { return v.trim().toLowerCase(); });
-        var dateIndex = header.indexOf("date");
-        if (dateIndex === -1) throw new Error("date列なし");
-        var now = new Date();
-        var y = now.getFullYear();
-        var m = String(now.getMonth() + 1).padStart(2, "0");
-        var d = String(now.getDate()).padStart(2, "0");
-        var todayKey = y + "-" + m + "-" + d;
-        var rows = lines.slice(1).map(parseCsvLine);
-        var row = rows.find(function (cols) { return String(cols[dateIndex] || "").trim() === todayKey; });
-        if (!row) throw new Error("今日の行なし: " + todayKey);
-        var labelMap = { holiday:"祝日", rokuyo:"六曜", gosekku:"五節句", senjitsu:"選日", nijushisekki:"二十四節気", shichijunikou:"七十二候", nikkanshi:"日干支", tsukikanshi:"月干支", nenkanshi:"年干支", other:"その他" };
-        var items = [];
-        Object.keys(labelMap).forEach(function (key) {
-          var index = header.indexOf(key);
-          if (index !== -1) {
-            var value = String(row[index] || "").trim();
-            if (value && value.toLowerCase() !== "nan") items.push({ label: labelMap[key], value: value });
+
+        if (xhr.status !== 200) {
+          statusEl.textContent = "almanac.csv の取得に失敗しました。HTTP status=" + xhr.status;
+          return;
+        }
+
+        try {
+          var text = xhr.responseText.replace(/^﻿/, "");
+          var lines = text.split(/?
+/).filter(function (line) {
+            return line.trim() !== "";
+          });
+
+          if (lines.length <= 1) {
+            statusEl.textContent = "almanac.csv にデータが入っていません。";
+            return;
           }
-        });
-        if (items.length === 0) throw new Error("表示項目なし");
-        renderItems(items);
-      } catch (error) {
-        console.error(error);
-        renderItems(fallbackItems);
-      }
+
+          var header = parseCsvLineForAlmanac(lines[0]).map(function (v) {
+            return v.trim().toLowerCase();
+          });
+
+          var dateIndex = header.indexOf("date");
+
+          if (dateIndex === -1) {
+            statusEl.textContent = "almanac.csv の1行目に date 列が必要です。";
+            return;
+          }
+
+          var rows = lines.slice(1).map(parseCsvLineForAlmanac);
+
+          var row = rows.find(function (cols) {
+            return String(cols[dateIndex] || "").trim() === todayKey;
+          });
+
+          if (!row) {
+            statusEl.textContent = "本日の暦情報が見つかりません。対象日：" + todayKey;
+            listEl.innerHTML = "";
+            return;
+          }
+
+          var items = [];
+
+          Object.keys(labelMap).forEach(function (key) {
+            var index = header.indexOf(key);
+
+            if (index !== -1) {
+              var value = String(row[index] || "").trim();
+
+              if (value && value.toLowerCase() !== "nan") {
+                items.push({
+                  label: labelMap[key],
+                  value: value
+                });
+              }
+            }
+          });
+
+          if (items.length === 0) {
+            statusEl.textContent = "";
+            listEl.innerHTML = "";
+            titleEl.style.display = "none";
+            return;
+          }
+
+          titleEl.style.display = "";
+          statusEl.textContent = "";
+
+          listEl.innerHTML = items.map(function (item) {
+            return (
+              '<div class="almanac-item">' +
+                '<div class="almanac-item-title">' + item.label + '</div>' +
+                '<div class="almanac-item-text">' + item.value + '</div>' +
+              '</div>'
+            );
+          }).join("");
+
+        } catch (error) {
+          console.error(error);
+          statusEl.textContent = "almanac.csv の解析中にエラーが発生しました。";
+        }
+      };
+
+      xhr.onerror = function () {
+        statusEl.textContent = "almanac.csv の通信に失敗しました。";
+      };
+
+      xhr.send();
     }
-    loadAlmanacSeparatedSafe();
+
+    loadAlmanacByXHR();
   </script>
 
+  <!-- Firebase処理：ログイン確認とログアウトだけ。表示処理には関与しません。 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    const firebaseConfig = { apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus", authDomain:"bizmon-31ffc.firebaseapp.com", projectId:"bizmon-31ffc" };
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
+      authDomain: "bizmon-31ffc.firebaseapp.com",
+      projectId: "bizmon-31ffc"
+    };
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    onAuthStateChanged(auth, function (user) {
-      if (!user) { location.href = "login.html"; return; }
-      var userInfo = document.getElementById("userInfo");
-      if (userInfo) userInfo.textContent = "ログイン中：" + user.email;
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        location.href = "login.html";
+        return;
+      }
+
+      document.getElementById("userInfo").textContent = "ログイン中：" + user.email;
     });
-    var logoutButton = document.getElementById("logoutBtn");
-    if (logoutButton) {
-      logoutButton.addEventListener("click", async function () {
-        try { await signOut(auth); location.href = "login.html"; }
-        catch (error) { console.error(error); alert("ログアウトに失敗しました。"); }
-      });
-    }
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        location.href = "login.html";
+      } catch (error) {
+        console.error(error);
+        alert("ログアウトに失敗しました。");
+      }
+    });
   </script>
 </body>
 </html>
