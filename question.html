@@ -172,8 +172,7 @@
         }
 
         const text = await res.text();
-        const lines = text.split(/?
-/).filter(line => line.trim() !== '');
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
 
         if (lines.length <= 1) {
           statusEl.textContent = 'questions.csv に問題データが入っていません。';
