@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>解説</title>
+</head>
+<body>
+  <h1>結果</h1>
+
+  <p id="question"></p>
+  <p id="result"></p>
+  <p id="detail"></p>
+  <p id="explanation"></p>
+
+  <button type="button" onclick="location.href='index.html'">トップに戻る</button>
+
+  <script>
+    const questionText = localStorage.getItem("questionText") || "";
+    const resultText = localStorage.getItem("result") || "";
+    const selectedChoice = localStorage.getItem("selectedChoice") || "";
+    const correctChoice = localStorage.getItem("correctChoice") || "";
+    const explanationText = localStorage.getItem("explanation") || "";
+
+    document.getElementById("question").innerText = questionText ? "問題：" + questionText : "";
+    document.getElementById("result").innerText = resultText ? "判定：" + resultText : "";
+    document.getElementById("detail").innerText = (selectedChoice && correctChoice)
+      ? "あなたの回答：" + selectedChoice + " / 正解：" + correctChoice
+      : "";
+    document.getElementById("explanation").innerText = explanationText ? "解説：" + explanationText : "";
+  </script>
+</body>
+</html>

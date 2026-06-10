@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>今日の問題</title>
+</head>
+<body>
+  <h1>今日の問題</h1>
+
+  <p id="status">読み込み中...</p>
+  <p id="today"></p>
+  <p id="question"></p>
+
+  <button id="btnA" type="button" onclick="answer('A')" style="display:none;"></button><br><br>
+  <button id="btnB" type="button" onclick="answer('B')" style="display:none;"></button><br><br>
+  <button id="btnC" type="button" onclick="answer('C')" style="display:none;"></button>
+
+  <script>
+    // ======================================
+    // ここだけ差し替えればOK（CSV部分）
+    // 1行目は見出しのまま残してください
+    // 日付は YYYY-MM-DD 形式にしてください
+    // ======================================
+    const csvData = `id,question,a,b,c,answer,explanation,date
+1,日本の首都は？,大阪,東京,名古屋,B,日本の首都は東京です,2026-06-09
+2,1+1は？,1,2,3,B,正解は2です,2026-06-10`;
+
+    let correct = "";
+    let explanation = "";
+    let questionText = "";
+
+    function getToday() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function loadQuestion() {
+      try {
+        const lines = csvData.split(/\r?\n/).filter(line => line.trim() !== "");
+        const today = getToday();
+        let found = null;
+
+        document.getElementById("today").innerText = "本日の日付：" + today;
+
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(",");
+          if (cols.length >= 8 && cols[7].trim() === today) {
+            found = cols;
+            break;
+          }
+        }
+
+        if (!found) {
+          document.getElementById("status").innerText =
+            "今日の日付に一致する問題はありません。csvData の date を今日の日付に合わせてください。";
+          return;
+        }
+
+        document.getElementById("status").innerText = "";
+        questionText = found[1];
+        correct = found[5];
+        explanation = found[6];
+
+        document.getElementById("question").innerText = "問題：" + questionText;
+        document.getElementById("btnA").innerText = "A：" + found[2];
+        document.getElementById("btnB").innerText = "B：" + found[3];
+        document.getElementById("btnC").innerText = "C：" + found[4];
+
+        document.getElementById("btnA").style.display = "inline-block";
+        document.getElementById("btnB").style.display = "inline-block";
+        document.getElementById("btnC").style.display = "inline-block";
+      } catch (e) {
+        document.getElementById("status").innerText =
+          "エラーが発生しました。question.html の貼り付け内容が途中で切れていないか確認してください。";
+      }
+    }
+
+    function answer(choice) {
+      if (!correct) {
+        return;
+      }
+
+      if (choice === correct) {
+        localStorage.setItem("result", "正解");
+      } else {
+        localStorage.setItem("result", "不正解");
+      }
+
+      localStorage.setItem("questionText", questionText);
+      localStorage.setItem("selectedChoice", choice);
+      localStorage.setItem("correctChoice", correct);
+      localStorage.setItem("explanation", explanation);
+      location.href = "result.html";
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
