@@ -4,30 +4,167 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>解説</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif;
+      background-color: #eef2f7;
+      color: #333;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .wrap {
+      max-width: 760px;
+      margin: 30px auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 32px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #111827;
+    }
+
+    .result-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .save-status {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 18px 0;
+      font-size: 14px;
+      color: #1e3a8a;
+      white-space: pre-wrap;
+    }
+
+    .top-btn {
+      margin-top: 16px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      background: #111827;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-  <h1>結果</h1>
+  <div class="wrap">
+    <h1>結果</h1>
 
-  <p id="question"></p>
-  <p id="result"></p>
-  <p id="detail"></p>
-  <p id="explanation"></p>
+    <div id="question" class="result-box"></div>
+    <div id="result" class="result-box"></div>
+    <div id="detail" class="result-box"></div>
+    <div id="explanation" class="result-box"></div>
 
-  <button type="button" onclick="location.href='index.html'">トップに戻る</button>
+    <div id="saveStatus" class="save-status">記録保存の準備中...</div>
 
-  <script>
+    <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
+      authDomain: "bizmon-31ffc.firebaseapp.com",
+      projectId: "bizmon-31ffc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
     const questionText = localStorage.getItem("questionText") || "";
     const resultText = localStorage.getItem("result") || "";
     const selectedChoice = localStorage.getItem("selectedChoice") || "";
     const correctChoice = localStorage.getItem("correctChoice") || "";
     const explanationText = localStorage.getItem("explanation") || "";
 
-    document.getElementById("question").innerText = questionText ? "問題：" + questionText : "";
-    document.getElementById("result").innerText = resultText ? "判定：" + resultText : "";
+    document.getElementById("question").innerText = questionText ? "問題：" + questionText : "問題情報がありません。";
+    document.getElementById("result").innerText = resultText ? "判定：" + resultText : "判定結果がありません。";
     document.getElementById("detail").innerText = (selectedChoice && correctChoice)
       ? "あなたの回答：" + selectedChoice + " / 正解：" + correctChoice
-      : "";
-    document.getElementById("explanation").innerText = explanationText ? "解説：" + explanationText : "";
+      : "回答情報がありません。";
+    document.getElementById("explanation").innerText = explanationText ? "解説：" + explanationText : "解説はありません。";
+
+    function getTodayKey() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + d;
+    }
+
+    function normalizeResult(resultText) {
+      if (resultText === "正解") {
+        return "correct";
+      }
+      if (resultText === "不正解") {
+        return "incorrect";
+      }
+      return "unknown";
+    }
+
+    async function saveQuizResult(user) {
+      const saveStatus = document.getElementById("saveStatus");
+      const dateKey = getTodayKey();
+      const normalizedResult = normalizeResult(resultText);
+
+      if (!resultText) {
+        saveStatus.textContent = "判定結果がないため、記録は保存されませんでした。";
+        return;
+      }
+
+      try {
+        saveStatus.textContent = "結果を保存中...";
+
+        const docId = user.uid + "_" + dateKey;
+        const ref = doc(db, "quizResults", docId);
+
+        await setDoc(ref, {
+          uid: user.uid,
+          email: user.email || "",
+          date: dateKey,
+          result: normalizedResult,
+          resultText: resultText,
+          selectedChoice: selectedChoice,
+          correctChoice: correctChoice,
+          questionText: questionText,
+          explanation: explanationText,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        saveStatus.textContent = "結果を保存しました。今日の記録は最後の結果で上書きされます。";
+      } catch (error) {
+        console.error(error);
+        saveStatus.textContent = "結果の保存に失敗しました。Firestoreの有効化またはセキュリティルールを確認してください。";
+      }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        location.href = "login.html";
+        return;
+      }
+      saveQuizResult(user);
+    });
   </script>
 </body>
 </html>
