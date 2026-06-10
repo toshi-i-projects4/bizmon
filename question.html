@@ -119,6 +119,7 @@
     const auth = getAuth(app);
 
     let currentQuestion = null;
+    let indexMap = null;
 
     function getTodayJstParts() {
       const now = new Date();
@@ -180,7 +181,7 @@
         }
 
         const header = parseCsvLine(lines[0]).map(v => v.trim().toLowerCase());
-        const idx = {
+        indexMap = {
           id: header.indexOf('id'),
           question: header.indexOf('question'),
           a: header.indexOf('a'),
@@ -191,47 +192,47 @@
           date: header.indexOf('date')
         };
 
-        if (Object.values(idx).some(v => v === -1)) {
+        if (Object.values(indexMap).some(v => v === -1)) {
           statusEl.textContent = 'CSVの見出しが不足しています。id,question,a,b,c,answer,explanation,date を確認してください。';
           return;
         }
 
         const rows = lines.slice(1).map(parseCsvLine);
-        currentQuestion = rows.find(cols => (cols[idx.date] || '').trim() === today.key);
+        currentQuestion = rows.find(cols => (cols[indexMap.date] || '').trim() === today.key);
 
         if (!currentQuestion) {
           statusEl.textContent = `今日（${today.key}）に一致する問題が questions.csv にありません。date列を確認してください。`;
           return;
         }
 
-        document.getElementById('questionText').textContent = `問題：${currentQuestion[idx.question] || ''}`;
+        document.getElementById('questionText').textContent = `問題：${currentQuestion[indexMap.question] || ''}`;
 
         const btnA = document.getElementById('btnA');
         const btnB = document.getElementById('btnB');
         const btnC = document.getElementById('btnC');
 
-        btnA.textContent = `A：${currentQuestion[idx.a] || ''}`;
-        btnB.textContent = `B：${currentQuestion[idx.b] || ''}`;
-        btnC.textContent = `C：${currentQuestion[idx.c] || ''}`;
+        btnA.textContent = `A：${currentQuestion[indexMap.a] || ''}`;
+        btnB.textContent = `B：${currentQuestion[indexMap.b] || ''}`;
+        btnC.textContent = `C：${currentQuestion[indexMap.c] || ''}`;
 
-        btnA.onclick = () => answer('A', idx);
-        btnB.onclick = () => answer('B', idx);
-        btnC.onclick = () => answer('C', idx);
+        btnA.onclick = () => answer('A');
+        btnB.onclick = () => answer('B');
+        btnC.onclick = () => answer('C');
 
         statusEl.textContent = '';
         quizArea.style.display = 'block';
       } catch (error) {
         console.error(error);
-        statusEl.textContent = 'CSVの読み込みに失敗しました。Vercel上なら通常はそのまま読めます。ファイル名が questions.csv で、index.html と同じ階層にあるか確認してください。';
+        statusEl.textContent = 'CSVの読み込みに失敗しました。questions.csv が index.html / question.html と同じ階層にあるか確認してください。';
       }
     }
 
-    function answer(choice, idx) {
-      if (!currentQuestion) return;
+    function answer(choice) {
+      if (!currentQuestion || !indexMap) return;
 
-      const correct = (currentQuestion[idx.answer] || '').trim();
-      const explanation = currentQuestion[idx.explanation] || '';
-      const questionText = currentQuestion[idx.question] || '';
+      const correct = (currentQuestion[indexMap.answer] || '').trim();
+      const explanation = currentQuestion[indexMap.explanation] || '';
+      const questionText = currentQuestion[indexMap.question] || '';
 
       localStorage.setItem('result', choice === correct ? '正解' : '不正解');
       localStorage.setItem('questionText', questionText);
