@@ -5,130 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>リマインド設定確認画面</title>
   <style>
-    body {
-      margin: 0;
-      font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif;
-      background: #ffffff;
-      color: #111827;
-      padding: 28px;
-      box-sizing: border-box;
-    }
+    body { margin: 0; font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif; background: #ffffff; color: #111827; padding: 28px; box-sizing: border-box; }
     .page { max-width: 920px; margin: 0 auto; }
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
     h1 { margin: 0; font-size: 28px; color: #111827; }
     .back-link { color: #2563eb; text-decoration: none; font-weight: bold; font-size: 14px; }
-    .card {
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      padding: 28px;
-      box-sizing: border-box;
-      margin-bottom: 18px;
-    }
+    .card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); padding: 28px; box-sizing: border-box; margin-bottom: 18px; }
     .section-title { font-size: 18px; font-weight: bold; margin: 0 0 14px; color: #111827; }
     .description { font-size: 14px; line-height: 1.7; color: #6b7280; margin: 0 0 18px; }
-    .form-grid {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      gap: 16px 18px;
-      align-items: center;
-    }
+    .form-grid { display: grid; grid-template-columns: 220px 1fr; gap: 16px 18px; align-items: center; }
     .label { font-size: 14px; font-weight: bold; color: #374151; }
-    input[type="time"], select, textarea {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      padding: 11px 12px;
-      font-size: 15px;
-      box-sizing: border-box;
-      background: #ffffff;
-      color: #111827;
-    }
+    input[type="time"], select, textarea { width: 100%; border: 1px solid #d1d5db; border-radius: 10px; padding: 11px 12px; font-size: 15px; box-sizing: border-box; background: #ffffff; color: #111827; }
     textarea { min-height: 82px; resize: vertical; line-height: 1.6; }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
-    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
     .toggle-row { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: bold; }
     .toggle-row input { width: 20px; height: 20px; }
     .weekday-list { display: flex; flex-wrap: wrap; gap: 8px; }
-    .weekday-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid #d1d5db;
-      border-radius: 999px;
-      padding: 8px 11px;
-      font-size: 14px;
-      background: #f9fafb;
-      cursor: pointer;
-      user-select: none;
-    }
+    .weekday-item { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #d1d5db; border-radius: 999px; padding: 8px 11px; font-size: 14px; background: #f9fafb; cursor: pointer; user-select: none; }
     .weekday-item input { width: 16px; height: 16px; }
     .small-note { font-size: 13px; color: #6b7280; line-height: 1.6; margin-top: 6px; }
     .button-row { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
-    .primary-btn, .secondary-btn {
-      border: none;
-      border-radius: 12px;
-      padding: 12px 22px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+    .primary-btn, .secondary-btn { border: none; border-radius: 12px; padding: 12px 22px; font-size: 15px; font-weight: bold; cursor: pointer; }
     .primary-btn { background: #2563eb; color: #ffffff; }
     .primary-btn:hover { background: #1d4ed8; }
     .secondary-btn { background: #f3f4f6; color: #111827; }
-    .preview-box {
-      background: #eff6ff;
-      border-left: 4px solid #2563eb;
-      border-radius: 10px;
-      padding: 14px 16px;
-      color: #1e3a8a;
-      font-size: 14px;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      font-weight: bold;
-    }
-    .status {
-      min-height: 24px;
-      margin-top: 16px;
-      font-size: 14px;
-      line-height: 1.6;
-      color: #166534;
-      white-space: pre-wrap;
-    }
-    .warning {
-      background: #fffbeb;
-      border-left: 4px solid #f59e0b;
-      border-radius: 10px;
-      padding: 14px 16px;
-      color: #92400e;
-      font-size: 14px;
-      line-height: 1.7;
-      margin-top: 16px;
-    }
-    .sub-card {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 18px;
-      margin-top: 18px;
-    }
-    @media (max-width: 720px) {
-      body { padding: 18px; }
-      .header { flex-direction: column; align-items: flex-start; }
-      .form-grid { grid-template-columns: 1fr; gap: 8px 0; }
-      .button-row { flex-direction: column; }
-      .primary-btn, .secondary-btn { width: 100%; }
-    }
+    .preview-box { background: #eff6ff; border-left: 4px solid #2563eb; border-radius: 10px; padding: 14px 16px; color: #1e3a8a; font-size: 14px; line-height: 1.7; white-space: pre-wrap; font-weight: bold; }
+    .status { min-height: 24px; margin-top: 16px; font-size: 14px; line-height: 1.6; color: #166534; white-space: pre-wrap; }
+    .warning { background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 10px; padding: 14px 16px; color: #92400e; font-size: 14px; line-height: 1.7; margin-top: 16px; }
+    .rule-box { background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 10px; padding: 14px 16px; color: #166534; font-size: 14px; line-height: 1.8; margin: 14px 0 18px; }
+    .rule-box strong { color: #14532d; }
+    .sub-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 14px; padding: 18px; margin-top: 18px; }
+    @media (max-width: 720px) { body { padding: 18px; } .header { flex-direction: column; align-items: flex-start; } .form-grid { grid-template-columns: 1fr; gap: 8px 0; } .button-row { flex-direction: column; } .primary-btn, .secondary-btn { width: 100%; } }
   </style>
 </head>
 <body>
@@ -140,17 +47,18 @@
 
     <div class="card">
       <p class="section-title">リマインド条件</p>
-      <p class="description">
-        クイズ回答を忘れないように、通知したい曜日と時刻を設定できます。
-        今回は、本日のクイズに未回答の場合だけ送る「未回答リマインド時刻」も設定できます。
-      </p>
+      <p class="description">クイズ回答を忘れないように、通知したい曜日と時刻を設定できます。今回は、本日のクイズに未回答の場合だけ送る「未回答リマインド時刻」も設定できます。</p>
+
+      <div class="rule-box">
+        <strong>未回答時の追加リマインドの実行条件</strong><br>
+        未回答時の追加リマインドは、<strong>リマインドが有効</strong>で、かつ<strong>通知タイミングに該当する日</strong>のみ実行されます。<br>
+        リマインドが無効の場合や、通知対象外の日には、未回答時の追加リマインドにチェックが入っていても送信されません。<br>
+        さらに、指定時刻時点で本日のクイズに回答済みの場合も送信されません。
+      </div>
 
       <div class="form-grid">
         <div class="label">リマインド</div>
-        <label class="toggle-row">
-          <input type="checkbox" id="enabled">
-          有効にする
-        </label>
+        <label class="toggle-row"><input type="checkbox" id="enabled">有効にする</label>
 
         <div class="label">通知タイミング</div>
         <select id="scheduleType">
@@ -160,10 +68,7 @@
         </select>
 
         <div class="label">通常リマインド時刻</div>
-        <div>
-          <input type="time" id="remindTime" value="08:00">
-          <div class="small-note">例：毎日8:00、平日8:00など、通常の通知時刻です。</div>
-        </div>
+        <div><input type="time" id="remindTime" value="08:00"><div class="small-note">例：毎日8:00、平日8:00など、通常の通知時刻です。</div></div>
 
         <div class="label">曜日指定</div>
         <div class="weekday-list" id="weekdayList">
@@ -179,21 +84,16 @@
 
       <div class="sub-card">
         <p class="section-title">未回答時の追加リマインド</p>
-        <p class="description">
-          指定時刻になっても本日のクイズに回答していない場合だけ、追加でリマインドするための設定です。
-        </p>
+        <p class="description">指定時刻になっても本日のクイズに回答していない場合だけ、追加でリマインドするための設定です。</p>
+        <div class="rule-box">
+          この追加リマインドは、上の「リマインド」が有効で、かつ「通知タイミング」に該当する日のみ対象になります。通知対象外の日には送信されません。
+        </div>
         <div class="form-grid">
           <div class="label">未回答リマインド</div>
-          <label class="toggle-row">
-            <input type="checkbox" id="unansweredReminderEnabled">
-            未回答の場合のみ追加で送る
-          </label>
+          <label class="toggle-row"><input type="checkbox" id="unansweredReminderEnabled">未回答の場合のみ追加で送る</label>
 
           <div class="label">未回答リマインド時刻</div>
-          <div>
-            <input type="time" id="unansweredReminderTime" value="17:00">
-            <div class="small-note">例：17:00に本日の回答状況を確認し、未回答者だけに送る想定です。</div>
-          </div>
+          <div><input type="time" id="unansweredReminderTime" value="17:00"><div class="small-note">例：17:00に本日の回答状況を確認し、未回答者だけに送る想定です。</div></div>
         </div>
       </div>
 
@@ -212,9 +112,7 @@
     <div class="card">
       <p class="section-title">設定プレビュー</p>
       <div id="previewBox" class="preview-box">読み込み中...</div>
-      <div class="warning">
-        注意：この画面では「いつ通知するか」の設定を保存します。実際に毎日8:00や未回答者への17:00通知を送るには、Firebase Cloud Functionsなどのサーバー側処理を後で追加する必要があります。
-      </div>
+      <div class="warning">注意：この画面では「いつ通知するか」の設定を保存します。実際に毎日8:00や未回答者への17:00通知を送るには、Firebase Cloud Functionsなどのサーバー側処理を後で追加する必要があります。</div>
     </div>
   </div>
 
@@ -223,16 +121,10 @@
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
-      authDomain: "bizmon-31ffc.firebaseapp.com",
-      projectId: "bizmon-31ffc"
-    };
-
+    const firebaseConfig = { apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus", authDomain: "bizmon-31ffc.firebaseapp.com", projectId: "bizmon-31ffc" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
     let currentUser = null;
 
     const enabledEl = document.getElementById("enabled");
@@ -247,41 +139,11 @@
     const saveBtn = document.getElementById("saveBtn");
     const previewBtn = document.getElementById("previewBtn");
 
-    function getSelectedWeekdays() {
-      return Array.from(weekdayListEl.querySelectorAll("input:checked")).map(function (input) {
-        return Number(input.value);
-      });
-    }
-
-    function setSelectedWeekdays(days) {
-      const dayValues = Array.isArray(days) ? days.map(Number) : [];
-      Array.from(weekdayListEl.querySelectorAll("input")).forEach(function (input) {
-        input.checked = dayValues.indexOf(Number(input.value)) !== -1;
-      });
-    }
-
-    function getWeekdayText(days) {
-      const names = {0:"日",1:"月",2:"火",3:"水",4:"木",5:"金",6:"土"};
-      return days.map(function (day) { return names[day]; }).join("・");
-    }
-
-    function getScheduleText(type, days) {
-      if (type === "daily") return "毎日";
-      if (type === "weekdays") return "平日（月〜金）";
-      if (type === "custom") {
-        if (!days || days.length === 0) return "曜日未指定";
-        return "毎週 " + getWeekdayText(days);
-      }
-      return "未設定";
-    }
-
-    function updateWeekdayDisabled() {
-      const isCustom = scheduleTypeEl.value === "custom";
-      Array.from(weekdayListEl.querySelectorAll("input")).forEach(function (input) {
-        input.disabled = !isCustom;
-      });
-      weekdayListEl.style.opacity = isCustom ? "1" : "0.45";
-    }
+    function getSelectedWeekdays() { return Array.from(weekdayListEl.querySelectorAll("input:checked")).map(function (input) { return Number(input.value); }); }
+    function setSelectedWeekdays(days) { const dayValues = Array.isArray(days) ? days.map(Number) : []; Array.from(weekdayListEl.querySelectorAll("input")).forEach(function (input) { input.checked = dayValues.indexOf(Number(input.value)) !== -1; }); }
+    function getWeekdayText(days) { const names = {0:"日",1:"月",2:"火",3:"水",4:"木",5:"金",6:"土"}; return days.map(function (day) { return names[day]; }).join("・"); }
+    function getScheduleText(type, days) { if (type === "daily") return "毎日"; if (type === "weekdays") return "平日（月〜金）"; if (type === "custom") { if (!days || days.length === 0) return "曜日未指定"; return "毎週 " + getWeekdayText(days); } return "未設定"; }
+    function updateWeekdayDisabled() { const isCustom = scheduleTypeEl.value === "custom"; Array.from(weekdayListEl.querySelectorAll("input")).forEach(function (input) { input.disabled = !isCustom; }); weekdayListEl.style.opacity = isCustom ? "1" : "0.45"; }
 
     function makeSettings() {
       const type = scheduleTypeEl.value;
@@ -290,18 +152,7 @@
       if (type === "daily") days = [0,1,2,3,4,5,6];
       if (type === "weekdays") days = [1,2,3,4,5];
       if (type === "custom") days = customDays;
-
-      return {
-        enabled: enabledEl.checked,
-        scheduleType: type,
-        time: remindTimeEl.value || "08:00",
-        weekdays: days,
-        customWeekdays: customDays,
-        unansweredReminderEnabled: unansweredReminderEnabledEl.checked,
-        unansweredReminderTime: unansweredReminderTimeEl.value || "17:00",
-        message: messageTextEl.value.trim() || "本日のクイズの回答をお願いします。",
-        timezone: "Asia/Tokyo"
-      };
+      return { enabled: enabledEl.checked, scheduleType: type, time: remindTimeEl.value || "08:00", weekdays: days, customWeekdays: customDays, unansweredReminderEnabled: unansweredReminderEnabledEl.checked, unansweredReminderTime: unansweredReminderTimeEl.value || "17:00", message: messageTextEl.value.trim() || "本日のクイズの回答をお願いします。", timezone: "Asia/Tokyo" };
     }
 
     function updatePreview() {
@@ -320,7 +171,11 @@
 " +
         "未回答リマインド時刻：" + settings.unansweredReminderTime + "
 " +
-        "判定条件：指定時刻時点で本日のクイズに未回答の場合のみ送信" + "
+        "実行条件：リマインドが有効、かつ通知タイミングに該当する日、かつ未回答時の追加リマインドが有効、かつ指定時刻時点で本日のクイズに未回答の場合のみ送信" + "
+" +
+        "通知対象外の日：送信しない" + "
+" +
+        "リマインド無効時：送信しない" + "
 " +
         "タイムゾーン：" + settings.timezone + "
 " +
@@ -363,29 +218,12 @@
     async function saveSettings() {
       if (!currentUser) return;
       const settings = makeSettings();
-      if (settings.scheduleType === "custom" && settings.weekdays.length === 0) {
-        statusEl.textContent = "曜日を指定する場合は、少なくとも1つの曜日を選択してください。";
-        return;
-      }
-
+      if (settings.scheduleType === "custom" && settings.weekdays.length === 0) { statusEl.textContent = "曜日を指定する場合は、少なくとも1つの曜日を選択してください。"; return; }
       try {
         saveBtn.disabled = true;
         saveBtn.textContent = "保存中...";
         const ref = doc(db, "reminderSettings", currentUser.uid);
-        await setDoc(ref, {
-          uid: currentUser.uid,
-          email: currentUser.email || "",
-          enabled: settings.enabled,
-          scheduleType: settings.scheduleType,
-          time: settings.time,
-          weekdays: settings.weekdays,
-          customWeekdays: settings.customWeekdays,
-          unansweredReminderEnabled: settings.unansweredReminderEnabled,
-          unansweredReminderTime: settings.unansweredReminderTime,
-          message: settings.message,
-          timezone: settings.timezone,
-          updatedAt: serverTimestamp()
-        }, { merge: true });
+        await setDoc(ref, { uid: currentUser.uid, email: currentUser.email || "", enabled: settings.enabled, scheduleType: settings.scheduleType, time: settings.time, weekdays: settings.weekdays, customWeekdays: settings.customWeekdays, unansweredReminderEnabled: settings.unansweredReminderEnabled, unansweredReminderTime: settings.unansweredReminderTime, message: settings.message, timezone: settings.timezone, updatedAt: serverTimestamp() }, { merge: true });
         statusEl.textContent = "リマインド設定を保存しました。";
         updatePreview();
       } catch (error) {
@@ -407,15 +245,7 @@
     previewBtn.addEventListener("click", updatePreview);
     saveBtn.addEventListener("click", saveSettings);
 
-    onAuthStateChanged(auth, function (user) {
-      if (!user) {
-        location.href = "login.html";
-        return;
-      }
-      currentUser = user;
-      loadSettings();
-    });
-
+    onAuthStateChanged(auth, function (user) { if (!user) { location.href = "login.html"; return; } currentUser = user; loadSettings(); });
     updatePreview();
   </script>
 </body>
