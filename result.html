@@ -65,18 +65,10 @@
     <div id="result" class="result-box"></div>
     <div id="detail" class="result-box"></div>
     <div id="explanation" class="result-box"></div>
-    <div id="saveStatus" class="save-status">STEP2_DISPLAY：外部JavaScriptによる結果表示を確認中...</div>
+    <div id="saveStatus" class="save-status">STEP2_V4：外部JavaScript読込待ち...</div>
     <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
   </div>
 
-  <script>
-    function step2DisplayOnError() {
-      var el = document.getElementById('saveStatus');
-      if (el) {
-        el.textContent = 'STEP2_DISPLAY_ERROR：result_step2_retry_20260610.js の読み込みに失敗しました。result.html と同じ階層に置いてください。';
-      }
-    }
-  </script>
-  <script src="result_step2_retry_20260610.js?v=3" onerror="step2DisplayOnError()"></script>
+  <script src="result_step2_display_v4.js?v=20260610-4"></script>
 </body>
 </html>
