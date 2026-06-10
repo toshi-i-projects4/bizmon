@@ -10,6 +10,7 @@
     .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
     h1 { margin: 0; font-size: 28px; color: #111827; }
     .back-link { color: #2563eb; text-decoration: none; font-weight: bold; font-size: 14px; }
+    .bottom-back-link { display: inline-block; margin-top: 20px; color: #2563eb; text-decoration: none; font-weight: bold; font-size: 14px; }
     .card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); padding: 28px; box-sizing: border-box; margin-bottom: 18px; }
     .section-title { font-size: 18px; font-weight: bold; margin: 0 0 14px; color: #111827; }
     .description { font-size: 14px; line-height: 1.7; color: #6b7280; margin: 0 0 18px; }
@@ -114,6 +115,8 @@
       <div id="previewBox" class="preview-box">読み込み中...</div>
       <div class="warning">注意：この画面では「いつ通知するか」の設定を保存します。実際に毎日8:00や未回答者への17:00通知を送るには、Firebase Cloud Functionsなどのサーバー側処理を後で追加する必要があります。</div>
     </div>
+
+    <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
   </div>
 
   <script type="module">
@@ -161,24 +164,15 @@
       const enabledText = settings.enabled ? "有効" : "無効";
       const unansweredText = settings.unansweredReminderEnabled ? "有効" : "無効";
       previewBoxEl.textContent =
-        "状態：" + enabledText + "
-" +
-        "頻度：" + getScheduleText(settings.scheduleType, settings.weekdays) + "
-" +
-        "通常リマインド時刻：" + settings.time + "
-" +
-        "未回答時の追加リマインド：" + unansweredText + "
-" +
-        "未回答リマインド時刻：" + settings.unansweredReminderTime + "
-" +
-        "実行条件：リマインドが有効、かつ通知タイミングに該当する日、かつ未回答時の追加リマインドが有効、かつ指定時刻時点で本日のクイズに未回答の場合のみ送信" + "
-" +
-        "通知対象外の日：送信しない" + "
-" +
-        "リマインド無効時：送信しない" + "
-" +
-        "タイムゾーン：" + settings.timezone + "
-" +
+        "状態：" + enabledText + "\n" +
+        "頻度：" + getScheduleText(settings.scheduleType, settings.weekdays) + "\n" +
+        "通常リマインド時刻：" + settings.time + "\n" +
+        "未回答時の追加リマインド：" + unansweredText + "\n" +
+        "未回答リマインド時刻：" + settings.unansweredReminderTime + "\n" +
+        "実行条件：リマインドが有効、かつ通知タイミングに該当する日、かつ未回答時の追加リマインドが有効、かつ指定時刻時点で本日のクイズに未回答の場合のみ送信" + "\n" +
+        "通知対象外の日：送信しない" + "\n" +
+        "リマインド無効時：送信しない" + "\n" +
+        "タイムゾーン：" + settings.timezone + "\n" +
         "メッセージ：" + settings.message;
     }
 
