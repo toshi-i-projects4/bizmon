@@ -11,18 +11,27 @@
       background-color: #eef2f7;
       color: #333;
       position: relative;
+      padding-top: 24px;
     }
+
+    .top-bar {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      min-height: 70px;
+    }
+
     .page-logo {
-      position: absolute;
-      top: -80px;
-      left: 80px;
       width: 120px;
       height: auto;
+      display: block;
     }
+
     .today-date {
-      position: absolute;
-      top: -60px;
-      right: 60px;
       background: rgba(255, 255, 255, 0.95);
       padding: 10px 14px;
       border-radius: 14px;
@@ -30,25 +39,29 @@
       text-align: right;
       line-height: 1.4;
     }
+
     .today-date .date-top {
       font-size: 15px;
       color: #4b5563;
       font-weight: bold;
     }
+
     .today-date .date-bottom {
       font-size: 20px;
       color: #111827;
       font-weight: bold;
     }
+
     .layout {
       max-width: 1400px;
-      margin: 80px auto 40px;
+      margin: 24px auto 40px;
       display: flex;
       gap: 24px;
       align-items: flex-start;
       padding: 0 20px;
       box-sizing: border-box;
     }
+
     .left-sidebar {
       width: 240px;
       background: #2563eb;
@@ -56,9 +69,9 @@
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.10);
       box-sizing: border-box;
-      transform: translateY(30px);
       color: white;
     }
+
     .main-content {
       flex: 1;
       background: #ffffff;
@@ -69,24 +82,42 @@
       text-align: center;
       min-height: 420px;
     }
+
     .right-sidebar {
-      width: 240px;
+      width: 280px;
       background: #f3f4f6;
       padding: 24px;
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       box-sizing: border-box;
-      transform: translateY(30px);
       color: #374151;
     }
+
     h1 {
       margin-top: 0;
       font-size: 28px;
       color: #111827;
     }
-    .left-sidebar h2 { margin-top: 0; font-size: 20px; color: white; margin-bottom: 16px; }
-    .right-sidebar h2 { margin-top: 0; font-size: 20px; color: #111827; margin-bottom: 16px; }
-    p { font-size: 15px; line-height: 1.6; }
+
+    .left-sidebar h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    .right-sidebar h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
     .guide-message {
       background: #eff6ff;
       border-left: 4px solid #2563eb;
@@ -97,6 +128,7 @@
       margin-bottom: 24px;
       text-align: left;
     }
+
     .quiz-button-image {
       width: 140px;
       max-width: 100%;
@@ -105,6 +137,7 @@
       display: inline-block;
       margin-bottom: 28px;
     }
+
     .left-sidebar .sidebar-box {
       background: rgba(255, 255, 255, 0.16);
       border: 1px solid rgba(255, 255, 255, 0.28);
@@ -112,17 +145,20 @@
       padding: 12px 14px;
       margin-bottom: 14px;
     }
+
     .left-sidebar .sidebar-box-title {
       font-size: 14px;
       font-weight: bold;
       color: white;
       margin-bottom: 6px;
     }
+
     .left-sidebar .sidebar-box-text {
       font-size: 13px;
       color: #eaf2ff;
       line-height: 1.6;
     }
+
     .logout-btn {
       margin-top: 20px;
       padding: 12px 24px;
@@ -133,53 +169,60 @@
       cursor: pointer;
       font-size: 14px;
     }
+
     .user-info {
       margin-top: 12px;
       font-size: 14px;
       color: #4b5563;
     }
+
     .almanac-status {
       font-size: 13px;
       color: #6b7280;
       margin-bottom: 10px;
       white-space: pre-wrap;
     }
+
     .almanac-list {
       display: grid;
       gap: 12px;
     }
+
     .almanac-item {
       background: #ffffff;
       border: 1px solid #e5e7eb;
       border-radius: 10px;
       padding: 12px 14px;
     }
+
     .almanac-item-title {
       font-size: 13px;
       font-weight: bold;
       color: #111827;
       margin-bottom: 6px;
     }
+
     .almanac-item-text {
       font-size: 13px;
       color: #6b7280;
       line-height: 1.6;
       white-space: pre-wrap;
     }
+
     @media (max-width: 1000px) {
+      .top-bar { align-items: center; }
       .layout { flex-direction: column; }
-      .left-sidebar, .main-content, .right-sidebar { width: 100%; transform: none; }
-      .today-date { position: static; margin: 12px 20px 0 auto; width: fit-content; }
-      .page-logo { position: static; display: block; margin: 16px 0 0 20px; }
+      .left-sidebar, .main-content, .right-sidebar { width: 100%; }
     }
   </style>
 </head>
 <body>
-  <img src="logo.png" alt="ロゴ" class="page-logo">
-
-  <div id="todayDate" class="today-date">
-    <div class="date-top"></div>
-    <div class="date-bottom"></div>
+  <div class="top-bar">
+    <img src="logo.png" alt="ロゴ" class="page-logo">
+    <div id="todayDate" class="today-date">
+      <div class="date-top"></div>
+      <div class="date-bottom"></div>
+    </div>
   </div>
 
   <div class="layout">
@@ -210,7 +253,7 @@
     </div>
 
     <div class="right-sidebar">
-      <h2 id="almanacHeading">暦情報</h2>
+      <h2 id="almanacTitle">暦情報</h2>
       <div id="almanacStatus" class="almanac-status">読み込み中...</div>
       <div id="almanacList" class="almanac-list"></div>
     </div>
@@ -229,16 +272,21 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    function getTodayJst() {
+    function getTodayJstParts() {
       const now = new Date();
       const y = now.getFullYear();
       const m = String(now.getMonth() + 1).padStart(2, '0');
       const d = String(now.getDate()).padStart(2, '0');
-      return { key: `${y}-${m}-${d}`, year: y, month: Number(m), day: Number(d) };
+      return {
+        key: `${y}-${m}-${d}`,
+        year: y,
+        month: Number(m),
+        day: Number(d)
+      };
     }
 
     function formatJapaneseDateTwoLines() {
-      const today = getTodayJst();
+      const today = getTodayJstParts();
       const reiwaYear = today.year - 2018;
       const reiwaText = reiwaYear === 1 ? '令和元年' : `令和${reiwaYear}年`;
       document.querySelector('#todayDate .date-top').textContent = `${today.year}年（${reiwaText}）`;
@@ -249,20 +297,21 @@
       const result = [];
       let current = '';
       let inQuotes = false;
+
       for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        if (ch === '"') {
+        const char = line[i];
+        if (char === '"') {
           if (inQuotes && line[i + 1] === '"') {
             current += '"';
             i++;
           } else {
             inQuotes = !inQuotes;
           }
-        } else if (ch === ',' && !inQuotes) {
+        } else if (char === ',' && !inQuotes) {
           result.push(current);
           current = '';
         } else {
-          current += ch;
+          current += char;
         }
       }
       result.push(current);
@@ -270,10 +319,10 @@
     }
 
     async function loadAlmanac() {
-      const today = getTodayJst();
-      const headingEl = document.getElementById('almanacHeading');
       const statusEl = document.getElementById('almanacStatus');
       const listEl = document.getElementById('almanacList');
+      const titleEl = document.getElementById('almanacTitle');
+      const today = getTodayJstParts();
 
       const labelMap = {
         holiday: '祝日',
@@ -290,13 +339,16 @@
 
       try {
         const res = await fetch(`almanac.csv?v=${Date.now()}`);
-        if (!res.ok) throw new Error(`almanac.csv が見つかりません（HTTP ${res.status}）`);
+        if (!res.ok) {
+          throw new Error('almanac.csv が見つかりません。');
+        }
 
         const text = (await res.text()).replace(/^﻿/, '');
         const lines = text.split(/?
 /).filter(line => line.trim() !== '');
+
         if (lines.length <= 1) {
-          statusEl.textContent = 'almanac.csv にデータがありません。';
+          statusEl.textContent = 'almanac.csv にデータが入っていません。';
           return;
         }
 
@@ -307,9 +359,11 @@
           return;
         }
 
-        const row = lines.slice(1).map(parseCsvLine).find(cols => (cols[dateIndex] || '').trim() === today.key);
+        const rows = lines.slice(1).map(parseCsvLine);
+        const row = rows.find(cols => (cols[dateIndex] || '').trim() === today.key);
+
         if (!row) {
-          headingEl.style.display = 'none';
+          titleEl.style.display = 'none';
           statusEl.textContent = '';
           listEl.innerHTML = '';
           return;
@@ -317,21 +371,23 @@
 
         const items = [];
         for (const [key, label] of Object.entries(labelMap)) {
-          const idx = header.indexOf(key);
-          if (idx !== -1) {
-            const value = String(row[idx] || '').trim();
-            if (value && value.toLowerCase() !== 'nan') items.push({ label, value });
+          const index = header.indexOf(key);
+          if (index !== -1) {
+            const value = String(row[index] || '').trim();
+            if (value && value.toLowerCase() !== 'nan') {
+              items.push({ label, value });
+            }
           }
         }
 
         if (items.length === 0) {
-          headingEl.style.display = 'none';
+          titleEl.style.display = 'none';
           statusEl.textContent = '';
           listEl.innerHTML = '';
           return;
         }
 
-        headingEl.style.display = '';
+        titleEl.style.display = '';
         statusEl.textContent = '';
         listEl.innerHTML = items.map(item => `
           <div class="almanac-item">
@@ -341,7 +397,7 @@
         `).join('');
       } catch (error) {
         console.error(error);
-        statusEl.textContent = '暦情報CSVの読み込みに失敗しました。almanac.csv が index.html と同じ階層にあるか確認してください。';
+        statusEl.textContent = '暦情報CSVの読み込みに失敗しました。index.html と almanac.csv を同じフォルダに置いてください。';
       }
     }
 
