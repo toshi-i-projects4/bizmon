@@ -154,27 +154,6 @@
       line-height: 1.6;
     }
 
-    .right-sidebar .sidebar-box {
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-bottom: 14px;
-    }
-
-    .right-sidebar .sidebar-box-title {
-      font-size: 14px;
-      font-weight: bold;
-      color: #111827;
-      margin-bottom: 6px;
-    }
-
-    .right-sidebar .sidebar-box-text {
-      font-size: 13px;
-      color: #6b7280;
-      line-height: 1.6;
-    }
-
     .logout-btn {
       margin-top: 20px;
       padding: 12px 24px;
@@ -190,6 +169,39 @@
       margin-top: 12px;
       font-size: 14px;
       color: #4b5563;
+    }
+
+    .almanac-status {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+    }
+
+    .almanac-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .almanac-item {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .almanac-item-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .almanac-item-text {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.6;
+      white-space: pre-wrap;
     }
 
     @media (max-width: 1000px) {
@@ -254,19 +266,9 @@
     </div>
 
     <div class="right-sidebar">
-      <h2>今日の出来事</h2>
-      <div class="sidebar-box">
-        <div class="sidebar-box-title">本日の記録</div>
-        <div class="sidebar-box-text">ここにその日の出来事や進捗を書けます。</div>
-      </div>
-      <div class="sidebar-box">
-        <div class="sidebar-box-title">学習履歴</div>
-        <div class="sidebar-box-text">前回の結果や解答履歴を表示できます。</div>
-      </div>
-      <div class="sidebar-box">
-        <div class="sidebar-box-title">ひとこと</div>
-        <div class="sidebar-box-text">任意のメッセージを表示できます。</div>
-      </div>
+      <h2>暦情報</h2>
+      <div id="almanacStatus" class="almanac-status">読み込み中...</div>
+      <div id="almanacList" class="almanac-list"></div>
     </div>
   </div>
 
@@ -287,36 +289,149 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    function formatJapaneseDateTwoLines() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth() + 1;
-      const day = today.getDate();
-      const reiwaYear = year - 2018;
-      const reiwaText = reiwaYear === 1 ? "令和元年" : "令和" + reiwaYear + "年";
+    function getTodayJst() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return {
+        key: `${y}-${m}-${d}`,
+        year: y,
+        month: Number(m),
+        day: Number(d)
+      };
+    }
 
-      document.querySelector("#todayDate .date-top").textContent = `${year}年（${reiwaText}）`;
-      document.querySelector("#todayDate .date-bottom").textContent = `${month}月${day}日`;
+    function formatJapaneseDateTwoLines() {
+      const today = getTodayJst();
+      const reiwaYear = today.year - 2018;
+      const reiwaText = reiwaYear === 1 ? '令和元年' : `令和${reiwaYear}年`;
+      document.querySelector('#todayDate .date-top').textContent = `${today.year}年（${reiwaText}）`;
+      document.querySelector('#todayDate .date-bottom').textContent = `${today.month}月${today.day}日`;
+    }
+
+    function parseCsvLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === ',' && !inQuotes) {
+          result.push(current);
+          current = '';
+        } else {
+          current += ch;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    async function loadAlmanac() {
+      const today = getTodayJst();
+      const statusEl = document.getElementById('almanacStatus');
+      const listEl = document.getElementById('almanacList');
+      const fileName = 'almanac.csv';
+
+      const labelMap = {
+        holiday: '祝日',
+        rokuyo: '六曜',
+        gosekku: '五節句',
+        senjitsu: '選日',
+        nijushisekki: '二十四節気',
+        shichijunikou: '七十二候',
+        nikkanshi: '日干支',
+        tsukikanshi: '月干支',
+        nenkanshi: '年干支',
+        other: 'その他'
+      };
+
+      try {
+        const res = await fetch(`${fileName}?v=${Date.now()}`);
+        if (!res.ok) {
+          throw new Error(`${fileName} が見つかりません。`);
+        }
+
+        const text = await res.text();
+        const lines = text.split(/?
+/).filter(line => line.trim() !== '');
+        if (lines.length <= 1) {
+          statusEl.textContent = `${fileName} にデータがありません。`;
+          return;
+        }
+
+        const header = parseCsvLine(lines[0]).map(v => v.trim().toLowerCase());
+        const dateIndex = header.indexOf('date');
+        if (dateIndex === -1) {
+          statusEl.textContent = `${fileName} の1行目に date 列が必要です。`;
+          return;
+        }
+
+        const row = lines.slice(1)
+          .map(parseCsvLine)
+          .find(cols => (cols[dateIndex] || '').trim() === today.key);
+
+        if (!row) {
+          statusEl.textContent = `本日（${today.key}）の暦情報はありません。`;
+          return;
+        }
+
+        const items = [];
+        for (const [key, label] of Object.entries(labelMap)) {
+          const index = header.indexOf(key);
+          if (index !== -1) {
+            const value = (row[index] || '').trim();
+            if (value) {
+              items.push({ label, value });
+            }
+          }
+        }
+
+        if (items.length === 0) {
+          statusEl.textContent = '';
+          listEl.innerHTML = '';
+          return;
+        }
+
+        statusEl.textContent = '';
+        listEl.innerHTML = items.map(item => `
+          <div class="almanac-item">
+            <div class="almanac-item-title">${item.label}</div>
+            <div class="almanac-item-text">${item.value}</div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = '暦情報CSVの読み込みに失敗しました。almanac.csv が index.html と同じ階層にあるか確認してください。';
+      }
     }
 
     formatJapaneseDateTwoLines();
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        location.href = "login.html";
+        location.href = 'login.html';
         return;
       }
 
-      document.getElementById("userInfo").textContent = `ログイン中：${user.email}`;
+      document.getElementById('userInfo').textContent = `ログイン中：${user.email}`;
+      loadAlmanac();
     });
 
     window.logout = async function () {
       try {
         await signOut(auth);
-        location.href = "login.html";
+        location.href = 'login.html';
       } catch (error) {
         console.error(error);
-        alert("ログアウトに失敗しました。");
+        alert('ログアウトに失敗しました。');
       }
     };
   </script>
