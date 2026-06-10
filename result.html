@@ -54,14 +54,11 @@
       white-space: pre-wrap;
       font-weight: bold;
     }
-    .top-btn {
-      margin-top: 16px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 10px;
-      background: #111827;
-      color: #ffffff;
-      cursor: pointer;
+    .top-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #2563eb;
+      text-decoration: none;
       font-size: 14px;
     }
   </style>
@@ -75,7 +72,7 @@
     <div id="explanation" class="result-box"></div>
     <div id="saveStatus" class="save-status">STEP2_V5：外部JavaScriptによる結果表示を確認中...</div>
     <div id="authStatus" class="auth-status">STEP4：Firestore保存準備中...</div>
-    <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
+    <a href="index.html" class="top-link">← マイページへ戻る</a>
   </div>
 
   <script src="result_step2_display_v5.js?v=20260610-7" onerror="document.getElementById('saveStatus').textContent='STEP2_V5_ERROR：result_step2_display_v5.js の読み込みに失敗しました。';"></script>
