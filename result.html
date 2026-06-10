@@ -20,20 +20,36 @@
     <div id="result" class="result-box"></div>
     <div id="detail" class="result-box"></div>
     <div id="explanation" class="result-box"></div>
-    <div id="saveStatus" class="save-status">STEP1_EXTERNAL_CHECK：result.html は表示されています。外部JS読込確認中...</div>
+    <div id="saveStatus" class="save-status">STEP1_EXTERNAL_V2：外部JavaScript読込待ち...</div>
     <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
   </div>
 
   <script>
-    window.resultStep1CheckLoaded = function () {
+    window.resultStep1Executed = false;
+    window.resultStep1Loaded = false;
+
+    function afterResultStep1Loaded() {
+      window.resultStep1Loaded = true;
+      setTimeout(function () {
+        var el = document.getElementById("saveStatus");
+        if (!el) return;
+
+        if (window.resultStep1Executed) {
+          // 外部JSが実行済みなら、外部JS側の表示を上書きしない
+          return;
+        }
+
+        el.textContent = "STEP1_EXTERNAL_V2_ONLOAD_ONLY：外部JSファイルの読込は成功しましたが、JS内処理の実行確認が取れていません。";
+      }, 0);
+    }
+
+    function afterResultStep1Error() {
       var el = document.getElementById("saveStatus");
       if (el) {
-        el.textContent = "STEP1_EXTERNAL_CHECK_OK：result_step1_check.js は読み込まれ、実行されました。";
+        el.textContent = "STEP1_EXTERNAL_V2_ERROR：外部JSファイルの読込に失敗しました。result_step1_v2.js が同じ階層にあるか確認してください。";
       }
-    };
+    }
   </script>
-  <script src="result_step1_check.js?v=20260610-1"
-          onload="document.getElementById('saveStatus').textContent='STEP1_EXTERNAL_CHECK_ONLOAD：外部JSファイルの読込自体は成功しました。JS内関数の実行結果を確認してください。';"
-          onerror="document.getElementById('saveStatus').textContent='STEP1_EXTERNAL_CHECK_ERROR：外部JSファイルの読込に失敗しました。result_step1_check.js が同じ階層にあるか確認してください。';"></script>
+  <script src="result_step1_v2.js?v=20260610-1" defer onload="afterResultStep1Loaded()" onerror="afterResultStep1Error()"></script>
 </body>
 </html>
