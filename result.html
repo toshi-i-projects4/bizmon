@@ -73,7 +73,7 @@
   <div class="wrap">
     <h1>結果</h1>
     <div id="question" class="result-box">結果表示準備中...</div>
-    <div id="choices" class="result-box choices-box">選択肢を読み込み中...</div>
+    <div id="choices" class="result-box choices-box">選択肢読込処理を開始します...</div>
     <div id="result" class="result-box"></div>
     <div id="detail" class="result-box"></div>
     <div id="explanation" class="result-box"></div>
@@ -82,193 +82,139 @@
     <a href="index.html" class="top-link">← マイページへ戻る</a>
   </div>
 
-  <script src="result_step2_display_v5.js?v=20260610-7" onerror="document.getElementById('saveStatus').textContent='STEP2_V5_ERROR：result_step2_display_v5.js の読み込みに失敗しました。';"></script>
-  <script type="module" src="result_step4_save.js?v=20260610-1"></script>
-
   <script>
-    (function() {
-      const CHOICES_LOADING_TEXT = '選択肢を読み込み中...';
+    // 選択肢表示専用：外部JSに依存しない独立処理です。
+    (function () {
+      const choicesEl = document.getElementById('choices');
+      if (!choicesEl) return;
+      choicesEl.textContent = '選択肢読込中：questions.csv を確認しています...';
 
       function parseCsvLine(line) {
-        const result = [];
-        let current = '';
-        let inQuotes = false;
+        const out = [];
+        let cur = '';
+        let q = false;
         for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          if (char === '"') {
-            if (inQuotes && line[i + 1] === '"') {
-              current += '"';
-              i++;
-            } else {
-              inQuotes = !inQuotes;
-            }
-          } else if (char === ',' && !inQuotes) {
-            result.push(current);
-            current = '';
+          const ch = line[i];
+          if (ch === '"') {
+            if (q && line[i + 1] === '"') { cur += '"'; i++; }
+            else { q = !q; }
+          } else if (ch === ',' && !q) {
+            out.push(cur);
+            cur = '';
           } else {
-            current += char;
+            cur += ch;
           }
         }
-        result.push(current);
-        return result;
+        out.push(cur);
+        return out;
       }
 
-      function getTodayKey() {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
-        return y + '-' + m + '-' + d;
-      }
-
-      function normalizeQuestionText(value) {
-        return String(value || '')
-          .replace(/^問題[:：]\s*/, '')
+      function norm(v) {
+        return String(v || '')
+          .replace(/^\uFEFF/, '')
+          .replace(/^問題\s*[:：]\s*/, '')
           .replace(/\s+/g, '')
           .trim();
       }
 
+      function todayKey() {
+        const now = new Date();
+        return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      }
+
       function setChoices(a, b, c) {
-        const choicesEl = document.getElementById('choices');
-        if (!choicesEl) return false;
-        if (!a && !b && !c) return false;
-        choicesEl.textContent = '選択肢
-A：' + (a || '') + '
-B：' + (b || '') + '
-C：' + (c || '');
+        choicesEl.textContent = '選択肢\nA：' + (a || '') + '\nB：' + (b || '') + '\nC：' + (c || '');
+      }
+
+      function getLocal(nameList) {
+        for (const name of nameList) {
+          const value = localStorage.getItem(name);
+          if (value) return value;
+        }
+        return '';
+      }
+
+      async function loadFromCsv() {
+        const localA = getLocal(['choiceA', 'answerA', 'optionA', 'a', 'A']);
+        const localB = getLocal(['choiceB', 'answerB', 'optionB', 'b', 'B']);
+        const localC = getLocal(['choiceC', 'answerC', 'optionC', 'c', 'C']);
+        if (localA || localB || localC) {
+          setChoices(localA, localB, localC);
+          return true;
+        }
+
+        const res = await fetch('./questions.csv?choices=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) throw new Error('questions.csv の取得に失敗しました。status=' + res.status);
+
+        const text = await res.text();
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        if (lines.length <= 1) throw new Error('questions.csv にデータ行がありません。');
+
+        const header = parseCsvLine(lines[0]).map(v => norm(v).toLowerCase());
+        const idx = {
+          id: header.indexOf('id'),
+          date: header.indexOf('date'),
+          question: header.indexOf('question'),
+          a: header.indexOf('a'),
+          b: header.indexOf('b'),
+          c: header.indexOf('c')
+        };
+        if (idx.a < 0 || idx.b < 0 || idx.c < 0) {
+          throw new Error('CSV見出しに a, b, c が見つかりません。現在の見出し：' + header.join(' / '));
+        }
+
+        const rows = lines.slice(1).map(parseCsvLine);
+        const key = todayKey();
+        const savedId = norm(getLocal(['questionId', 'currentQuestionId', 'id']));
+        const savedQuestion = norm(localStorage.getItem('questionText'));
+        const displayedQuestion = norm(document.getElementById('question') ? document.getElementById('question').textContent : '');
+
+        let row = null;
+        if (idx.id >= 0 && savedId) row = rows.find(r => norm(r[idx.id]) === savedId);
+        if (!row && idx.date >= 0) row = rows.find(r => String(r[idx.date] || '').trim() === key);
+        if (!row && idx.question >= 0 && savedQuestion) row = rows.find(r => norm(r[idx.question]) === savedQuestion);
+        if (!row && idx.question >= 0 && displayedQuestion && displayedQuestion !== norm('結果表示準備中...')) {
+          row = rows.find(r => norm(r[idx.question]) === displayedQuestion);
+        }
+        if (!row && rows.length === 1) row = rows[0];
+
+        if (!row) {
+          throw new Error('該当行を特定できません。本日=' + key + ' / localStorage.questionText=' + (savedQuestion || 'なし'));
+        }
+
+        setChoices(row[idx.a] || '', row[idx.b] || '', row[idx.c] || '');
         return true;
       }
 
-      function setChoicesMessage(message) {
-        const choicesEl = document.getElementById('choices');
-        if (choicesEl) choicesEl.textContent = message;
-      }
+      function runWithRetry() {
+        let tries = 0;
+        const maxTries = 12;
 
-      function getLocalStorageChoices() {
-        return {
-          a: localStorage.getItem('choiceA') || localStorage.getItem('answerA') || localStorage.getItem('a') || localStorage.getItem('A') || '',
-          b: localStorage.getItem('choiceB') || localStorage.getItem('answerB') || localStorage.getItem('b') || localStorage.getItem('B') || '',
-          c: localStorage.getItem('choiceC') || localStorage.getItem('answerC') || localStorage.getItem('c') || localStorage.getItem('C') || ''
-        };
-      }
-
-      function fetchWithTimeout(url, timeoutMs) {
-        return new Promise(function(resolve, reject) {
-          const timer = setTimeout(function() {
-            reject(new Error('timeout'));
-          }, timeoutMs);
-          fetch(url).then(function(response) {
-            clearTimeout(timer);
-            resolve(response);
-          }).catch(function(error) {
-            clearTimeout(timer);
-            reject(error);
-          });
-        });
-      }
-
-      async function loadChoices() {
-        try {
-          const saved = getLocalStorageChoices();
-          if (setChoices(saved.a, saved.b, saved.c)) return;
-
-          const response = await fetchWithTimeout('questions.csv?v=' + Date.now(), 5000);
-          if (!response.ok) throw new Error('questions.csv not found');
-
-          const text = await response.text();
-          const lines = text.split(/?
-/).filter(function(line) { return line.trim() !== ''; });
-          if (lines.length <= 1) throw new Error('empty questions.csv');
-
-          const header = parseCsvLine(lines[0]).map(function(v) { return v.trim().toLowerCase(); });
-          const indexMap = {
-            date: header.indexOf('date'),
-            question: header.indexOf('question'),
-            a: header.indexOf('a'),
-            b: header.indexOf('b'),
-            c: header.indexOf('c')
-          };
-          if (indexMap.a === -1 || indexMap.b === -1 || indexMap.c === -1) {
-            throw new Error('a/b/c header missing');
-          }
-
-          const rows = lines.slice(1).map(parseCsvLine);
-          const todayKey = getTodayKey();
-          const localQuestion = normalizeQuestionText(localStorage.getItem('questionText'));
-          const displayedQuestion = normalizeQuestionText(document.getElementById('question') ? document.getElementById('question').textContent : '');
-
-          let target = null;
-
-          // 1. 今日の日付で探す
-          if (indexMap.date !== -1) {
-            target = rows.find(function(cols) {
-              return String(cols[indexMap.date] || '').trim() === todayKey;
-            });
-          }
-
-          // 2. localStorage の問題文で探す
-          if (!target && indexMap.question !== -1 && localQuestion) {
-            target = rows.find(function(cols) {
-              return normalizeQuestionText(cols[indexMap.question]) === localQuestion;
-            });
-          }
-
-          // 3. 画面に表示済みの問題文で探す
-          if (!target && indexMap.question !== -1 && displayedQuestion && displayedQuestion.indexOf('結果表示準備中') === -1) {
-            target = rows.find(function(cols) {
-              return normalizeQuestionText(cols[indexMap.question]) === displayedQuestion;
-            });
-          }
-
-          // 4. どうしても特定できない場合、CSVが1問だけならその1問を表示
-          if (!target && rows.length === 1) {
-            target = rows[0];
-          }
-
-          if (!target) {
-            setChoicesMessage('選択肢を取得できませんでした。questions.csv の date 列に本日の日付（' + todayKey + '）があるか確認してください。');
-            return;
-          }
-
-          setChoices(target[indexMap.a] || '', target[indexMap.b] || '', target[indexMap.c] || '');
-        } catch (error) {
-          console.error('choices load error:', error);
-          setChoicesMessage('選択肢を取得できませんでした。questions.csv が result.html と同じ階層にあるか確認してください。');
-        }
-      }
-
-      // 外部JSが後から問題文を表示する場合があるため、複数回リトライします。
-      function startChoicesLoader() {
-        loadChoices();
-        let count = 0;
-        const timer = setInterval(function() {
-          const choicesEl = document.getElementById('choices');
-          if (!choicesEl) {
-            clearInterval(timer);
-            return;
-          }
-          if (choicesEl.textContent !== CHOICES_LOADING_TEXT && choicesEl.textContent.indexOf('取得できませんでした') === -1) {
-            clearInterval(timer);
-            return;
-          }
-          count++;
-          if (count >= 8) {
-            clearInterval(timer);
-            if (choicesEl.textContent === CHOICES_LOADING_TEXT) {
-              setChoicesMessage('選択肢を取得できませんでした。questions.csv が result.html と同じ階層にあるか確認してください。');
+        async function attempt() {
+          tries++;
+          try {
+            choicesEl.textContent = '選択肢読込中：questions.csv 確認中...（' + tries + '/' + maxTries + '）';
+            const ok = await loadFromCsv();
+            if (ok) return;
+          } catch (e) {
+            console.error('choices load error', e);
+            if (tries >= maxTries) {
+              choicesEl.textContent = '選択肢を取得できませんでした。\n' +
+                '確認内容：questions.csv は見つかりましたが、該当する問題行または a/b/c 列を取得できませんでした。\n' +
+                '詳細：' + e.message;
+              return;
             }
-            return;
           }
-          loadChoices();
-        }, 700);
+          setTimeout(attempt, 500);
+        }
+        attempt();
       }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', startChoicesLoader);
-      } else {
-        startChoicesLoader();
-      }
+      runWithRetry();
     })();
   </script>
+
+  <script src="result_step2_display_v5.js?v=20260610-7" onerror="document.getElementById('saveStatus').textContent='STEP2_V5_ERROR：result_step2_display_v5.js の読み込みに失敗しました。';"></script>
+  <script type="module" src="result_step4_save.js?v=20260610-1"></script>
 </body>
 </html>
