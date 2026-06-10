@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>マイページ</title>
-
   <style>
     body {
       margin: 0;
@@ -14,7 +13,6 @@
       position: relative;
     }
 
-    /* 左上ロゴ */
     .page-logo {
       position: absolute;
       top: -80px;
@@ -23,7 +21,6 @@
       height: auto;
     }
 
-    /* 右上の日付 */
     .today-date {
       position: absolute;
       top: -60px;
@@ -48,7 +45,6 @@
       font-weight: bold;
     }
 
-    /* 全体3カラム */
     .layout {
       max-width: 1400px;
       margin: 80px auto 40px;
@@ -59,7 +55,6 @@
       box-sizing: border-box;
     }
 
-    /* 左サイドバー */
     .left-sidebar {
       width: 240px;
       background: #2563eb;
@@ -71,7 +66,6 @@
       color: white;
     }
 
-    /* 中央メイン */
     .main-content {
       flex: 1;
       background: #ffffff;
@@ -81,10 +75,8 @@
       box-sizing: border-box;
       text-align: center;
       min-height: 420px;
-　　　transform: translateY(-160px);
-   }
+    }
 
-    /* 右サイドバー */
     .right-sidebar {
       width: 240px;
       background: #f3f4f6;
@@ -141,7 +133,6 @@
       margin-bottom: 28px;
     }
 
-    /* 左サイドバー内ボックス */
     .left-sidebar .sidebar-box {
       background: rgba(255, 255, 255, 0.16);
       border: 1px solid rgba(255, 255, 255, 0.28);
@@ -163,7 +154,6 @@
       line-height: 1.6;
     }
 
-    /* 右サイドバー内ボックス */
     .right-sidebar .sidebar-box {
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -185,60 +175,23 @@
       line-height: 1.6;
     }
 
-    /* カレンダー */
-    .calendar-box {
-      margin-top: 10px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .calendar-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #111827;
-      margin-bottom: 14px;
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
+    .logout-btn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      background: #111827;
+      color: #fff;
+      cursor: pointer;
       font-size: 14px;
     }
 
-    .calendar-weekday {
-      font-weight: bold;
+    .user-info {
+      margin-top: 12px;
+      font-size: 14px;
       color: #4b5563;
-      padding: 6px 0;
     }
 
-    .calendar-day {
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #374151;
-    }
-
-    .calendar-empty {
-      background: transparent;
-      border: none;
-    }
-
-    .calendar-today {
-      background: #dbeafe;
-      border: 1px solid #60a5fa;
-      color: #1d4ed8;
-      font-weight: bold;
-    }
-
-    /* スマホでは縦並び */
     @media (max-width: 1000px) {
       .layout {
         flex-direction: column;
@@ -266,7 +219,6 @@
   </style>
 </head>
 <body>
-
   <img src="logo.png" alt="ロゴ" class="page-logo">
 
   <div id="todayDate" class="today-date">
@@ -275,154 +227,98 @@
   </div>
 
   <div class="layout">
-
-    <!-- 左サイドバー -->
     <div class="left-sidebar">
       <h2>サイドバー</h2>
-
       <div class="sidebar-box">
         <div class="sidebar-box-title">お知らせ</div>
-        <div class="sidebar-box-text">
-          ここにお知らせを表示できます。
-        </div>
+        <div class="sidebar-box-text">ここにお知らせを表示できます。</div>
       </div>
-
       <div class="sidebar-box">
         <div class="sidebar-box-title">設定変更</div>
-        <div class="sidebar-box-text">
-          通知設定や表示設定などを配置できます。
-        </div>
+        <div class="sidebar-box-text">通知設定や表示設定などを配置できます。</div>
       </div>
-
       <div class="sidebar-box">
         <div class="sidebar-box-title">メモ</div>
-        <div class="sidebar-box-text">
-          自由に補足情報を入れられます。
-        </div>
+        <div class="sidebar-box-text">自由に補足情報を入れられます。</div>
       </div>
     </div>
 
-    <!-- 中央メイン -->
     <div class="main-content">
       <h1>マイページ</h1>
-
-      <p class="guide-message">
-        ▼ 下のボタンから本日のクイズに進めます
-      </p>
-
+      <p class="guide-message">▼ 下のボタンから本日のクイズに進めます</p>
       <a href="question.html">
-        <img
-          src="button_本日のクイズへ.png"
-          alt="本日のクイズへ"
-          class="quiz-button-image"
-        >
+        <img src="button_本日のクイズへ.png" alt="本日のクイズへ" class="quiz-button-image">
       </a>
-
-      <!-- カレンダー -->
-      <div class="calendar-box">
-        <div id="calendarTitle" class="calendar-title"></div>
-        <div id="calendarGrid" class="calendar-grid"></div>
-      </div>
+      <div id="userInfo" class="user-info"></div>
+      <button class="logout-btn" onclick="logout()">ログアウト</button>
     </div>
 
-    <!-- 右サイドバー -->
     <div class="right-sidebar">
       <h2>今日の出来事</h2>
-
       <div class="sidebar-box">
         <div class="sidebar-box-title">本日の記録</div>
-        <div class="sidebar-box-text">
-          ここにその日の出来事や進捗を書けます。
-        </div>
+        <div class="sidebar-box-text">ここにその日の出来事や進捗を書けます。</div>
       </div>
-
       <div class="sidebar-box">
         <div class="sidebar-box-title">学習履歴</div>
-        <div class="sidebar-box-text">
-          前回の結果や解答履歴を表示できます。
-        </div>
+        <div class="sidebar-box-text">前回の結果や解答履歴を表示できます。</div>
       </div>
-
       <div class="sidebar-box">
         <div class="sidebar-box-title">ひとこと</div>
-        <div class="sidebar-box-text">
-          任意のメッセージを表示できます。
-        </div>
+        <div class="sidebar-box-text">任意のメッセージを表示できます。</div>
       </div>
     </div>
-
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
+      authDomain: "bizmon-31ffc.firebaseapp.com",
+      projectId: "bizmon-31ffc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
     function formatJapaneseDateTwoLines() {
       const today = new Date();
-
       const year = today.getFullYear();
       const month = today.getMonth() + 1;
       const day = today.getDate();
-
       const reiwaYear = year - 2018;
       const reiwaText = reiwaYear === 1 ? "令和元年" : "令和" + reiwaYear + "年";
 
-      document.querySelector("#todayDate .date-top").textContent =
-        `${year}年（${reiwaText}）`;
-
-      document.querySelector("#todayDate .date-bottom").textContent =
-        `${month}月${day}日`;
-    }
-
-    function renderCalendar() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth(); // 0始まり
-      const day = today.getDate();
-
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-
-      const firstWeekday = firstDay.getDay();
-      const lastDate = lastDay.getDate();
-
-      const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-
-      document.getElementById("calendarTitle").textContent =
-        `${year}年 ${month + 1}月`;
-
-      const calendarGrid = document.getElementById("calendarGrid");
-      calendarGrid.innerHTML = "";
-
-      // 曜日
-      weekdays.forEach(weekday => {
-        const cell = document.createElement("div");
-        cell.className = "calendar-weekday";
-        cell.textContent = weekday;
-        calendarGrid.appendChild(cell);
-      });
-
-      // 空白
-      for (let i = 0; i < firstWeekday; i++) {
-        const emptyCell = document.createElement("div");
-        emptyCell.className = "calendar-day calendar-empty";
-        calendarGrid.appendChild(emptyCell);
-      }
-
-      // 日付
-      for (let date = 1; date <= lastDate; date++) {
-        const dayCell = document.createElement("div");
-        dayCell.className = "calendar-day";
-        dayCell.textContent = date;
-
-        if (date === day) {
-          dayCell.classList.add("calendar-today");
-        }
-
-        calendarGrid.appendChild(dayCell);
-      }
+      document.querySelector("#todayDate .date-top").textContent = `${year}年（${reiwaText}）`;
+      document.querySelector("#todayDate .date-bottom").textContent = `${month}月${day}日`;
     }
 
     formatJapaneseDateTwoLines();
-    renderCalendar();
-  </script>
 
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        location.href = "login.html";
+        return;
+      }
+
+      document.getElementById("userInfo").textContent = `ログイン中：${user.email}`;
+    });
+
+    window.logout = async function () {
+      try {
+        await signOut(auth);
+        location.href = "login.html";
+      } catch (error) {
+        console.error(error);
+        alert("ログアウトに失敗しました。");
+      }
+    };
+  </script>
 </body>
 </html>

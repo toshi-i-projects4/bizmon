@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログイン</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #eef2f7;
+      font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif;
+      color: #333;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 32px;
+      box-sizing: border-box;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #111827;
+    }
+
+    .input-group {
+      margin-bottom: 14px;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 15px;
+      background: #fff;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    button {
+      flex: 1;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .login-btn {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .signup-btn {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .message {
+      margin-top: 16px;
+      font-size: 14px;
+      text-align: center;
+      color: #4b5563;
+      min-height: 1.4em;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h1>ログイン</h1>
+
+    <div class="input-group">
+      <input id="email" type="email" placeholder="メールアドレス">
+    </div>
+
+    <div class="input-group">
+      <input id="password" type="password" placeholder="パスワード">
+    </div>
+
+    <div class="button-row">
+      <button class="login-btn" onclick="login()">ログイン</button>
+      <button class="signup-btn" onclick="signup()">新規登録</button>
+    </div>
+
+    <div id="message" class="message"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
+      authDomain: "bizmon-31ffc.firebaseapp.com",
+      projectId: "bizmon-31ffc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const message = document.getElementById("message");
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        location.href = "index.html";
+      }
+    });
+
+    window.login = async function () {
+      const email = document.getElementById("email").value.trim();
+      const pass = document.getElementById("password").value;
+
+      if (!email || !pass) {
+        message.textContent = "メールアドレスとパスワードを入力してください。";
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        message.textContent = "ログイン成功。マイページへ移動します。";
+        location.href = "index.html";
+      } catch (error) {
+        console.error(error);
+        message.textContent = "ログインに失敗しました。メールアドレスまたはパスワードを確認してください。";
+      }
+    };
+
+    window.signup = async function () {
+      const email = document.getElementById("email").value.trim();
+      const pass = document.getElementById("password").value;
+
+      if (!email || !pass) {
+        message.textContent = "メールアドレスとパスワードを入力してください。";
+        return;
+      }
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        message.textContent = "登録成功。ログイン済みの状態でマイページへ移動します。";
+        location.href = "index.html";
+      } catch (error) {
+        console.error(error);
+        message.textContent = "登録に失敗しました。すでに登録済みか、パスワードが短すぎる可能性があります。";
+      }
+    };
+  </script>
+</body>
+</html>
