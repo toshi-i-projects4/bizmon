@@ -26,7 +26,17 @@
     h1 { margin-top: 0; font-size: 28px; color: #111827; }
     .left-sidebar h2 { margin-top: 0; font-size: 20px; color: white; margin-bottom: 16px; }
     p { font-size: 15px; line-height: 1.6; }
-    .guide-message { background: #eff6ff; border-left: 4px solid #2563eb; padding: 12px 14px; border-radius: 8px; font-size: 14px; color: #1e3a8a; margin-bottom: 24px; text-align: left; }
+    .guide-message {
+      background: transparent;
+      border-left: none;
+      padding: 0;
+      border-radius: 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: #1e3a8a;
+      margin: 0 0 10px;
+      text-align: center;
+    }
     .quiz-button-image { width: 140px; max-width: 100%; height: auto; cursor: pointer; display: inline-block; margin-bottom: 24px; }
     .left-sidebar .sidebar-box { background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.28); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
     .left-sidebar .sidebar-box-title { font-size: 14px; font-weight: bold; color: white; margin-bottom: 6px; }
@@ -84,8 +94,7 @@
       <div class="sidebar-box"><div class="sidebar-box-title">メモ</div><div class="sidebar-box-text">自由に補足情報を入れられます。</div></div>
     </div>
     <div class="main-content">
-      <h1>マイページ</h1>
-      <p class="guide-message">▼ 下のボタンから本日のクイズに進めます</p>
+      <p class="guide-message">本日のクイズへ</p>
       <a href="question.html"><img src="button_本日のクイズへ.png" alt="本日のクイズへ" class="quiz-button-image"></a>
       <div id="userInfo" class="user-info"></div>
       <button class="logout-btn" id="logoutBtn">ログアウト</button>
@@ -140,7 +149,6 @@
       var titleEl = document.getElementById("almanacTitle");
       if (!statusEl || !listEl || !titleEl) return;
       statusEl.textContent = "CSV確認中...";
-
       function parseCsvLine(line) {
         var result = [];
         var current = "";
@@ -148,12 +156,8 @@
         for (var i = 0; i < line.length; i++) {
           var ch = line.charAt(i);
           if (ch === '"') {
-            if (inQuotes && line.charAt(i + 1) === '"') {
-              current += '"';
-              i++;
-            } else {
-              inQuotes = !inQuotes;
-            }
+            if (inQuotes && line.charAt(i + 1) === '"') { current += '"'; i++; }
+            else { inQuotes = !inQuotes; }
           } else if (ch === "," && !inQuotes) {
             result.push(current);
             current = "";
@@ -164,7 +168,6 @@
         result.push(current);
         return result;
       }
-
       function renderItems(items) {
         titleEl.style.display = "";
         statusEl.textContent = "";
@@ -177,7 +180,6 @@
         }
         listEl.innerHTML = html;
       }
-
       var now = new Date();
       var y = now.getFullYear();
       var m = String(now.getMonth() + 1).padStart(2, "0");
@@ -189,19 +191,14 @@
       xhr.overrideMimeType("text/plain; charset=UTF-8");
       xhr.onreadystatechange = function () {
         if (xhr.readyState !== 4) return;
-        if (xhr.status !== 200) {
-          statusEl.textContent = "almanac.csv の取得に失敗しました。HTTP status=" + xhr.status;
-          return;
-        }
+        if (xhr.status !== 200) { statusEl.textContent = "almanac.csv の取得に失敗しました。HTTP status=" + xhr.status; return; }
         try {
           var text = xhr.responseText || "";
           if (text.length > 0 && text.charCodeAt(0) === 65279) text = text.substring(1);
           text = text.split(String.fromCharCode(13)).join("");
           var rawLines = text.split(String.fromCharCode(10));
           var lines = [];
-          for (var i = 0; i < rawLines.length; i++) {
-            if (rawLines[i] && rawLines[i].trim() !== "") lines.push(rawLines[i]);
-          }
+          for (var i = 0; i < rawLines.length; i++) { if (rawLines[i] && rawLines[i].trim() !== "") lines.push(rawLines[i]); }
           if (lines.length <= 1) { statusEl.textContent = "almanac.csv にデータが入っていません。"; return; }
           var headerRaw = parseCsvLine(lines[0]);
           var header = [];
@@ -226,10 +223,7 @@
           }
           if (items.length === 0) { titleEl.style.display = "none"; statusEl.textContent = ""; listEl.innerHTML = ""; return; }
           renderItems(items);
-        } catch (error) {
-          console.error(error);
-          statusEl.textContent = "almanac.csv の解析中にエラーが発生しました。";
-        }
+        } catch (error) { console.error(error); statusEl.textContent = "almanac.csv の解析中にエラーが発生しました。"; }
       };
       xhr.onerror = function () { statusEl.textContent = "almanac.csv の通信に失敗しました。"; };
       xhr.send();
