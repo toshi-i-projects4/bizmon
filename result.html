@@ -22,7 +22,14 @@
       padding: 32px;
       box-sizing: border-box;
     }
-    h1 { margin-top: 0; color: #111827; }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    h1 { margin: 0; color: #111827; }
     .result-box {
       background: #f9fafb;
       border: 1px solid #e5e7eb;
@@ -62,16 +69,35 @@
     }
     .top-link {
       display: inline-block;
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .bottom-link {
+      display: inline-block;
       margin-top: 20px;
       color: #2563eb;
       text-decoration: none;
       font-size: 14px;
+      font-weight: bold;
+    }
+    @media (max-width: 640px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>結果</h1>
+    <div class="page-header">
+      <h1>結果</h1>
+      <a href="index.html" class="top-link">← マイページへ戻る</a>
+    </div>
+
     <div id="question" class="result-box">結果表示準備中...</div>
     <div id="choices" class="result-box choices-box">選択肢読込処理を開始します...</div>
     <div id="result" class="result-box"></div>
@@ -79,7 +105,8 @@
     <div id="explanation" class="result-box"></div>
     <div id="saveStatus" class="save-status">STEP2_V5：外部JavaScriptによる結果表示を確認中...</div>
     <div id="authStatus" class="auth-status">STEP4：Firestore保存準備中...</div>
-    <a href="index.html" class="top-link">← マイページへ戻る</a>
+
+    <a href="index.html" class="bottom-link">← マイページへ戻る</a>
   </div>
 
   <script>
@@ -146,7 +173,8 @@
         const res = await fetch('./questions.csv?choices=' + Date.now(), { cache: 'no-store' });
         if (!res.ok) throw new Error('questions.csv の取得に失敗しました。status=' + res.status);
 
-        const text = await res.text();
+        let text = await res.text();
+        if (text.charCodeAt(0) === 65279) text = text.slice(1);
         const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
         if (lines.length <= 1) throw new Error('questions.csv にデータ行がありません。');
 

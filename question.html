@@ -21,11 +21,19 @@
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       padding: 32px;
+      box-sizing: border-box;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
     }
 
     h1 {
-      margin-top: 0;
-      margin-bottom: 8px;
+      margin: 0;
       color: #111827;
     }
 
@@ -80,16 +88,37 @@
 
     .top-link {
       display: inline-block;
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .bottom-link {
+      display: inline-block;
       margin-top: 20px;
       color: #2563eb;
       text-decoration: none;
       font-size: 14px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 640px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>今日の問題</h1>
+    <div class="page-header">
+      <h1>今日の問題</h1>
+      <a href="index.html" class="top-link">← マイページへ戻る</a>
+    </div>
+
     <div id="todayText" class="sub"></div>
     <div id="status" class="status">読み込み中...</div>
 
@@ -102,7 +131,7 @@
       </div>
     </div>
 
-    <a href="index.html" class="top-link">← マイページへ戻る</a>
+    <a href="index.html" class="bottom-link">← マイページへ戻る</a>
   </div>
 
   <script type="module">
@@ -166,12 +195,13 @@
       todayText.textContent = `本日の日付：${today.display}`;
 
       try {
-        const res = await fetch(`questions.csv?v=${Date.now()}`);
+        const res = await fetch(`questions.csv?v=${Date.now()}`, { cache: 'no-store' });
         if (!res.ok) {
           throw new Error('questions.csv が見つかりません。');
         }
 
-        const text = await res.text();
+        let text = await res.text();
+        if (text.charCodeAt(0) === 65279) text = text.slice(1);
         const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
 
         if (lines.length <= 1) {
@@ -179,7 +209,7 @@
           return;
         }
 
-        const header = parseCsvLine(lines[0]).map(v => v.trim().toLowerCase());
+        const header = parseCsvLine(lines[0]).map(v => v.trim().replace(/^\uFEFF/, '').toLowerCase());
         indexMap = {
           id: header.indexOf('id'),
           question: header.indexOf('question'),
@@ -238,6 +268,10 @@
       localStorage.setItem('selectedChoice', choice);
       localStorage.setItem('correctChoice', correct);
       localStorage.setItem('explanation', explanation);
+      localStorage.setItem('choiceA', currentQuestion[indexMap.a] || '');
+      localStorage.setItem('choiceB', currentQuestion[indexMap.b] || '');
+      localStorage.setItem('choiceC', currentQuestion[indexMap.c] || '');
+      localStorage.setItem('questionId', currentQuestion[indexMap.id] || '');
 
       location.href = 'result.html';
     }
