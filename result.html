@@ -65,138 +65,29 @@
     <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
   </div>
 
-  <!-- 通常スクリプト：ここが動けば、result.html自体は最新版です -->
   <script>
-    const questionText = localStorage.getItem("questionText") || "";
-    const resultText = localStorage.getItem("result") || "";
-    const selectedChoice = localStorage.getItem("selectedChoice") || "";
-    const correctChoice = localStorage.getItem("correctChoice") || "";
-    const explanationText = localStorage.getItem("explanation") || "";
+    (function () {
+      var questionText = localStorage.getItem("questionText") || "";
+      var resultText = localStorage.getItem("result") || "";
+      var selectedChoice = localStorage.getItem("selectedChoice") || "";
+      var correctChoice = localStorage.getItem("correctChoice") || "";
+      var explanationText = localStorage.getItem("explanation") || "";
 
-    document.getElementById("question").innerText = questionText ? "問題：" + questionText : "問題情報がありません。";
-    document.getElementById("result").innerText = resultText ? "判定：" + resultText : "判定結果がありません。";
-    document.getElementById("detail").innerText = (selectedChoice && correctChoice)
-      ? "あなたの回答：" + selectedChoice + " / 正解：" + correctChoice
-      : "回答情報がありません。";
-    document.getElementById("explanation").innerText = explanationText ? "解説：" + explanationText : "解説はありません。";
+      document.getElementById("question").innerText = questionText ? "問題：" + questionText : "問題情報がありません。";
+      document.getElementById("result").innerText = resultText ? "判定：" + resultText : "判定結果がありません。";
+      document.getElementById("detail").innerText = (selectedChoice && correctChoice)
+        ? "あなたの回答：" + selectedChoice + " / 正解：" + correctChoice
+        : "回答情報がありません。";
+      document.getElementById("explanation").innerText = explanationText ? "解説：" + explanationText : "解説はありません。";
 
-    document.getElementById("saveStatus").textContent = "通常スクリプト起動済み。Firebaseモジュール確認中...";
-
-    window.addEventListener("error", function (event) {
-      const el = document.getElementById("saveStatus");
-      if (el) {
-        el.textContent = "JavaScriptエラーを検知しました。
-" + (event.message || "詳細不明");
-      }
-    });
-
-    window.addEventListener("unhandledrejection", function (event) {
-      const el = document.getElementById("saveStatus");
-      if (el) {
-        el.textContent = "Promiseエラーを検知しました。
-" + (event.reason && event.reason.message ? event.reason.message : String(event.reason));
-      }
-    });
-  </script>
-
-  <!-- Firebase / Firestore 診断・保存スクリプト -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    const saveStatus = document.getElementById("saveStatus");
-    saveStatus.textContent = "Firebaseモジュール起動済み。認証状態を確認中...";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
-      authDomain: "bizmon-31ffc.firebaseapp.com",
-      projectId: "bizmon-31ffc"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    function getTodayKey() {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, "0");
-      const d = String(now.getDate()).padStart(2, "0");
-      return y + "-" + m + "-" + d;
-    }
-
-    function normalizeResult(text) {
-      if (text === "正解") return "correct";
-      if (text === "不正解") return "incorrect";
-      return "unknown";
-    }
-
-    function withTimeout(promise, ms) {
-      return Promise.race([
-        promise,
-        new Promise(function (_, reject) {
-          setTimeout(function () {
-            reject(new Error("timeout: " + ms + "ms"));
-          }, ms);
-        })
-      ]);
-    }
-
-    async function saveQuizResult(user) {
-      const dateKey = getTodayKey();
-      const normalizedResult = normalizeResult(resultText);
-      const docId = user.uid + "_" + dateKey;
-      const ref = doc(db, "quizResults", docId);
-
-      if (!resultText) {
-        saveStatus.textContent = "判定結果がないため、記録は保存されませんでした。";
-        return;
-      }
-
-      const payload = {
-        uid: user.uid,
-        email: user.email || "",
-        date: dateKey,
-        result: normalizedResult,
-        resultText: resultText,
-        selectedChoice: selectedChoice,
-        correctChoice: correctChoice,
-        questionText: questionText,
-        explanation: explanationText,
-        updatedAt: serverTimestamp()
-      };
-
-      try {
-        saveStatus.textContent = "結果を保存中...
-保存先：quizResults / " + docId;
-        await withTimeout(setDoc(ref, payload, { merge: true }), 10000);
-        saveStatus.textContent = "結果を保存しました。今日の記録は最後の結果で上書きされます。
-保存先：quizResults / " + docId;
-      } catch (error) {
-        console.error(error);
-        saveStatus.textContent =
-          "結果の保存に失敗しました。
+      var now = new Date();
+      document.getElementById("saveStatus").textContent =
+        "STEP0確認：result.html の通常JavaScriptは実行されています。
 " +
-          "エラー内容：" + (error && error.message ? error.message : String(error)) + "
+        "現在時刻：" + now.toLocaleString() + "
 " +
-          "保存先：quizResults / " + docId;
-      }
-    }
-
-    let authTimer = setTimeout(function () {
-      saveStatus.textContent = "認証状態の確認が10秒以内に完了しませんでした。login.htmlから再ログインして再確認してください。";
-    }, 10000);
-
-    onAuthStateChanged(auth, (user) => {
-      clearTimeout(authTimer);
-      if (!user) {
-        location.href = "login.html";
-        return;
-      }
-      saveStatus.textContent = "ログイン確認済み。結果保存を開始します。";
-      saveQuizResult(user);
-    });
+        "次の段階でFirebase保存処理を追加します。";
+    })();
   </script>
 </body>
 </html>
