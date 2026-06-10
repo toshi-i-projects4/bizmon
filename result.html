@@ -13,7 +13,6 @@
       padding: 24px;
       box-sizing: border-box;
     }
-
     .wrap {
       max-width: 760px;
       margin: 30px auto;
@@ -23,12 +22,7 @@
       padding: 32px;
       box-sizing: border-box;
     }
-
-    h1 {
-      margin-top: 0;
-      color: #111827;
-    }
-
+    h1 { margin-top: 0; color: #111827; }
     .result-box {
       background: #f9fafb;
       border: 1px solid #e5e7eb;
@@ -38,7 +32,6 @@
       line-height: 1.7;
       white-space: pre-wrap;
     }
-
     .save-status {
       background: #eff6ff;
       border-left: 4px solid #2563eb;
@@ -49,7 +42,6 @@
       color: #1e3a8a;
       white-space: pre-wrap;
     }
-
     .top-btn {
       margin-top: 16px;
       padding: 12px 24px;
@@ -65,14 +57,11 @@
 <body>
   <div class="wrap">
     <h1>結果</h1>
-
     <div id="question" class="result-box"></div>
     <div id="result" class="result-box"></div>
     <div id="detail" class="result-box"></div>
     <div id="explanation" class="result-box"></div>
-
     <div id="saveStatus" class="save-status">記録保存の準備中...</div>
-
     <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
   </div>
 
@@ -112,14 +101,21 @@
       return y + "-" + m + "-" + d;
     }
 
-    function normalizeResult(resultText) {
-      if (resultText === "正解") {
-        return "correct";
-      }
-      if (resultText === "不正解") {
-        return "incorrect";
-      }
+    function normalizeResult(text) {
+      if (text === "正解") return "correct";
+      if (text === "不正解") return "incorrect";
       return "unknown";
+    }
+
+    function withTimeout(promise, ms) {
+      return Promise.race([
+        promise,
+        new Promise(function (_, reject) {
+          setTimeout(function () {
+            reject(new Error("timeout: " + ms + "ms"));
+          }, ms);
+        })
+      ]);
     }
 
     async function saveQuizResult(user) {
@@ -132,37 +128,47 @@
         return;
       }
 
+      const docId = user.uid + "_" + dateKey;
+      const ref = doc(db, "quizResults", docId);
+      const payload = {
+        uid: user.uid,
+        email: user.email || "",
+        date: dateKey,
+        result: normalizedResult,
+        resultText: resultText,
+        selectedChoice: selectedChoice,
+        correctChoice: correctChoice,
+        questionText: questionText,
+        explanation: explanationText,
+        updatedAt: serverTimestamp()
+      };
+
       try {
-        saveStatus.textContent = "結果を保存中...";
-
-        const docId = user.uid + "_" + dateKey;
-        const ref = doc(db, "quizResults", docId);
-
-        await setDoc(ref, {
-          uid: user.uid,
-          email: user.email || "",
-          date: dateKey,
-          result: normalizedResult,
-          resultText: resultText,
-          selectedChoice: selectedChoice,
-          correctChoice: correctChoice,
-          questionText: questionText,
-          explanation: explanationText,
-          updatedAt: serverTimestamp()
-        }, { merge: true });
-
-        saveStatus.textContent = "結果を保存しました。今日の記録は最後の結果で上書きされます。";
+        saveStatus.textContent = "結果を保存中...
+保存先：quizResults / " + docId;
+        await withTimeout(setDoc(ref, payload, { merge: true }), 10000);
+        saveStatus.textContent = "結果を保存しました。今日の記録は最後の結果で上書きされます。
+保存先：quizResults / " + docId;
       } catch (error) {
         console.error(error);
-        saveStatus.textContent = "結果の保存に失敗しました。Firestoreの有効化またはセキュリティルールを確認してください。";
+        saveStatus.textContent =
+          "結果の保存に失敗しました。
+" +
+          "原因候補：Firestore Databaseが未作成、Firestoreルールで拒否、または通信/権限エラーです。
+" +
+          "エラー内容：" + (error && error.message ? error.message : String(error)) + "
+" +
+          "保存先：quizResults / " + docId;
       }
     }
 
     onAuthStateChanged(auth, (user) => {
+      const saveStatus = document.getElementById("saveStatus");
       if (!user) {
         location.href = "login.html";
         return;
       }
+      saveStatus.textContent = "ログイン確認済み。結果保存を開始します。";
       saveQuizResult(user);
     });
   </script>
