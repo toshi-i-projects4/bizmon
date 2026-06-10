@@ -5,54 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>解説</title>
   <style>
-    body {
-      margin: 0;
-      font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif;
-      background-color: #eef2f7;
-      color: #333;
-      padding: 24px;
-      box-sizing: border-box;
-    }
-    .wrap {
-      max-width: 760px;
-      margin: 30px auto;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      padding: 32px;
-      box-sizing: border-box;
-    }
-    h1 { margin-top: 0; color: #111827; }
-    .result-box {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 14px;
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-    .save-status {
-      background: #eff6ff;
-      border-left: 4px solid #2563eb;
-      border-radius: 8px;
-      padding: 12px 14px;
-      margin: 18px 0;
-      font-size: 14px;
-      color: #1e3a8a;
-      white-space: pre-wrap;
-      font-weight: bold;
-    }
-    .top-btn {
-      margin-top: 16px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 10px;
-      background: #111827;
-      color: #ffffff;
-      cursor: pointer;
-      font-size: 14px;
-    }
+    body { margin:0; font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif; background:#eef2f7; color:#333; padding:24px; box-sizing:border-box; }
+    .wrap { max-width:760px; margin:30px auto; background:#fff; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,.08); padding:32px; box-sizing:border-box; }
+    h1 { margin-top:0; color:#111827; }
+    .result-box { background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:14px 16px; margin-bottom:14px; line-height:1.7; white-space:pre-wrap; }
+    .save-status { background:#eff6ff; border-left:4px solid #2563eb; border-radius:8px; padding:12px 14px; margin:18px 0; font-size:14px; color:#1e3a8a; white-space:pre-wrap; font-weight:bold; }
+    .top-btn { margin-top:16px; padding:12px 24px; border:none; border-radius:10px; background:#111827; color:#fff; cursor:pointer; font-size:14px; }
   </style>
 </head>
 <body>
@@ -62,11 +20,29 @@
     <div id="result" class="result-box"></div>
     <div id="detail" class="result-box"></div>
     <div id="explanation" class="result-box"></div>
-    <div id="saveStatus" class="save-status">STEP2_RETRY：外部JavaScriptによる結果表示を確認中...</div>
+    <div id="saveStatus" class="save-status">STEP2_UNIQUE：外部JavaScript読込待ち...</div>
     <button type="button" class="top-btn" onclick="location.href='index.html'">トップに戻る</button>
   </div>
 
-  <!-- 前回「実行された」と確認できた result_step1_v3.js というファイル名を使います -->
-  <script src="result_step1_v3.js?v=step2-retry-20260610" onerror="document.getElementById('saveStatus').textContent='STEP2_RETRY_ERROR：result_step1_v3.js の読み込みに失敗しました。result.html と同じ階層に result_step1_v3.js があるか確認してください。';"></script>
+  <script>
+    window.step2UniqueExecuted = false;
+    function step2UniqueOnLoad() {
+      setTimeout(function () {
+        var el = document.getElementById('saveStatus');
+        if (!el) return;
+        if (window.step2UniqueExecuted) {
+          return;
+        }
+        el.textContent = 'STEP2_UNIQUE_ONLOAD_ONLY：外部JSファイルの読込は成功しましたが、JS内処理の実行確認が取れていません。';
+      }, 500);
+    }
+    function step2UniqueOnError() {
+      var el = document.getElementById('saveStatus');
+      if (el) {
+        el.textContent = 'STEP2_UNIQUE_ERROR：result_step2_retry_20260610.js の読み込みに失敗しました。result.html と同じ階層に置いてください。';
+      }
+    }
+  </script>
+  <script src="result_step2_retry_20260610.js?v=1" onload="step2UniqueOnLoad()" onerror="step2UniqueOnError()"></script>
 </body>
 </html>
