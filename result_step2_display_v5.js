@@ -54,7 +54,7 @@ try {
   if (saveStatus) {
     saveStatus.textContent = "STEP2_V5_OK：外部JavaScriptで結果表示に成功しました。" + nl +
       "判定=" + (resultText || "未取得") + " / あなたの回答=" + (selectedChoice || "未取得") + " / 正解=" + (correctChoice || "未取得") + nl +
-      "次の段階でFirebase認証確認を追加します。";
+      "次の段階：Firebase認証確認を実行中です。";
   }
 } catch (error) {
   if (saveStatus) {
