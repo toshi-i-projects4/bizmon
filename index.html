@@ -13,16 +13,14 @@
       padding-top: 24px;
     }
 
-    /* ここを flex → grid に変更 */
     .top-bar {
       max-width: 1400px;
       margin: 0 auto;
       padding: 0 20px;
       box-sizing: border-box;
-      display: grid;
-      grid-template-columns: 160px 1fr 230px;
-      align-items: center;
-      column-gap: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
       min-height: 70px;
     }
 
@@ -32,16 +30,6 @@
       display: block;
     }
 
-    /* 追加：あいさつ */
-    .greeting-message {
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      color: #1f2937;
-      line-height: 1.4;
-      letter-spacing: 0.02em;
-    }
-
     .today-date {
       background: rgba(255, 255, 255, 0.95);
       padding: 10px 14px;
@@ -49,7 +37,6 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       text-align: right;
       line-height: 1.4;
-      justify-self: end;
     }
 
     .today-date .date-top {
@@ -207,6 +194,51 @@
       padding: 12px 14px;
     }
 
+    /* 吹き出し風タイトル */
+    .speech-title-wrap {
+      margin-bottom: 16px;
+    }
+
+    .speech-title {
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+      background: #ffffff;
+      color: #111827;
+      padding: 10px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 1.4;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .speech-title::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      bottom: -10px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #ffffff;
+    }
+
+    .speech-title::before {
+      content: "";
+      position: absolute;
+      left: 17px;
+      bottom: -12px;
+      width: 0;
+      height: 0;
+      border-left: 11px solid transparent;
+      border-right: 11px solid transparent;
+      border-top: 11px solid #d1d5db;
+      z-index: -1;
+    }
+
     .almanac-item-title {
       font-size: 13px;
       font-weight: bold;
@@ -223,9 +255,7 @@
 
     @media (max-width: 1000px) {
       .top-bar {
-        grid-template-columns: 1fr;
-        row-gap: 12px;
-        justify-items: center;
+        align-items: center;
       }
 
       .layout {
@@ -237,24 +267,12 @@
       .right-sidebar {
         width: 100%;
       }
-
-      .greeting-message {
-        font-size: 24px;
-      }
-
-      .today-date {
-        justify-self: center;
-      }
     }
   </style>
 </head>
 <body>
   <div class="top-bar">
     <img src="logo.png" alt="ロゴ" class="page-logo">
-
-    <!-- 追加：あいさつ -->
-    <div id="greetingMessage" class="greeting-message"></div>
-
     <div id="todayDate" class="today-date">
       <div class="date-top"></div>
       <div class="date-bottom"></div>
@@ -289,7 +307,9 @@
     </div>
 
     <div class="right-sidebar">
-      <h2 id="almanacTitle">暦情報</h2>
+      <div class="speech-title-wrap">
+        <div id="almanacTitle" class="speech-title">今日はこんな日</div>
+      </div>
       <div id="almanacStatus" class="almanac-status">読み込み中...</div>
       <div id="almanacList" class="almanac-list"></div>
     </div>
@@ -327,27 +347,6 @@
       const reiwaText = reiwaYear === 1 ? "令和元年" : `令和${reiwaYear}年`;
       document.querySelector("#todayDate .date-top").textContent = `${today.year}年（${reiwaText}）`;
       document.querySelector("#todayDate .date-bottom").textContent = `${today.month}月${today.day}日`;
-    }
-
-    /* 追加：時間帯別あいさつ */
-    function setGreetingMessage() {
-      const now = new Date();
-      const hour = now.getHours();
-      let message = "";
-
-      if (hour >= 5 && hour <= 10) {
-        message = "おはようございます";
-      } else if (hour >= 11 && hour <= 15) {
-        message = "こんにちは";
-      } else if (hour >= 16 && hour <= 17) {
-        message = "おつかれさまです";
-      } else if (hour >= 18 && hour <= 21) {
-        message = "こんばんは";
-      } else {
-        message = "おつかれさまです";
-      }
-
-      document.getElementById("greetingMessage").textContent = message;
     }
 
     function parseCsvLine(line) {
@@ -400,8 +399,9 @@
           throw new Error("almanac.csv が見つかりません。");
         }
 
-        const text = (await res.text()).replace(/^\uFEFF/, "");
-        const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
+        const text = (await res.text()).replace(/^﻿/, "");
+        const lines = text.split(/?
+/).filter(line => line.trim() !== "");
 
         if (lines.length <= 1) {
           statusEl.textContent = "almanac.csv にデータが入っていません。";
@@ -444,7 +444,7 @@
           return;
         }
 
-        titleEl.style.display = "";
+        titleEl.style.display = "inline-block";
         statusEl.textContent = "";
         listEl.innerHTML = items.map(item => `
           <div class="almanac-item">
@@ -459,7 +459,7 @@
     }
 
     formatJapaneseDateTwoLines();
-    setGreetingMessage();   // ← 追加
+
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         location.href = "login.html";
