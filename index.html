@@ -330,6 +330,9 @@
       <div id="almanacStatus" class="almanac-status">読み込み中...</div>
       <div id="almanacList" class="almanac-list"></div>
     </div>
+<script>
+  document.getElementById("almanacStatus").textContent = "暦情報スクリプト起動";
+</script> 
   </div>
 
   <!-- 表示処理1：日付・あいさつ。FirebaseやCSVには依存しません。 -->
@@ -444,7 +447,8 @@
 
         try {
           var text = xhr.responseText.replace(/^﻿/, "");
-          var lines = text.split(/?
+          var lines = text.split(/
+?
 /).filter(function (line) {
             return line.trim() !== "";
           });
