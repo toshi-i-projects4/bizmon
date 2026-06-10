@@ -1,104 +1,254 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>今日の問題</title>
-</head>
-<body>
-  <h1>今日の問題</h1>
-
-  <p id="status">読み込み中...</p>
-  <p id="today"></p>
-  <p id="question"></p>
-
-  <button id="btnA" type="button" onclick="answer('A')" style="display:none;"></button><br><br>
-  <button id="btnB" type="button" onclick="answer('B')" style="display:none;"></button><br><br>
-  <button id="btnC" type="button" onclick="answer('C')" style="display:none;"></button>
-
-  <script>
-    // ======================================
-    // ここだけ差し替えればOK（CSV部分）
-    // 1行目は見出しのまま残してください
-    // 日付は YYYY-MM-DD 形式にしてください
-    // ======================================
-    const csvData = `id,question,a,b,c,answer,explanation,date
-1,日本の首都は？,大阪,東京,名古屋,B,日本の首都は東京です,2026-06-09
-2,1+1は？,1,2,3,B,正解は2です,2026-06-10`;
-
-    let correct = "";
-    let explanation = "";
-    let questionText = "";
-
-    function getToday() {
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
+  <style>
+    body {
+      margin: 0;
+      font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif;
+      background-color: #eef2f7;
+      color: #333;
+      padding: 24px;
+      box-sizing: border-box;
     }
 
-    function loadQuestion() {
-      try {
-        const lines = csvData.split(/\r?\n/).filter(line => line.trim() !== "");
-        const today = getToday();
-        let found = null;
+    .wrap {
+      max-width: 760px;
+      margin: 30px auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 32px;
+    }
 
-        document.getElementById("today").innerText = "本日の日付：" + today;
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #111827;
+    }
 
-        for (let i = 1; i < lines.length; i++) {
-          const cols = lines[i].split(",");
-          if (cols.length >= 8 && cols[7].trim() === today) {
-            found = cols;
-            break;
+    .sub {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .status {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      color: #374151;
+      white-space: pre-wrap;
+    }
+
+    .question-box {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-size: 20px;
+      line-height: 1.7;
+      color: #1f2937;
+    }
+
+    .choices {
+      display: grid;
+      gap: 12px;
+    }
+
+    .choice-btn {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: #fff;
+      padding: 14px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .choice-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .top-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>今日の問題</h1>
+    <div id="todayText" class="sub"></div>
+    <div id="status" class="status">読み込み中...</div>
+
+    <div id="quizArea" style="display:none;">
+      <div id="questionText" class="question-box"></div>
+      <div class="choices">
+        <button id="btnA" class="choice-btn" type="button"></button>
+        <button id="btnB" class="choice-btn" type="button"></button>
+        <button id="btnC" class="choice-btn" type="button"></button>
+      </div>
+    </div>
+
+    <a href="index.html" class="top-link">← マイページへ戻る</a>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
+      authDomain: "bizmon-31ffc.firebaseapp.com",
+      projectId: "bizmon-31ffc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    let currentQuestion = null;
+
+    function getTodayJstParts() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return {
+        display: `${y}年${Number(m)}月${Number(d)}日`,
+        key: `${y}-${m}-${d}`
+      };
+    }
+
+    function parseCsvLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
           }
+        } else if (char === ',' && !inQuotes) {
+          result.push(current);
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    async function loadQuestionFromCsv() {
+      const statusEl = document.getElementById('status');
+      const quizArea = document.getElementById('quizArea');
+      const todayText = document.getElementById('todayText');
+      const today = getTodayJstParts();
+
+      todayText.textContent = `本日の日付：${today.display}`;
+
+      try {
+        const res = await fetch(`questions.csv?v=${Date.now()}`);
+        if (!res.ok) {
+          throw new Error('questions.csv が見つかりません。');
         }
 
-        if (!found) {
-          document.getElementById("status").innerText =
-            "今日の日付に一致する問題はありません。csvData の date を今日の日付に合わせてください。";
+        const text = await res.text();
+        const lines = text.split(/?
+/).filter(line => line.trim() !== '');
+
+        if (lines.length <= 1) {
+          statusEl.textContent = 'questions.csv に問題データが入っていません。';
           return;
         }
 
-        document.getElementById("status").innerText = "";
-        questionText = found[1];
-        correct = found[5];
-        explanation = found[6];
+        const header = parseCsvLine(lines[0]).map(v => v.trim().toLowerCase());
+        const idx = {
+          id: header.indexOf('id'),
+          question: header.indexOf('question'),
+          a: header.indexOf('a'),
+          b: header.indexOf('b'),
+          c: header.indexOf('c'),
+          answer: header.indexOf('answer'),
+          explanation: header.indexOf('explanation'),
+          date: header.indexOf('date')
+        };
 
-        document.getElementById("question").innerText = "問題：" + questionText;
-        document.getElementById("btnA").innerText = "A：" + found[2];
-        document.getElementById("btnB").innerText = "B：" + found[3];
-        document.getElementById("btnC").innerText = "C：" + found[4];
+        if (Object.values(idx).some(v => v === -1)) {
+          statusEl.textContent = 'CSVの見出しが不足しています。id,question,a,b,c,answer,explanation,date を確認してください。';
+          return;
+        }
 
-        document.getElementById("btnA").style.display = "inline-block";
-        document.getElementById("btnB").style.display = "inline-block";
-        document.getElementById("btnC").style.display = "inline-block";
-      } catch (e) {
-        document.getElementById("status").innerText =
-          "エラーが発生しました。question.html の貼り付け内容が途中で切れていないか確認してください。";
+        const rows = lines.slice(1).map(parseCsvLine);
+        currentQuestion = rows.find(cols => (cols[idx.date] || '').trim() === today.key);
+
+        if (!currentQuestion) {
+          statusEl.textContent = `今日（${today.key}）に一致する問題が questions.csv にありません。date列を確認してください。`;
+          return;
+        }
+
+        document.getElementById('questionText').textContent = `問題：${currentQuestion[idx.question] || ''}`;
+
+        const btnA = document.getElementById('btnA');
+        const btnB = document.getElementById('btnB');
+        const btnC = document.getElementById('btnC');
+
+        btnA.textContent = `A：${currentQuestion[idx.a] || ''}`;
+        btnB.textContent = `B：${currentQuestion[idx.b] || ''}`;
+        btnC.textContent = `C：${currentQuestion[idx.c] || ''}`;
+
+        btnA.onclick = () => answer('A', idx);
+        btnB.onclick = () => answer('B', idx);
+        btnC.onclick = () => answer('C', idx);
+
+        statusEl.textContent = '';
+        quizArea.style.display = 'block';
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = 'CSVの読み込みに失敗しました。Vercel上なら通常はそのまま読めます。ファイル名が questions.csv で、index.html と同じ階層にあるか確認してください。';
       }
     }
 
-    function answer(choice) {
-      if (!correct) {
+    function answer(choice, idx) {
+      if (!currentQuestion) return;
+
+      const correct = (currentQuestion[idx.answer] || '').trim();
+      const explanation = currentQuestion[idx.explanation] || '';
+      const questionText = currentQuestion[idx.question] || '';
+
+      localStorage.setItem('result', choice === correct ? '正解' : '不正解');
+      localStorage.setItem('questionText', questionText);
+      localStorage.setItem('selectedChoice', choice);
+      localStorage.setItem('correctChoice', correct);
+      localStorage.setItem('explanation', explanation);
+
+      location.href = 'result.html';
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        location.href = 'login.html';
         return;
       }
-
-      if (choice === correct) {
-        localStorage.setItem("result", "正解");
-      } else {
-        localStorage.setItem("result", "不正解");
-      }
-
-      localStorage.setItem("questionText", questionText);
-      localStorage.setItem("selectedChoice", choice);
-      localStorage.setItem("correctChoice", correct);
-      localStorage.setItem("explanation", explanation);
-      location.href = "result.html";
-    }
-
-    loadQuestion();
+      loadQuestionFromCsv();
+    });
   </script>
 </body>
 </html>
