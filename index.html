@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -13,6 +14,7 @@
       padding-top: 24px;
     }
 
+    /* ここを flex → grid に変更 */
     .top-bar {
       max-width: 1400px;
       margin: 0 auto;
@@ -31,6 +33,7 @@
       display: block;
     }
 
+    /* 追加：あいさつ */
     .greeting-message {
       text-align: center;
       font-size: 28px;
@@ -219,7 +222,7 @@
       white-space: pre-wrap;
     }
 
-    /* 追加：吹き出しタイトル */
+    /* 追加：右サイドバー見出しの吹き出し */
     .speech-title-wrap {
       margin-top: 0;
       margin-bottom: 16px;
@@ -296,6 +299,7 @@
   <div class="top-bar">
     <img src="logo.png" alt="ロゴ" class="page-logo">
 
+    <!-- 追加：あいさつ -->
     <div id="greetingMessage" class="greeting-message"></div>
 
     <div id="todayDate" class="today-date">
@@ -374,6 +378,7 @@
       document.querySelector("#todayDate .date-bottom").textContent = `${today.month}月${today.day}日`;
     }
 
+    /* 追加：時間帯別あいさつ */
     function setGreetingMessage() {
       const now = new Date();
       const hour = now.getHours();
@@ -444,9 +449,8 @@
           throw new Error("almanac.csv が見つかりません。");
         }
 
-        const text = (await res.text()).replace(/^﻿/, "");
-        const lines = text.split(/?
-/).filter(line => line.trim() !== "");
+        const text = (await res.text()).replace(/^\uFEFF/, "");
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
 
         if (lines.length <= 1) {
           statusEl.textContent = "almanac.csv にデータが入っていません。";
