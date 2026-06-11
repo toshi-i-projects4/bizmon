@@ -17,7 +17,6 @@ function categoriesFromRows(rows){var m={};for(var i=0;i<rows.length;i++){var r=
 function requireLogin(callback){auth.onAuthStateChanged(function(user){if(!user){location.href='login.html';return;}callback(user);});}
 function isCorrectResult(r){
   var result=String(r.result||r.judgement||r.resultText||'').toLowerCase();
-  // 重要：「不正解」には「正解」が含まれるため、不正解を先に判定する
   if(result.indexOf('incorrect')>=0||result.indexOf('wrong')>=0||result.indexOf('不正解')>=0||result.indexOf('×')>=0)return false;
   if(result.indexOf('correct')>=0||result.indexOf('正解')>=0||result.indexOf('○')>=0)return true;
   var selected=String(r.selectedChoice||'').trim().toUpperCase();
@@ -26,5 +25,44 @@ function isCorrectResult(r){
 }
 function showResultMark(r){var hero=document.getElementById('resultHero');var mark=document.getElementById('resultBigMark');if(!mark||!hero)return;hero.className='result-hero';var ok=isCorrectResult(r);mark.textContent=ok?'○':'×';mark.className='result-big-mark '+(ok?'correct':'incorrect');setTimeout(function(){hero.className='result-hero hidden-after';},1700);}
 function show(r){showResultMark(r);document.getElementById('q').textContent='問題：'+(r.questionText||'');document.getElementById('choices').textContent='選択肢\nA：'+(r.choiceA||'')+'\nB：'+(r.choiceB||'')+'\nC：'+(r.choiceC||'');document.getElementById('ans').textContent='判定：'+(r.resultText||'')+'\nあなたの回答：'+(r.selectedChoice||'')+'\n正解：'+(r.correctChoice||'')+'\nカテゴリー：'+(r.category1||'')+' ＞ '+(r.category2||'');document.getElementById('exp').textContent='解説：'+(r.explanation||'');document.getElementById('content').style.display='block';}
-loadFirebase(function(e){if(e){setStatus(e.message,'error');return;}requireLogin(function(user){try{var raw=localStorage.getItem('currentQuizResult');if(!raw)throw new Error('回答結果が見つかりません。今日の問題から回答してください。');var r=JSON.parse(raw);show(r);setStatus('Firestoreへ保存中...');db.collection('quizResults').doc(user.uid+'_'+r.date).set(Object.assign({},r,{uid:user.uid,email:user.email||'',savedAt:firebase.firestore.FieldValue.serverTimestamp()}),{merge:true}).then(function(){setStatus('回答結果を保存しました。','ok');}).catch(function(err){setStatus('保存に失敗しました。\n'+err.message,'error');});}catch(err){setStatus('結果の表示に失敗しました。\n'+err.message,'error');}});});
+
+// companyId対応版：users/{uid}から企業情報を取得してquizResultsへ保存
+function saveQuizResultWithCompanyId(user, r){
+  var dateKey = r.date || todayKey();
+  var resultId = user.uid + '_' + dateKey;
+
+  return db.collection('users').doc(user.uid).get().then(function(userDoc){
+    if(!userDoc.exists){
+      throw new Error('users/' + user.uid + ' が見つかりません。Firestoreのusersにログインユーザーを作成してください。');
+    }
+
+    var userData = userDoc.data() || {};
+    if(!userData.companyId){
+      throw new Error('users/' + user.uid + ' に companyId がありません。');
+    }
+
+    var saveData = Object.assign({}, r, {
+      resultId: resultId,
+      uid: user.uid,
+      email: user.email || userData.email || '',
+      companyId: userData.companyId,
+      companyName: userData.companyName || '',
+      name: userData.name || '',
+      department: userData.department || '',
+      position: userData.position || '',
+      role: userData.role || 'user',
+      date: dateKey,
+      dateKey: dateKey,
+      isCorrect: isCorrectResult(r),
+      savedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    return db.collection('quizResults').doc(resultId).set(saveData,{merge:true}).then(function(){
+      return {resultId: resultId, companyId: userData.companyId, companyName: userData.companyName || ''};
+    });
+  });
+}
+
+loadFirebase(function(e){if(e){setStatus(e.message,'error');return;}requireLogin(function(user){try{var raw=localStorage.getItem('currentQuizResult');if(!raw)throw new Error('回答結果が見つかりません。今日の問題から回答してください。');var r=JSON.parse(raw);show(r);setStatus('Firestoreへ保存中...');saveQuizResultWithCompanyId(user,r).then(function(info){setStatus('回答結果を保存しました。\n保存先：quizResults / '+info.resultId+'\n企業ID：'+info.companyId,'ok');}).catch(function(err){setStatus('保存に失敗しました。\n'+err.message,'error');});}catch(err){setStatus('結果の表示に失敗しました。\n'+err.message,'error');}});});
 </script></body></html>
