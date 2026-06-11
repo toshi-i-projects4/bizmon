@@ -1,5 +1,76 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CSVダウンロード</title><style>body{margin:0;font-family:"Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:32px}.box{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 4px 12px rgba(0,0,0,.08)}a{color:#2563eb;text-decoration:none;font-weight:bold}</style></head>
-<body><div class="box"><h1>CSVダウンロード</h1><p>このページは後で内容を追加するための仮ページです。</p><p><a href="index.html">← マイページへ戻る</a></p></div></body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSVダウンロード</title>
+<style>
+body{margin:0;font-family:"Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:32px}.box{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 4px 12px rgba(0,0,0,.08)}a{color:#2563eb;text-decoration:none;font-weight:bold}.status{font-size:13px;color:#6b7280;margin-top:16px;padding:10px 12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;white-space:pre-wrap}
+</style>
+</head>
+<body style="display:none;">
+<div class="box">
+<h1>CSVダウンロード</h1>
+<p>このページは後で内容を追加するための仮ページです。</p>
+<p><a href="index.html">← マイページへ戻る</a></p>
+<div id="accessStatus" class="status">管理者権限を確認中...</div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
+  authDomain:"bizmon-31ffc.firebaseapp.com",
+  projectId:"bizmon-31ffc"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+function showPage(message){
+  document.body.style.display="block";
+  const status=document.getElementById("accessStatus");
+  if(status)status.textContent=message||"管理者権限を確認しました。";
+}
+
+function redirectToIndex(message){
+  alert(message||"このページは管理者のみ利用できます。");
+  location.href="index.html";
+}
+
+async function checkAdminAccess(user){
+  try{
+    const userDocRef=doc(db,"users",user.uid);
+    const userDocSnap=await getDoc(userDocRef);
+    const role=userDocSnap.exists()?(userDocSnap.data().role||"user"):"user";
+
+    console.log("管理ページ権限確認:",role);
+    console.log("ログイン中:",user.email);
+    console.log("UID:",user.uid);
+
+    if(role!=="admin"){
+      redirectToIndex("このページは管理者のみ利用できます。");
+      return;
+    }
+
+    showPage("管理者権限を確認しました。ログイン中："+(user.email||"メール未取得"));
+  }catch(error){
+    console.error("管理ページ権限確認エラー:",error);
+    redirectToIndex("権限確認に失敗しました。もう一度ログインしてください。");
+  }
+}
+
+onAuthStateChanged(auth,async function(user){
+  if(!user){
+    location.href="login.html";
+    return;
+  }
+  await checkAdminAccess(user);
+});
+</script>
+</body>
 </html>
