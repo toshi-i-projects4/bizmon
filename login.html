@@ -19,7 +19,7 @@
     }
     .login-card {
       width: 100%;
-      max-width: 430px;
+      max-width: 460px;
       background: #ffffff;
       border-radius: 18px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.10);
@@ -166,19 +166,48 @@
       <button type="button" id="forgotPasswordBtn" class="forgot-link">パスワードを忘れた場合</button>
     </div>
 
-    <div id="statusMessage" class="status-message"></div>
+    <div id="statusMessage" class="status-message note">STEP0：HTMLを読み込みました。</div>
 
     <div class="note-box">
       パスワードを忘れた場合は、メールアドレスを入力してから「パスワードを忘れた場合」を押してください。<br>
       再設定メールが複数ある場合は、一番新しいメールのリンクだけを使用してください。
     </div>
 
-    <div id="debugInfo" class="debug-box"></div>
+    <div id="debugInfo" class="debug-box">STEP0：JavaScript起動前</div>
   </div>
+
+  <script>
+    // module が読み込めない場合でも、最低限ここまでは表示されます。
+    window.addEventListener('error', function(event) {
+      var status = document.getElementById('statusMessage');
+      var debug = document.getElementById('debugInfo');
+      if (status) {
+        status.textContent = '画面内でエラーが発生しました。\n' +
+          '内容：' + (event.message || '') + '\n' +
+          'ファイル：' + (event.filename || '') + '\n' +
+          '行：' + (event.lineno || '');
+        status.className = 'status-message error';
+      }
+      if (debug) debug.textContent = 'window error を検出しました。';
+    });
+
+    window.addEventListener('unhandledrejection', function(event) {
+      var status = document.getElementById('statusMessage');
+      var reason = event.reason || {};
+      if (status) {
+        status.textContent = '非同期処理でエラーが発生しました。\n' +
+          'エラーコード：' + (reason.code || 'なし') + '\n' +
+          '詳細：' + (reason.message || String(reason));
+        status.className = 'status-message error';
+      }
+    });
+
+    document.getElementById('debugInfo').textContent = 'STEP1：通常JavaScriptは起動しました。次にFirebase読込を確認します。';
+  </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
@@ -200,9 +229,11 @@
     const debugInfo = document.getElementById("debugInfo");
 
     debugInfo.textContent =
-      "接続先Firebase：" + firebaseConfig.projectId + "
-" +
+      "STEP2：Firebase JavaScriptの読み込みに成功しました。\n" +
+      "接続先Firebase：" + firebaseConfig.projectId + "\n" +
       "authDomain：" + firebaseConfig.authDomain;
+    statusMessage.textContent = "STEP2：ログイン準備ができました。";
+    statusMessage.className = "status-message note";
 
     function setStatus(message, type) {
       statusMessage.textContent = message;
@@ -244,19 +275,17 @@
       try {
         loginBtn.disabled = true;
         loginBtn.textContent = "ログイン中...";
+        setStatus("STEP3：Firebaseへログイン要求を送信中...", "note");
         await signInWithEmailAndPassword(auth, email, password);
-        setStatus("ログインに成功しました。マイページへ移動します。", "ok");
+        setStatus("STEP4：ログインに成功しました。マイページへ移動します。", "ok");
         location.href = "index.html";
       } catch (error) {
         console.error(error);
         const code = error && error.code ? error.code : "unknown";
         const message = error && error.message ? error.message : "";
         setStatus(
-          getFriendlyLoginMessage(error) + "
-
-" +
-          "エラーコード：" + code + "
-" +
+          getFriendlyLoginMessage(error) + "\n\n" +
+          "エラーコード：" + code + "\n" +
           "詳細：" + message,
           "error"
         );
@@ -279,12 +308,11 @@
       try {
         forgotPasswordBtn.disabled = true;
         forgotPasswordBtn.textContent = "送信中...";
+        setStatus("パスワード再設定メールを送信中...", "note");
         await sendPasswordResetEmail(auth, email);
         setStatus(
-          "パスワード再設定用のメールを送信しました。
-" +
-          "届いたメールのリンクから新しいパスワードの設定完了まで進めてください。
-" +
+          "パスワード再設定用のメールを送信しました。\n" +
+          "届いたメールのリンクから新しいパスワードの設定完了まで進めてください。\n" +
           "複数回送信した場合は、一番新しいメールだけを使用してください。",
           "ok"
         );
@@ -295,10 +323,7 @@
         if (code === "auth/invalid-email") message = "メールアドレスの形式が正しくありません。";
         if (code === "auth/user-not-found") message = "このメールアドレスのユーザーが見つかりません。";
         if (code === "auth/too-many-requests") message = "短時間に何度も操作したため一時的に制限されています。しばらく時間を置いてください。";
-        setStatus(message + "
-
-エラーコード：" + code + "
-詳細：" + (error.message || ""), "error");
+        setStatus(message + "\n\nエラーコード：" + code + "\n詳細：" + (error.message || ""), "error");
       } finally {
         forgotPasswordBtn.disabled = false;
         forgotPasswordBtn.textContent = "パスワードを忘れた場合";
@@ -307,18 +332,8 @@
 
     loginBtn.addEventListener("click", login);
     forgotPasswordBtn.addEventListener("click", sendResetMail);
-
-    passwordInput.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") login();
-    });
-
-    emailInput.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") login();
-    });
-
-    onAuthStateChanged(auth, function (user) {
-      if (user) location.href = "index.html";
-    });
+    passwordInput.addEventListener("keydown", function (event) { if (event.key === "Enter") login(); });
+    emailInput.addEventListener("keydown", function (event) { if (event.key === "Enter") login(); });
   </script>
 </body>
 </html>
