@@ -1,10 +1,73 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>回答結果</title><style>body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}.wrap{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{margin:0}.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-link{display:inline-block;margin-top:20px}.status,.box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:14px;line-height:1.7;white-space:pre-wrap}.error{color:#dc2626}.ok{color:#166534}.sub{color:#6b7280;font-size:14px;margin:6px 0 20px}.question-box{background:#eff6ff;border-left:4px solid #2563eb;font-size:20px}.choices{display:grid;gap:12px}.choice-btn{width:100%;border:none;border-radius:10px;background:#2563eb;color:#fff;padding:14px 16px;font-size:16px;cursor:pointer;text-align:left}.cat-group{border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin-bottom:12px;background:#fff}.cat-parent{font-weight:bold}.cat-children{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}.cat-item{display:flex;gap:8px;align-items:center;background:#f9fafb;border:1px solid #e5e7eb;border-radius:999px;padding:8px 10px;font-size:14px}.btn-row{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:18px}.primary-btn,.secondary-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.secondary-btn{background:#f3f4f6;color:#111827}.answer-box{background:#f0fdf4;border-left:4px solid #22c55e;color:#166534;font-weight:bold}.explanation-box{background:#fff7ed;border-left:4px solid #f97316;color:#7c2d12}@media(max-width:640px){.header{flex-direction:column;align-items:flex-start}.wrap{padding:24px}}</style></head><body><div class="wrap"><div class="header"><h1>回答結果</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div><div id="dateText" class="sub"></div><div id="status" class="status">結果を読み込み中...</div><div id="content" style="display:none"><div id="q" class="box question-box"></div><div id="choices" class="box"></div><div id="ans" class="box answer-box"></div><div id="exp" class="box explanation-box"></div></div><a class="bottom-link" href="index.html">← マイページへ戻る</a></div><script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";import { getFirestore,doc,getDoc,collection,query,where,getDocs,limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",projectId:"bizmon-31ffc"};const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);const params=new URLSearchParams(location.search),targetDate=params.get("date")||"";document.getElementById("dateText").textContent=targetDate;const statusEl=document.getElementById("status");function show(r){document.getElementById("q").textContent="問題："+(r.questionText||r.question||"");document.getElementById("choices").textContent="選択肢
-A："+(r.choiceA||"")+"
-B："+(r.choiceB||"")+"
-C："+(r.choiceC||"");document.getElementById("ans").textContent="判定："+(r.resultText||(r.result==="correct"?"正解":r.result==="incorrect"?"不正解":""))+"
-あなたの回答："+(r.selectedChoice||r.userAnswer||"")+"
-正解："+(r.correctChoice||r.correctAnswer||"")+"
-カテゴリー："+(r.category1||"")+" ＞ "+(r.category2||"");document.getElementById("exp").textContent="解説："+(r.explanation||"");document.getElementById("content").style.display="block";statusEl.style.display="none"}async function load(user){if(!targetDate){statusEl.textContent="日付が指定されていません。";return}let data=null;const snap=await getDoc(doc(db,"quizResults",user.uid+"_"+targetDate));if(snap.exists())data=snap.data();else{const q=query(collection(db,"quizResults"),where("uid","==",user.uid),where("date","==",targetDate),limit(1));const qs=await getDocs(q);if(!qs.empty)data=qs.docs[0].data()}if(!data){statusEl.textContent="この日の結果が見つかりませんでした。対象日："+targetDate;return}show(data)}onAuthStateChanged(auth,user=>{if(!user){location.href="login.html";return}load(user).catch(e=>{console.error(e);statusEl.textContent="結果の読み込みに失敗しました。
-"+e.message;statusEl.className="status error"})});
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>回答結果</title><style>
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}.wrap{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{margin:0}.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-link{display:inline-block;margin-top:20px}.status,.box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:14px;line-height:1.7;white-space:pre-wrap}.error{color:#dc2626}.ok{color:#166534}.sub{color:#6b7280;font-size:14px;margin:6px 0 20px}.question-box{background:#eff6ff;border-left:4px solid #2563eb;font-size:20px}.choices{display:grid;gap:12px}.choice-btn{width:100%;border:none;border-radius:10px;background:#2563eb;color:#fff;padding:14px 16px;font-size:16px;cursor:pointer;text-align:left}.cat-group{border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin-bottom:12px;background:#fff}.cat-parent{font-weight:bold}.cat-children{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}.cat-item{display:flex;gap:8px;align-items:center;background:#f9fafb;border:1px solid #e5e7eb;border-radius:999px;padding:8px 10px;font-size:14px}.btn-row{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:18px}.primary-btn,.secondary-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.secondary-btn{background:#f3f4f6;color:#111827}.answer-box{background:#f0fdf4;border-left:4px solid #22c55e;color:#166534;font-weight:bold}.explanation-box{background:#fff7ed;border-left:4px solid #f97316;color:#7c2d12}@media(max-width:640px){.header{flex-direction:column;align-items:flex-start}.wrap{padding:24px}}
+</style></head><body><div class="wrap"><div class="header"><h1>回答結果</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div><div id="dateText" class="sub"></div><div id="status" class="status">結果を読み込み中...</div><div id="content" style="display:none"><div id="q" class="box question-box"></div><div id="choices" class="box"></div><div id="ans" class="box answer-box"></div><div id="exp" class="box explanation-box"></div></div><a class="bottom-link" href="index.html">← マイページへ戻る</a></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" onerror="document.getElementById('status').textContent='Firebase app compat の読み込みに失敗しました。';"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" onerror="document.getElementById('status').textContent='Firebase auth compat の読み込みに失敗しました。';"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" onerror="document.getElementById('status').textContent='Firebase firestore compat の読み込みに失敗しました。';"></script>
+
+<script>
+
+function setStatus(id, msg, type) {
+  const el = document.getElementById(id || 'status');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'status ' + (type || '');
+}
+function parseCsvLine(line){
+  const out=[]; let cur=''; let q=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){
+      if(q && line[i+1]==='"'){cur+='"'; i++;}
+      else q=!q;
+    } else if(ch===',' && !q){out.push(cur); cur='';}
+    else cur+=ch;
+  }
+  out.push(cur); return out;
+}
+function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function tomorrowKey(){const d=new Date();d.setDate(d.getDate()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function keyOf(c){return c.category1+'＞'+c.category2}
+function hash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h+=(h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24)}return Math.abs(h>>>0)}
+async function loadQuestionRows(){
+  const res = await fetch('questions.csv?v=' + Date.now(), { cache: 'no-store' });
+  if(!res.ok) throw new Error('questions.csvを取得できません。HTTP=' + res.status);
+  let text = await res.text();
+  if(text.charCodeAt(0)===65279) text=text.slice(1);
+  const lines=text.split(/\r?\n/).filter(l=>l.trim()!=='');
+  if(lines.length<=1) throw new Error('questions.csvにデータがありません。');
+  const header=parseCsvLine(lines[0]).map(v=>v.trim().toLowerCase());
+  const idx={id:header.indexOf('id'),category1:header.indexOf('category1'),category2:header.indexOf('category2'),question:header.indexOf('question'),a:header.indexOf('a'),b:header.indexOf('b'),c:header.indexOf('c'),answer:header.indexOf('answer'),explanation:header.indexOf('explanation'),active:header.indexOf('active')};
+  ['id','category1','category2','question','a','b','c','answer','explanation','active'].forEach(k=>{if(idx[k]<0) throw new Error('questions.csvに「'+k+'」列がありません。')});
+  return lines.slice(1).map(parseCsvLine).map(cols=>({
+    id: cols[idx.id], category1: cols[idx.category1], category2: cols[idx.category2], question: cols[idx.question],
+    a: cols[idx.a], b: cols[idx.b], c: cols[idx.c], answer: String(cols[idx.answer]||'').trim().toUpperCase(),
+    explanation: cols[idx.explanation], active: String(cols[idx.active]||'true').toLowerCase()
+  })).filter(r=>r.active !== 'false');
+}
+function categoriesFromRows(rows){const m=new Map();rows.forEach(r=>{if(r.category1&&r.category2)m.set(keyOf(r),{category1:r.category1,category2:r.category2})});return Array.from(m.values()).sort((a,b)=>keyOf(a).localeCompare(keyOf(b),'ja'))}
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
+  authDomain: "bizmon-31ffc.firebaseapp.com",
+  projectId: "bizmon-31ffc"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const targetDate=new URLSearchParams(location.search).get('date')||'';document.getElementById('dateText').textContent=targetDate;
+function show(r){document.getElementById('q').textContent='問題：'+(r.questionText||r.question||'');document.getElementById('choices').textContent='選択肢
+A：'+(r.choiceA||'')+'
+B：'+(r.choiceB||'')+'
+C：'+(r.choiceC||'');document.getElementById('ans').textContent='判定：'+(r.resultText||(r.result==='correct'?'正解':r.result==='incorrect'?'不正解':''))+'
+あなたの回答：'+(r.selectedChoice||r.userAnswer||'')+'
+正解：'+(r.correctChoice||r.correctAnswer||'')+'
+カテゴリー：'+(r.category1||'')+' ＞ '+(r.category2||'');document.getElementById('exp').textContent='解説：'+(r.explanation||'');document.getElementById('content').style.display='block';document.getElementById('status').style.display='none'}
+async function load(user){if(!targetDate){setStatus('status','日付が指定されていません。','error');return}let data=null;const snap=await db.collection('quizResults').doc(user.uid+'_'+targetDate).get();if(snap.exists)data=snap.data();else{const qs=await db.collection('quizResults').where('uid','==',user.uid).where('date','==',targetDate).limit(1).get();if(!qs.empty)data=qs.docs[0].data()}if(!data){setStatus('status','この日の結果が見つかりませんでした。対象日：'+targetDate,'error');return}show(data)}
+auth.onAuthStateChanged(user=>{if(!user){location.href='login.html';return}load(user).catch(e=>{console.error(e);setStatus('status','結果の読み込みに失敗しました。
+'+e.message,'error')})});
 </script></body></html>
