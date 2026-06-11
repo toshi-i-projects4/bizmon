@@ -7,41 +7,52 @@ function setStatus(msg,type){var el=document.getElementById('status');if(!el)ret
 function addStatus(msg){var el=document.getElementById('status');if(!el)return;el.textContent=(el.textContent?el.textContent+'\n':'')+msg;}
 function loadScript(src,label,callback){var s=document.createElement('script');var done=false;var timer=setTimeout(function(){if(done)return;done=true;callback(new Error(label+' の読込がタイムアウトしました。'));},12000);s.onload=function(){if(done)return;done=true;clearTimeout(timer);callback(null);};s.onerror=function(){if(done)return;done=true;clearTimeout(timer);callback(new Error(label+' の読込に失敗しました。'));};s.src=src+'?v='+new Date().getTime();document.head.appendChild(s);}
 function loadFirebase(callback){setStatus('STEP1：通常JavaScriptは起動しました。Firebase SDKを読み込み中...');loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js','firebase-app-compat',function(e){if(e){callback(e);return;}addStatus('STEP1-1：firebase-app-compat 読込OK');loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js','firebase-auth-compat',function(e){if(e){callback(e);return;}addStatus('STEP1-2：firebase-auth-compat 読込OK');loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js','firebase-firestore-compat',function(e){if(e){callback(e);return;}addStatus('STEP1-3：firebase-firestore-compat 読込OK');try{if(!firebase.apps.length){firebase.initializeApp(firebaseConfig);}auth=firebase.auth();db=firebase.firestore();addStatus('STEP1-4：Firebase初期化OK / '+firebaseConfig.projectId);callback(null);}catch(err){callback(err);}});});});}
-function parseCsvLine(line){var out=[];var cur='';var q=false;for(var i=0;i<line.length;i++){var ch=line.charAt(i);if(ch==='"'){if(q&&line.charAt(i+1)==='"'){cur+='"';i++;}else{q=!q;}}else if(ch===','&&!q){out.push(cur);cur='';}else{cur+=ch;}}out.push(cur);return out;}
 function todayKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function tomorrowKey(){var d=new Date();d.setDate(d.getDate()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function keyOf(c){return c.category1+'＞'+c.category2;}
-function hash(str){var h=2166136261;for(var i=0;i<str.length;i++){h^=str.charCodeAt(i);h+=(h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);}return Math.abs(h>>>0);}
-function loadQuestionRows(callback){var xhr=new XMLHttpRequest();xhr.open('GET','questions.csv?v='+new Date().getTime(),true);xhr.overrideMimeType('text/plain; charset=UTF-8');xhr.onreadystatechange=function(){if(xhr.readyState!==4)return;if(xhr.status!==200){callback(new Error('questions.csvを取得できません。HTTP='+xhr.status));return;}try{var text=xhr.responseText||'';if(text.length>0&&text.charCodeAt(0)===65279)text=text.substring(1);var lines=text.split(/\r?\n/).filter(function(l){return l.trim()!=='';});if(lines.length<=1)throw new Error('questions.csvにデータがありません。');var header=parseCsvLine(lines[0]).map(function(v){return v.trim().toLowerCase();});var idx={id:header.indexOf('id'),category1:header.indexOf('category1'),category2:header.indexOf('category2'),question:header.indexOf('question'),a:header.indexOf('a'),b:header.indexOf('b'),c:header.indexOf('c'),answer:header.indexOf('answer'),explanation:header.indexOf('explanation'),active:header.indexOf('active')};var req=['id','category1','category2','question','a','b','c','answer','explanation','active'];for(var r=0;r<req.length;r++){if(idx[req[r]]<0)throw new Error('questions.csvに「'+req[r]+'」列がありません。');}var rows=[];for(var i=1;i<lines.length;i++){var cols=parseCsvLine(lines[i]);var obj={id:cols[idx.id],category1:cols[idx.category1],category2:cols[idx.category2],question:cols[idx.question],a:cols[idx.a],b:cols[idx.b],c:cols[idx.c],answer:String(cols[idx.answer]||'').trim().toUpperCase(),explanation:cols[idx.explanation],active:String(cols[idx.active]||'true').toLowerCase()};if(obj.active!=='false')rows.push(obj);}callback(null,rows);}catch(e){callback(e);}};xhr.onerror=function(){callback(new Error('questions.csvの通信に失敗しました。'));};xhr.send();}
-function categoriesFromRows(rows){var m={};for(var i=0;i<rows.length;i++){var r=rows[i];if(r.category1&&r.category2)m[keyOf(r)]={category1:r.category1,category2:r.category2};}var arr=[];for(var k in m){arr.push(m[k]);}arr.sort(function(a,b){return keyOf(a).localeCompare(keyOf(b),'ja');});return arr;}
 function requireLogin(callback){auth.onAuthStateChanged(function(user){if(!user){location.href='login.html';return;}callback(user);});}
+function firstNonEmpty(){for(var i=0;i<arguments.length;i++){var v=arguments[i];if(v!==undefined&&v!==null&&String(v).trim()!=='')return String(v).trim();}return '';}
+function normalizeChoice(v){return firstNonEmpty(v).toUpperCase();}
 function isCorrectResult(r){
   var result=String(r.result||r.judgement||r.resultText||'').toLowerCase();
   if(result.indexOf('incorrect')>=0||result.indexOf('wrong')>=0||result.indexOf('不正解')>=0||result.indexOf('×')>=0)return false;
   if(result.indexOf('correct')>=0||result.indexOf('正解')>=0||result.indexOf('○')>=0)return true;
-  var selected=String(r.selectedChoice||'').trim().toUpperCase();
-  var correct=String(r.correctChoice||'').trim().toUpperCase();
+  var selected=normalizeChoice(r.selectedChoice||r.selectedAnswer||r.userAnswer);
+  var correct=normalizeChoice(r.correctChoice||r.correctAnswer);
   return selected&&correct&&selected===correct;
 }
 function showResultMark(r){var hero=document.getElementById('resultHero');var mark=document.getElementById('resultBigMark');if(!mark||!hero)return;hero.className='result-hero';var ok=isCorrectResult(r);mark.textContent=ok?'○':'×';mark.className='result-big-mark '+(ok?'correct':'incorrect');setTimeout(function(){hero.className='result-hero hidden-after';},1700);}
-function show(r){showResultMark(r);document.getElementById('q').textContent='問題：'+(r.questionText||'');document.getElementById('choices').textContent='選択肢\nA：'+(r.choiceA||'')+'\nB：'+(r.choiceB||'')+'\nC：'+(r.choiceC||'');document.getElementById('ans').textContent='判定：'+(r.resultText||'')+'\nあなたの回答：'+(r.selectedChoice||'')+'\n正解：'+(r.correctChoice||'')+'\nカテゴリー：'+(r.category1||'')+' ＞ '+(r.category2||'');document.getElementById('exp').textContent='解説：'+(r.explanation||'');document.getElementById('content').style.display='block';}
+function normalizeResultForDisplay(r){
+  var selectedChoice=normalizeChoice(r.selectedChoice||r.selectedAnswer||r.userAnswer);
+  var correctChoice=normalizeChoice(r.correctChoice||r.correctAnswer);
+  var questionText=firstNonEmpty(r.questionText,r.question);
+  return {
+    questionId:firstNonEmpty(r.questionId,r.id),
+    questionText:questionText,
+    choiceA:firstNonEmpty(r.choiceA,r.a),
+    choiceB:firstNonEmpty(r.choiceB,r.b),
+    choiceC:firstNonEmpty(r.choiceC,r.c),
+    selectedChoice:selectedChoice,
+    correctChoice:correctChoice,
+    category1:firstNonEmpty(r.category1),
+    category2:firstNonEmpty(r.category2),
+    explanation:firstNonEmpty(r.explanation),
+    resultText:isCorrectResult(Object.assign({},r,{selectedChoice:selectedChoice,correctChoice:correctChoice}))?'正解':'不正解',
+    result:isCorrectResult(Object.assign({},r,{selectedChoice:selectedChoice,correctChoice:correctChoice}))?'correct':'incorrect'
+  };
+}
+function show(r){var n=normalizeResultForDisplay(r);showResultMark(n);document.getElementById('q').textContent='問題：'+n.questionText;document.getElementById('choices').textContent='選択肢\nA：'+n.choiceA+'\nB：'+n.choiceB+'\nC：'+n.choiceC;document.getElementById('ans').textContent='判定：'+n.resultText+'\nあなたの回答：'+n.selectedChoice+'\n正解：'+n.correctChoice+'\nカテゴリー：'+n.category1+' ＞ '+n.category2;document.getElementById('exp').textContent='解説：'+n.explanation;document.getElementById('content').style.display='block';}
 
-// companyId対応版：users/{uid}から企業情報を取得してquizResultsへ保存
-function saveQuizResultWithCompanyId(user, r){
-  var dateKey = r.date || todayKey();
+// 保存データ整理版：Firestoreへ保存する項目を統一し、空欄・重複・ズレを減らします。
+function saveQuizResultClean(user, r){
+  var n = normalizeResultForDisplay(r);
+  var dateKey = firstNonEmpty(r.date,r.dateKey) || todayKey();
   var resultId = user.uid + '_' + dateKey;
 
   return db.collection('users').doc(user.uid).get().then(function(userDoc){
-    if(!userDoc.exists){
-      throw new Error('users/' + user.uid + ' が見つかりません。Firestoreのusersにログインユーザーを作成してください。');
-    }
-
+    if(!userDoc.exists){throw new Error('users/' + user.uid + ' が見つかりません。Firestoreのusersにログインユーザーを作成してください。');}
     var userData = userDoc.data() || {};
-    if(!userData.companyId){
-      throw new Error('users/' + user.uid + ' に companyId がありません。');
-    }
+    if(!userData.companyId){throw new Error('users/' + user.uid + ' に companyId がありません。');}
 
-    var saveData = Object.assign({}, r, {
+    var saveData = {
       resultId: resultId,
       uid: user.uid,
       email: user.email || userData.email || '',
@@ -51,18 +62,36 @@ function saveQuizResultWithCompanyId(user, r){
       department: userData.department || '',
       position: userData.position || '',
       role: userData.role || 'user',
+
       date: dateKey,
       dateKey: dateKey,
-      isCorrect: isCorrectResult(r),
+      questionId: n.questionId,
+      questionText: n.questionText,
+      question: n.questionText,
+      choiceA: n.choiceA,
+      choiceB: n.choiceB,
+      choiceC: n.choiceC,
+      selectedChoice: n.selectedChoice,
+      selectedAnswer: n.selectedChoice,
+      userAnswer: n.selectedChoice,
+      correctChoice: n.correctChoice,
+      correctAnswer: n.correctChoice,
+      isCorrect: n.result === 'correct',
+      result: n.result,
+      resultText: n.resultText,
+      category1: n.category1,
+      category2: n.category2,
+      explanation: n.explanation,
+
       savedAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    };
 
     return db.collection('quizResults').doc(resultId).set(saveData,{merge:true}).then(function(){
-      return {resultId: resultId, companyId: userData.companyId, companyName: userData.companyName || ''};
+      return {resultId: resultId, companyId: userData.companyId, companyName: userData.companyName || '', savedData: saveData};
     });
   });
 }
 
-loadFirebase(function(e){if(e){setStatus(e.message,'error');return;}requireLogin(function(user){try{var raw=localStorage.getItem('currentQuizResult');if(!raw)throw new Error('回答結果が見つかりません。今日の問題から回答してください。');var r=JSON.parse(raw);show(r);setStatus('Firestoreへ保存中...');saveQuizResultWithCompanyId(user,r).then(function(info){setStatus('回答結果を保存しました。\n保存先：quizResults / '+info.resultId+'\n企業ID：'+info.companyId,'ok');}).catch(function(err){setStatus('保存に失敗しました。\n'+err.message,'error');});}catch(err){setStatus('結果の表示に失敗しました。\n'+err.message,'error');}});});
+loadFirebase(function(e){if(e){setStatus(e.message,'error');return;}requireLogin(function(user){try{var raw=localStorage.getItem('currentQuizResult');if(!raw)throw new Error('回答結果が見つかりません。今日の問題から回答してください。');var r=JSON.parse(raw);show(r);setStatus('Firestoreへ保存中...');saveQuizResultClean(user,r).then(function(info){setStatus('回答結果を保存しました。\n保存先：quizResults / '+info.resultId+'\n企業ID：'+info.companyId+'\n保存データ：整理版','ok');}).catch(function(err){setStatus('保存に失敗しました。\n'+err.message,'error');});}catch(err){setStatus('結果の表示に失敗しました。\n'+err.message,'error');}});});
 </script></body></html>
