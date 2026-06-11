@@ -1,70 +1,21 @@
-<!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>今日の問題</title><style>
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>今日の問題</title><style>
 body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}.wrap{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{margin:0}.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-link{display:inline-block;margin-top:20px}.status,.box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:14px;line-height:1.7;white-space:pre-wrap}.error{color:#dc2626}.ok{color:#166534}.sub{color:#6b7280;font-size:14px;margin:6px 0 20px}.question-box{background:#eff6ff;border-left:4px solid #2563eb;font-size:20px}.choices{display:grid;gap:12px}.choice-btn{width:100%;border:none;border-radius:10px;background:#2563eb;color:#fff;padding:14px 16px;font-size:16px;cursor:pointer;text-align:left}.cat-group{border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin-bottom:12px;background:#fff}.cat-parent{font-weight:bold}.cat-children{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}.cat-item{display:flex;gap:8px;align-items:center;background:#f9fafb;border:1px solid #e5e7eb;border-radius:999px;padding:8px 10px;font-size:14px}.btn-row{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:18px}.primary-btn,.secondary-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.secondary-btn{background:#f3f4f6;color:#111827}.answer-box{background:#f0fdf4;border-left:4px solid #22c55e;color:#166534;font-weight:bold}.explanation-box{background:#fff7ed;border-left:4px solid #f97316;color:#7c2d12}@media(max-width:640px){.header{flex-direction:column;align-items:flex-start}.wrap{padding:24px}}
-</style></head>
-<body><div class="wrap"><div class="header"><h1>今日の問題</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div><div id="todayText" class="sub"></div><div id="status" class="status">STEP0：HTML読込完了。compat版JavaScript起動待ち...</div><div id="quizArea" style="display:none"><div id="categoryText" class="sub"></div><div id="questionText" class="question-box box"></div><div class="choices"><button id="btnA" class="choice-btn"></button><button id="btnB" class="choice-btn"></button><button id="btnC" class="choice-btn"></button></div></div><a class="bottom-link" href="index.html">← マイページへ戻る</a></div>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" onerror="document.getElementById('status').textContent='Firebase app compat の読み込みに失敗しました。';"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" onerror="document.getElementById('status').textContent='Firebase auth compat の読み込みに失敗しました。';"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" onerror="document.getElementById('status').textContent='Firebase firestore compat の読み込みに失敗しました。';"></script>
-
-<script>
-
-function setStatus(id, msg, type) {
-  const el = document.getElementById(id || 'status');
-  if (!el) return;
-  el.textContent = msg;
-  el.className = 'status ' + (type || '');
-}
-function parseCsvLine(line){
-  const out=[]; let cur=''; let q=false;
-  for(let i=0;i<line.length;i++){
-    const ch=line[i];
-    if(ch==='"'){
-      if(q && line[i+1]==='"'){cur+='"'; i++;}
-      else q=!q;
-    } else if(ch===',' && !q){out.push(cur); cur='';}
-    else cur+=ch;
-  }
-  out.push(cur); return out;
-}
+</style></head><body><div class="wrap"><div class="header"><h1>今日の問題</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div><div id="todayText" class="sub"></div><div id="status" class="status">STEP0：HTML読込完了。通常JavaScript起動待ち...</div><div id="quizArea" style="display:none"><div id="categoryText" class="sub"></div><div id="questionText" class="question-box box"></div><div class="choices"><button id="btnA" class="choice-btn"></button><button id="btnB" class="choice-btn"></button><button id="btnC" class="choice-btn"></button></div></div><a class="bottom-link" href="index.html">← マイページへ戻る</a></div><script>
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",projectId:"bizmon-31ffc"};
+function setStatus(msg,type){const el=document.getElementById('status');if(!el)return;el.textContent=msg;el.className='status '+(type||'')}
+function addStatus(msg){const el=document.getElementById('status');if(el)el.textContent=(el.textContent?el.textContent+'\n':'')+msg}
+window.addEventListener('error',e=>setStatus('画面エラー：'+(e.message||'')+'\nファイル：'+(e.filename||'')+'\n行：'+(e.lineno||''),'error'));
+window.addEventListener('unhandledrejection',e=>setStatus('非同期エラー：'+((e.reason&&e.reason.message)||String(e.reason)),'error'));
+function loadScript(src,label){return new Promise((resolve,reject)=>{const s=document.createElement('script');let done=false;const timer=setTimeout(()=>{if(done)return;done=true;reject(new Error(label+' の読込がタイムアウトしました：'+src))},12000);s.onload=()=>{if(done)return;done=true;clearTimeout(timer);resolve()};s.onerror=()=>{if(done)return;done=true;clearTimeout(timer);reject(new Error(label+' の読込に失敗しました：'+src))};s.src=src+'?v='+Date.now();document.head.appendChild(s)})}
+async function loadFirebase(){setStatus('STEP1：通常JavaScript起動。Firebase SDKを順番に読み込みます...');await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js','firebase-app-compat');addStatus('STEP1-1：firebase-app-compat 読込OK');await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js','firebase-auth-compat');addStatus('STEP1-2：firebase-auth-compat 読込OK');await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js','firebase-firestore-compat');addStatus('STEP1-3：firebase-firestore-compat 読込OK');firebase.initializeApp(firebaseConfig);window.auth=firebase.auth();window.db=firebase.firestore();addStatus('STEP1-4：Firebase初期化OK / '+firebaseConfig.projectId)}
+function parseCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){cur+='"';i++}else q=!q}else if(ch===','&&!q){out.push(cur);cur=''}else cur+=ch}out.push(cur);return out}
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function tomorrowKey(){const d=new Date();d.setDate(d.getDate()+1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function keyOf(c){return c.category1+'＞'+c.category2}
 function hash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h+=(h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24)}return Math.abs(h>>>0)}
-async function loadQuestionRows(){
-  const res = await fetch('questions.csv?v=' + Date.now(), { cache: 'no-store' });
-  if(!res.ok) throw new Error('questions.csvを取得できません。HTTP=' + res.status);
-  let text = await res.text();
-  if(text.charCodeAt(0)===65279) text=text.slice(1);
-  const lines=text.split(/\r?\n/).filter(l=>l.trim()!=='');
-  if(lines.length<=1) throw new Error('questions.csvにデータがありません。');
-  const header=parseCsvLine(lines[0]).map(v=>v.trim().toLowerCase());
-  const idx={id:header.indexOf('id'),category1:header.indexOf('category1'),category2:header.indexOf('category2'),question:header.indexOf('question'),a:header.indexOf('a'),b:header.indexOf('b'),c:header.indexOf('c'),answer:header.indexOf('answer'),explanation:header.indexOf('explanation'),active:header.indexOf('active')};
-  ['id','category1','category2','question','a','b','c','answer','explanation','active'].forEach(k=>{if(idx[k]<0) throw new Error('questions.csvに「'+k+'」列がありません。')});
-  return lines.slice(1).map(parseCsvLine).map(cols=>({
-    id: cols[idx.id], category1: cols[idx.category1], category2: cols[idx.category2], question: cols[idx.question],
-    a: cols[idx.a], b: cols[idx.b], c: cols[idx.c], answer: String(cols[idx.answer]||'').trim().toUpperCase(),
-    explanation: cols[idx.explanation], active: String(cols[idx.active]||'true').toLowerCase()
-  })).filter(r=>r.active !== 'false');
-}
+async function loadQuestionRows(){const res=await fetch('questions.csv?v='+Date.now(),{cache:'no-store'});if(!res.ok)throw new Error('questions.csvを取得できません。HTTP='+res.status);let text=await res.text();if(text.charCodeAt(0)===65279)text=text.slice(1);const lines=text.split(/\r?\n/).filter(l=>l.trim()!=='');if(lines.length<=1)throw new Error('questions.csvにデータがありません。');const header=parseCsvLine(lines[0]).map(v=>v.trim().toLowerCase());const idx={id:header.indexOf('id'),category1:header.indexOf('category1'),category2:header.indexOf('category2'),question:header.indexOf('question'),a:header.indexOf('a'),b:header.indexOf('b'),c:header.indexOf('c'),answer:header.indexOf('answer'),explanation:header.indexOf('explanation'),active:header.indexOf('active')};['id','category1','category2','question','a','b','c','answer','explanation','active'].forEach(k=>{if(idx[k]<0)throw new Error('questions.csvに「'+k+'」列がありません。')});return lines.slice(1).map(parseCsvLine).map(cols=>({id:cols[idx.id],category1:cols[idx.category1],category2:cols[idx.category2],question:cols[idx.question],a:cols[idx.a],b:cols[idx.b],c:cols[idx.c],answer:String(cols[idx.answer]||'').trim().toUpperCase(),explanation:cols[idx.explanation],active:String(cols[idx.active]||'true').toLowerCase()})).filter(r=>r.active!=='false')}
 function categoriesFromRows(rows){const m=new Map();rows.forEach(r=>{if(r.category1&&r.category2)m.set(keyOf(r),{category1:r.category1,category2:r.category2})});return Array.from(m.values()).sort((a,b)=>keyOf(a).localeCompare(keyOf(b),'ja'))}
+function requireLogin(){return new Promise(resolve=>{auth.onAuthStateChanged(user=>{if(!user){location.href='login.html';return}resolve(user)})})}
 
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
-  authDomain: "bizmon-31ffc.firebaseapp.com",
-  projectId: "bizmon-31ffc"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-let currentQuestion=null;
-async function enabledCats(allCats){const s=await db.collection('companySettings').doc('quiz').get();if(!s.exists)return allCats;const d=s.data();if(d.nextApplyDate&&d.nextCategories&&todayKey()>=d.nextApplyDate)return d.nextCategories;return d.activeCategories&&d.activeCategories.length?d.activeCategories:allCats}
-function answer(choice){const correct=currentQuestion.answer;const result=choice===correct?'correct':'incorrect';localStorage.setItem('currentQuizResult',JSON.stringify({date:todayKey(),questionId:currentQuestion.id,category1:currentQuestion.category1,category2:currentQuestion.category2,questionText:currentQuestion.question,choiceA:currentQuestion.a,choiceB:currentQuestion.b,choiceC:currentQuestion.c,selectedChoice:choice,correctChoice:correct,result:result,resultText:choice===correct?'正解':'不正解',explanation:currentQuestion.explanation}));location.href='result.html'}
-async function start(){document.getElementById('todayText').textContent='本日の日付：'+todayKey();setStatus('status','STEP1：questions.csvを読み込み中...');const rows=await loadQuestionRows();const allCats=categoriesFromRows(rows);setStatus('status','STEP2：出題カテゴリー設定を確認中...');const cats=await enabledCats(allCats);const set=new Set(cats.map(keyOf));const candidates=rows.filter(r=>set.has(keyOf(r)));if(!candidates.length)throw new Error('出題対象の問題がありません。出題カテゴリー設定を確認してください。');candidates.sort((a,b)=>String(a.id).localeCompare(String(b.id),'ja'));const seed=todayKey()+'|'+Array.from(set).sort().join('|');currentQuestion=candidates[hash(seed)%candidates.length];document.getElementById('categoryText').textContent=currentQuestion.category1+' ＞ '+currentQuestion.category2;document.getElementById('questionText').textContent='問題：'+currentQuestion.question;document.getElementById('btnA').textContent='A：'+currentQuestion.a;document.getElementById('btnB').textContent='B：'+currentQuestion.b;document.getElementById('btnC').textContent='C：'+currentQuestion.c;document.getElementById('btnA').onclick=()=>answer('A');document.getElementById('btnB').onclick=()=>answer('B');document.getElementById('btnC').onclick=()=>answer('C');document.getElementById('quizArea').style.display='block';setStatus('status','STEP3：本日の問題を表示しました。','ok')}
-setStatus('status','STEP0.5：compat版JavaScript起動。ログイン確認中...');
-auth.onAuthStateChanged(user=>{if(!user){location.href='login.html';return}start().catch(e=>{console.error(e);setStatus('status','読み込みに失敗しました。
-'+e.message,'error')})});
-</script></body></html>
+let currentQuestion=null;async function enabledCats(allCats){const s=await db.collection('companySettings').doc('quiz').get();if(!s.exists)return allCats;const d=s.data();if(d.nextApplyDate&&d.nextCategories&&todayKey()>=d.nextApplyDate)return d.nextCategories;return d.activeCategories&&d.activeCategories.length?d.activeCategories:allCats}function answer(choice){const correct=currentQuestion.answer;const result=choice===correct?'correct':'incorrect';localStorage.setItem('currentQuizResult',JSON.stringify({date:todayKey(),questionId:currentQuestion.id,category1:currentQuestion.category1,category2:currentQuestion.category2,questionText:currentQuestion.question,choiceA:currentQuestion.a,choiceB:currentQuestion.b,choiceC:currentQuestion.c,selectedChoice:choice,correctChoice:correct,result:result,resultText:choice===correct?'正解':'不正解',explanation:currentQuestion.explanation}));location.href='result.html'}async function start(){document.getElementById('todayText').textContent='本日の日付：'+todayKey();setStatus('STEP2：questions.csvを読み込み中...');const rows=await loadQuestionRows();const allCats=categoriesFromRows(rows);setStatus('STEP3：出題カテゴリー設定を確認中...');const cats=await enabledCats(allCats);const set=new Set(cats.map(keyOf));const candidates=rows.filter(r=>set.has(keyOf(r)));if(!candidates.length)throw new Error('出題対象の問題がありません。出題カテゴリー設定を確認してください。');candidates.sort((a,b)=>String(a.id).localeCompare(String(b.id),'ja'));const seed=todayKey()+'|'+Array.from(set).sort().join('|');currentQuestion=candidates[hash(seed)%candidates.length];document.getElementById('categoryText').textContent=currentQuestion.category1+' ＞ '+currentQuestion.category2;document.getElementById('questionText').textContent='問題：'+currentQuestion.question;document.getElementById('btnA').textContent='A：'+currentQuestion.a;document.getElementById('btnB').textContent='B：'+currentQuestion.b;document.getElementById('btnC').textContent='C：'+currentQuestion.c;document.getElementById('btnA').onclick=()=>answer('A');document.getElementById('btnB').onclick=()=>answer('B');document.getElementById('btnC').onclick=()=>answer('C');document.getElementById('quizArea').style.display='block';setStatus('STEP4：本日の問題を表示しました。','ok')};(async()=>{try{await loadFirebase();await requireLogin();await start()}catch(e){console.error(e);setStatus('読み込みに失敗しました。
+'+e.message,'error')}})();</script></body></html>
