@@ -5,47 +5,227 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>回答レポート</title>
   <style>
-    body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}.wrap{max-width:1200px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box}.header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}h1{margin:0;font-size:26px}.top-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.status{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:16px;line-height:1.7;white-space:pre-wrap}.ok{color:#166534}.error{color:#dc2626}.info-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.info-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px}.info-label{font-size:12px;color:#6b7280;margin-bottom:4px}.info-value{font-size:18px;font-weight:bold}.controls{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0;align-items:center}input,select{border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;background:#fff}.btn{border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:bold;cursor:pointer;background:#2563eb;color:#fff}.btn.secondary{background:#f3f4f6;color:#111827;border:1px solid #d1d5db}.table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px;margin-top:14px}table{width:100%;border-collapse:collapse;min-width:980px;background:#fff}th,td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top;font-size:14px;white-space:nowrap}th{background:#f3f4f6;font-weight:bold;color:#374151;position:sticky;top:0;z-index:1}tr:hover td{background:#f9fafb}.question-cell{white-space:normal;min-width:280px;max-width:420px;line-height:1.5}.badge{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:bold;font-size:13px}.badge.ok{background:#dcfce7;color:#166534}.badge.ng{background:#fee2e2;color:#991b1b}.empty{text-align:center;padding:28px;color:#6b7280}@media(max-width:640px){body{padding:14px}.wrap{padding:20px;margin:12px auto}h1{font-size:22px}}
+    body{
+      margin:0;
+      font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;
+      background:#eef2f7;
+      color:#111827;
+      padding:24px;
+      box-sizing:border-box;
+    }
+    .wrap{
+      max-width:1200px;
+      margin:30px auto;
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 4px 12px rgba(0,0,0,.08);
+      padding:28px;
+      box-sizing:border-box;
+    }
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    h1{margin:0;font-size:26px;color:#111827;}
+    .top-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px;}
+    .status{
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      padding:14px 16px;
+      margin-bottom:16px;
+      line-height:1.7;
+      white-space:pre-wrap;
+    }
+    .ok{color:#166534;}
+    .error{color:#dc2626;}
+    .info-row{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .info-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px;}
+    .info-label{font-size:12px;color:#6b7280;margin-bottom:4px;}
+    .info-value{font-size:18px;font-weight:bold;color:#111827;}
+    .filter-box{
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:16px;
+      margin:16px 0;
+      display:none;
+    }
+    .filter-title{
+      font-weight:bold;
+      margin-bottom:12px;
+      color:#374151;
+    }
+    .controls{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+      gap:12px;
+      align-items:end;
+    }
+    .control-item label{
+      display:block;
+      font-size:12px;
+      color:#6b7280;
+      font-weight:bold;
+      margin-bottom:5px;
+    }
+    input,select{
+      width:100%;
+      box-sizing:border-box;
+      border:1px solid #d1d5db;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:14px;
+      background:#fff;
+    }
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .btn{
+      border:none;
+      border-radius:10px;
+      padding:10px 16px;
+      font-size:14px;
+      font-weight:bold;
+      cursor:pointer;
+      background:#2563eb;
+      color:#fff;
+      min-height:40px;
+    }
+    .btn.secondary{background:#f3f4f6;color:#111827;border:1px solid #d1d5db;}
+    .table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px;margin-top:14px;display:none;}
+    table{width:100%;border-collapse:collapse;min-width:980px;background:#fff;}
+    th,td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top;font-size:14px;white-space:nowrap;}
+    th{background:#f3f4f6;font-weight:bold;color:#374151;position:sticky;top:0;z-index:1;}
+    tr:hover td{background:#f9fafb;}
+    .question-cell{white-space:normal;min-width:280px;max-width:420px;line-height:1.5;}
+    .badge{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:bold;font-size:13px;}
+    .badge.ok{background:#dcfce7;color:#166534;}
+    .badge.ng{background:#fee2e2;color:#991b1b;}
+    .empty{text-align:center;padding:28px;color:#6b7280;}
+    .note{font-size:12px;color:#6b7280;margin-top:10px;line-height:1.6;}
+    @media(max-width:640px){body{padding:14px}.wrap{padding:20px;margin:12px auto}h1{font-size:22px}.btn-row{display:grid}.btn{width:100%;}}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="header"><h1>回答レポート</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div>
+    <div class="header">
+      <h1>回答レポート</h1>
+      <a class="top-link" href="index.html">← マイページへ戻る</a>
+    </div>
+
     <div id="status" class="status">レポートを読み込み中...</div>
+
     <div class="info-row" id="summary" style="display:none;">
       <div class="info-card"><div class="info-label">企業</div><div class="info-value" id="companyName">-</div></div>
       <div class="info-card"><div class="info-label">表示件数</div><div class="info-value" id="totalCount">0</div></div>
       <div class="info-card"><div class="info-label">正解数</div><div class="info-value" id="correctCount">0</div></div>
       <div class="info-card"><div class="info-label">正解率</div><div class="info-value" id="correctRate">0%</div></div>
     </div>
-    <div class="controls" id="controls" style="display:none;">
-      <input id="searchInput" type="text" placeholder="社員コード・氏名・部署・問題で検索" />
-      <select id="resultFilter"><option value="all">すべて</option><option value="correct">正解のみ</option><option value="incorrect">不正解のみ</option></select>
-      <button class="btn secondary" id="reloadBtn" type="button">再読み込み</button>
-      <button class="btn" id="csvBtn" type="button">CSVダウンロード</button>
+
+    <div class="filter-box" id="filterBox">
+      <div class="filter-title">絞り込み条件</div>
+      <div class="controls">
+        <div class="control-item">
+          <label for="startDate">開始日</label>
+          <input id="startDate" type="date" />
+        </div>
+        <div class="control-item">
+          <label for="endDate">終了日</label>
+          <input id="endDate" type="date" />
+        </div>
+        <div class="control-item">
+          <label for="departmentFilter">部署</label>
+          <select id="departmentFilter"><option value="all">すべて</option></select>
+        </div>
+        <div class="control-item">
+          <label for="positionFilter">役職</label>
+          <select id="positionFilter"><option value="all">すべて</option></select>
+        </div>
+        <div class="control-item">
+          <label for="resultFilter">判定</label>
+          <select id="resultFilter">
+            <option value="all">すべて</option>
+            <option value="correct">正解のみ</option>
+            <option value="incorrect">不正解のみ</option>
+          </select>
+        </div>
+        <div class="control-item">
+          <label for="searchInput">検索</label>
+          <input id="searchInput" type="text" placeholder="社員コード・氏名・問題で検索" />
+        </div>
+        <div class="control-item">
+          <label>&nbsp;</label>
+          <div class="btn-row">
+            <button class="btn" id="applyBtn" type="button">表示更新</button>
+            <button class="btn secondary" id="clearBtn" type="button">条件クリア</button>
+            <button class="btn secondary" id="reloadBtn" type="button">再読み込み</button>
+          </div>
+        </div>
+      </div>
+      <div class="note">※CSVダウンロード機能は削除しています。画面上で期間・部署・役職・判定・検索により確認できます。</div>
     </div>
-    <div class="table-wrap" id="tableWrap" style="display:none;">
-      <table><thead><tr><th>回答日</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>カテゴリー</th><th>問題</th><th>回答</th><th>正解</th><th>判定</th></tr></thead><tbody id="resultBody"></tbody></table>
+
+    <div class="table-wrap" id="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>回答日</th>
+            <th>社員コード</th>
+            <th>氏名</th>
+            <th>部署</th>
+            <th>役職</th>
+            <th>カテゴリー</th>
+            <th>問題</th>
+            <th>回答</th>
+            <th>正解</th>
+            <th>判定</th>
+          </tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+      </table>
     </div>
   </div>
+
 <script>
 var firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",projectId:"bizmon-31ffc"};
 var auth=null,db=null,currentUserData=null,allResults=[],filteredResults=[];
+
 function setStatus(msg,type){var el=document.getElementById('status');if(!el)return;el.textContent=msg;el.className='status '+(type||'');}
 function loadScript(src,label,callback){var s=document.createElement('script');var done=false;var timer=setTimeout(function(){if(done)return;done=true;callback(new Error(label+' の読込がタイムアウトしました。'));},12000);s.onload=function(){if(done)return;done=true;clearTimeout(timer);callback(null);};s.onerror=function(){if(done)return;done=true;clearTimeout(timer);callback(new Error(label+' の読込に失敗しました。'));};s.src=src+'?v='+new Date().getTime();document.head.appendChild(s);}
 function loadFirebase(callback){setStatus('Firebase SDKを読み込み中...');loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js','firebase-app-compat',function(e){if(e){callback(e);return;}loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js','firebase-auth-compat',function(e){if(e){callback(e);return;}loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js','firebase-firestore-compat',function(e){if(e){callback(e);return;}try{if(!firebase.apps.length){firebase.initializeApp(firebaseConfig);}auth=firebase.auth();db=firebase.firestore();callback(null);}catch(err){callback(err);}});});});}
 function requireLogin(callback){auth.onAuthStateChanged(function(user){if(!user){location.href='login.html';return;}callback(user);});}
-function formatDateValue(value,fallback){if(value&&typeof value.toDate==='function'){var d=value.toDate();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}return fallback||'';}
 function escapeHtml(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function normalizeResult(doc){var d=doc.data()||{};return {id:doc.id,date:d.dateKey||d.date||formatDateValue(d.savedAt,''),savedAtText:formatDateValue(d.savedAt,d.dateKey||d.date||''),employeeCode:d.employeeCode||'',name:d.name||'',department:d.department||'',position:d.position||'',category:(d.category1||'')+(d.category2?' ＞ '+d.category2:''),question:d.questionText||d.question||'',selectedAnswer:d.selectedAnswer||d.selectedChoice||d.userAnswer||'',correctAnswer:d.correctAnswer||d.correctChoice||'',isCorrect:!!d.isCorrect,resultText:d.resultText||(d.isCorrect?'正解':'不正解'),companyId:d.companyId||'',companyName:d.companyName||''};}
+function formatDateValue(value,fallback){if(value&&typeof value.toDate==='function'){var d=value.toDate();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}return fallback||'';}
+function toDateKeyFromTimestamp(value,fallback){if(value&&typeof value.toDate==='function'){var d=value.toDate();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}return fallback||'';}
+function normalizeResult(doc){var d=doc.data()||{};var dateKey=d.dateKey||d.date||toDateKeyFromTimestamp(d.savedAt,'');return {id:doc.id,dateKey:dateKey,savedAtText:formatDateValue(d.savedAt,dateKey),employeeCode:d.employeeCode||'',name:d.name||'',department:d.department||'',position:d.position||'',category:(d.category1||'')+(d.category2?' ＞ '+d.category2:''),question:d.questionText||d.question||'',selectedAnswer:d.selectedAnswer||d.selectedChoice||d.userAnswer||'',correctAnswer:d.correctAnswer||d.correctChoice||'',isCorrect:!!d.isCorrect,resultText:d.resultText||(d.isCorrect?'正解':'不正解'),companyId:d.companyId||'',companyName:d.companyName||''};}
 function loadCurrentUser(user){return db.collection('users').doc(user.uid).get().then(function(snap){if(!snap.exists){throw new Error('users/'+user.uid+' が見つかりません。');}var data=snap.data()||{};if(data.role!=='admin'){throw new Error('このレポート画面は管理者のみ利用できます。現在のrole：'+(data.role||'未設定'));}if(!data.companyId){throw new Error('users/'+user.uid+' に companyId がありません。');}currentUserData=data;return data;});}
-function loadReportData(){setStatus('回答結果を読み込み中...');var companyId=currentUserData.companyId;return db.collection('quizResults').where('companyId','==',companyId).get().then(function(qs){allResults=[];qs.forEach(function(doc){allResults.push(normalizeResult(doc));});allResults.sort(function(a,b){return String(b.date).localeCompare(String(a.date),'ja')||String(a.employeeCode).localeCompare(String(b.employeeCode),'ja');});applyFilters();document.getElementById('summary').style.display='grid';document.getElementById('controls').style.display='flex';document.getElementById('tableWrap').style.display='block';setStatus('回答結果を読み込みました。','ok');});}
-function applyFilters(){var keyword=(document.getElementById('searchInput').value||'').trim().toLowerCase();var filter=document.getElementById('resultFilter').value;filteredResults=allResults.filter(function(r){var text=[r.employeeCode,r.name,r.department,r.position,r.category,r.question,r.selectedAnswer,r.correctAnswer,r.resultText].join(' ').toLowerCase();var keywordOk=!keyword||text.indexOf(keyword)>=0;var resultOk=true;if(filter==='correct')resultOk=r.isCorrect===true;if(filter==='incorrect')resultOk=r.isCorrect!==true;return keywordOk&&resultOk;});renderTable();renderSummary();}
+function loadReportData(){setStatus('回答結果を読み込み中...');var companyId=currentUserData.companyId;return db.collection('quizResults').where('companyId','==',companyId).get().then(function(qs){allResults=[];qs.forEach(function(doc){allResults.push(normalizeResult(doc));});allResults.sort(function(a,b){return String(b.dateKey).localeCompare(String(a.dateKey),'ja')||String(a.employeeCode).localeCompare(String(b.employeeCode),'ja');});populateSelects();applyFilters();document.getElementById('summary').style.display='grid';document.getElementById('filterBox').style.display='block';document.getElementById('tableWrap').style.display='block';setStatus('回答結果を読み込みました。','ok');});}
+function uniqueValues(key){var set={};allResults.forEach(function(r){var v=(r[key]||'').trim();if(v)set[v]=true;});return Object.keys(set).sort(function(a,b){return a.localeCompare(b,'ja');});}
+function setSelectOptions(id,values){var select=document.getElementById(id);var current=select.value;select.innerHTML='<option value="all">すべて</option>'+values.map(function(v){return '<option value="'+escapeHtml(v)+'">'+escapeHtml(v)+'</option>';}).join('');if(values.indexOf(current)>=0){select.value=current;}else{select.value='all';}}
+function populateSelects(){setSelectOptions('departmentFilter',uniqueValues('department'));setSelectOptions('positionFilter',uniqueValues('position'));}
+function applyFilters(){var keyword=(document.getElementById('searchInput').value||'').trim().toLowerCase();var resultFilter=document.getElementById('resultFilter').value;var department=document.getElementById('departmentFilter').value;var position=document.getElementById('positionFilter').value;var startDate=document.getElementById('startDate').value;var endDate=document.getElementById('endDate').value;filteredResults=allResults.filter(function(r){var text=[r.employeeCode,r.name,r.department,r.position,r.category,r.question,r.selectedAnswer,r.correctAnswer,r.resultText].join(' ').toLowerCase();var keywordOk=!keyword||text.indexOf(keyword)>=0;var resultOk=true;if(resultFilter==='correct')resultOk=r.isCorrect===true;if(resultFilter==='incorrect')resultOk=r.isCorrect!==true;var deptOk=department==='all'||r.department===department;var positionOk=position==='all'||r.position===position;var startOk=!startDate||String(r.dateKey)>=startDate;var endOk=!endDate||String(r.dateKey)<=endDate;return keywordOk&&resultOk&&deptOk&&positionOk&&startOk&&endOk;});renderTable();renderSummary();}
+function clearFilters(){document.getElementById('startDate').value='';document.getElementById('endDate').value='';document.getElementById('departmentFilter').value='all';document.getElementById('positionFilter').value='all';document.getElementById('resultFilter').value='all';document.getElementById('searchInput').value='';applyFilters();}
 function renderSummary(){var total=filteredResults.length;var correct=filteredResults.filter(function(r){return r.isCorrect;}).length;var rate=total?Math.round((correct/total)*100):0;document.getElementById('companyName').textContent=currentUserData.companyName||currentUserData.companyId||'-';document.getElementById('totalCount').textContent=String(total);document.getElementById('correctCount').textContent=String(correct);document.getElementById('correctRate').textContent=rate+'%';}
-function renderTable(){var body=document.getElementById('resultBody');if(!filteredResults.length){body.innerHTML='<tr><td colspan="10" class="empty">表示できる回答結果がありません。</td></tr>';return;}body.innerHTML=filteredResults.map(function(r){return '<tr><td>'+escapeHtml(r.savedAtText||r.date)+'</td><td>'+escapeHtml(r.employeeCode)+'</td><td>'+escapeHtml(r.name)+'</td><td>'+escapeHtml(r.department)+'</td><td>'+escapeHtml(r.position)+'</td><td>'+escapeHtml(r.category)+'</td><td class="question-cell">'+escapeHtml(r.question)+'</td><td>'+escapeHtml(r.selectedAnswer)+'</td><td>'+escapeHtml(r.correctAnswer)+'</td><td><span class="badge '+(r.isCorrect?'ok':'ng')+'">'+escapeHtml(r.resultText)+'</span></td></tr>';}).join('');}
-function csvEscape(v){var s=String(v==null?'':v);return '"'+s.replace(/"/g,'""')+'"';}
-function downloadCsv(){var header=['回答日','社員コード','氏名','部署','役職','カテゴリー','問題','回答','正解','判定'];var rows=filteredResults.map(function(r){return [r.savedAtText||r.date,r.employeeCode,r.name,r.department,r.position,r.category,r.question,r.selectedAnswer,r.correctAnswer,r.resultText];});var csv=[header].concat(rows).map(function(row){return row.map(csvEscape).join(',');}).join('\r\n');var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');var today=new Date();var ymd=today.getFullYear()+String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');a.href=url;a.download='quiz_report_'+(currentUserData.companyId||'company')+'_'+ymd+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}
-document.getElementById('searchInput').addEventListener('input',applyFilters);document.getElementById('resultFilter').addEventListener('change',applyFilters);document.getElementById('csvBtn').addEventListener('click',downloadCsv);document.getElementById('reloadBtn').addEventListener('click',function(){if(currentUserData){loadReportData().catch(function(err){setStatus('レポートの再読み込みに失敗しました。\n'+err.message,'error');});}});
+function renderTable(){var body=document.getElementById('resultBody');if(!filteredResults.length){body.innerHTML='<tr><td colspan="10" class="empty">表示できる回答結果がありません。</td></tr>';return;}body.innerHTML=filteredResults.map(function(r){return '<tr><td>'+escapeHtml(r.savedAtText||r.dateKey)+'</td><td>'+escapeHtml(r.employeeCode)+'</td><td>'+escapeHtml(r.name)+'</td><td>'+escapeHtml(r.department)+'</td><td>'+escapeHtml(r.position)+'</td><td>'+escapeHtml(r.category)+'</td><td class="question-cell">'+escapeHtml(r.question)+'</td><td>'+escapeHtml(r.selectedAnswer)+'</td><td>'+escapeHtml(r.correctAnswer)+'</td><td><span class="badge '+(r.isCorrect?'ok':'ng')+'">'+escapeHtml(r.resultText)+'</span></td></tr>';}).join('');}
+
+document.getElementById('applyBtn').addEventListener('click',applyFilters);
+document.getElementById('clearBtn').addEventListener('click',clearFilters);
+document.getElementById('reloadBtn').addEventListener('click',function(){if(currentUserData){loadReportData().catch(function(err){setStatus('レポートの再読み込みに失敗しました。\n'+err.message,'error');});}});
+document.getElementById('searchInput').addEventListener('keydown',function(e){if(e.key==='Enter'){applyFilters();}});
+document.getElementById('resultFilter').addEventListener('change',applyFilters);
+document.getElementById('departmentFilter').addEventListener('change',applyFilters);
+document.getElementById('positionFilter').addEventListener('change',applyFilters);
+document.getElementById('startDate').addEventListener('change',applyFilters);
+document.getElementById('endDate').addEventListener('change',applyFilters);
+
 loadFirebase(function(e){if(e){setStatus(e.message,'error');return;}requireLogin(function(user){loadCurrentUser(user).then(function(){return loadReportData();}).catch(function(err){setStatus('レポートの読み込みに失敗しました。\n'+err.message,'error');});});});
 </script>
 </body>
