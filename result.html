@@ -24,6 +24,8 @@ function normalizeResultForDisplay(r){
   var selectedChoice=normalizeChoice(r.selectedChoice||r.selectedAnswer||r.userAnswer);
   var correctChoice=normalizeChoice(r.correctChoice||r.correctAnswer);
   var questionText=firstNonEmpty(r.questionText,r.question);
+  var base={selectedChoice:selectedChoice,correctChoice:correctChoice,result:r.result,judgement:r.judgement,resultText:r.resultText};
+  var ok=isCorrectResult(base);
   return {
     questionId:firstNonEmpty(r.questionId,r.id),
     questionText:questionText,
@@ -35,13 +37,14 @@ function normalizeResultForDisplay(r){
     category1:firstNonEmpty(r.category1),
     category2:firstNonEmpty(r.category2),
     explanation:firstNonEmpty(r.explanation),
-    resultText:isCorrectResult(Object.assign({},r,{selectedChoice:selectedChoice,correctChoice:correctChoice}))?'正解':'不正解',
-    result:isCorrectResult(Object.assign({},r,{selectedChoice:selectedChoice,correctChoice:correctChoice}))?'correct':'incorrect'
+    resultText:ok?'正解':'不正解',
+    result:ok?'correct':'incorrect'
   };
 }
 function show(r){var n=normalizeResultForDisplay(r);showResultMark(n);document.getElementById('q').textContent='問題：'+n.questionText;document.getElementById('choices').textContent='選択肢\nA：'+n.choiceA+'\nB：'+n.choiceB+'\nC：'+n.choiceC;document.getElementById('ans').textContent='判定：'+n.resultText+'\nあなたの回答：'+n.selectedChoice+'\n正解：'+n.correctChoice+'\nカテゴリー：'+n.category1+' ＞ '+n.category2;document.getElementById('exp').textContent='解説：'+n.explanation;document.getElementById('content').style.display='block';}
 
-// 保存データ整理版：Firestoreへ保存する項目を統一し、空欄・重複・ズレを減らします。
+// 保存データ整理版＋社員コード対応版
+// users/{uid}.employeeCode を quizResults.employeeCode として保存します。
 function saveQuizResultClean(user, r){
   var n = normalizeResultForDisplay(r);
   var dateKey = firstNonEmpty(r.date,r.dateKey) || todayKey();
@@ -59,6 +62,7 @@ function saveQuizResultClean(user, r){
       companyId: userData.companyId,
       companyName: userData.companyName || '',
       name: userData.name || '',
+      employeeCode: userData.employeeCode || '',
       department: userData.department || '',
       position: userData.position || '',
       role: userData.role || 'user',
@@ -88,10 +92,10 @@ function saveQuizResultClean(user, r){
     };
 
     return db.collection('quizResults').doc(resultId).set(saveData,{merge:true}).then(function(){
-      return {resultId: resultId, companyId: userData.companyId, companyName: userData.companyName || '', savedData: saveData};
+      return {resultId: resultId, companyId: userData.companyId, employeeCode: userData.employeeCode || '', savedData: saveData};
     });
   });
 }
 
-loadFirebase(function(e){if(e){setStatus(e.message,'error');return;}requireLogin(function(user){try{var raw=localStorage.getItem('currentQuizResult');if(!raw)throw new Error('回答結果が見つかりません。今日の問題から回答してください。');var r=JSON.parse(raw);show(r);setStatus('Firestoreへ保存中...');saveQuizResultClean(user,r).then(function(info){setStatus('回答結果を保存しました。\n保存先：quizResults / '+info.resultId+'\n企業ID：'+info.companyId+'\n保存データ：整理版','ok');}).catch(function(err){setStatus('保存に失敗しました。\n'+err.message,'error');});}catch(err){setStatus('結果の表示に失敗しました。\n'+err.message,'error');}});});
+loadFirebase(function(e){if(e){setStatus(e.message,'error');return;}requireLogin(function(user){try{var raw=localStorage.getItem('currentQuizResult');if(!raw)throw new Error('回答結果が見つかりません。今日の問題から回答してください。');var r=JSON.parse(raw);show(r);setStatus('Firestoreへ保存中...');saveQuizResultClean(user,r).then(function(info){setStatus('回答結果を保存しました。\n保存先：quizResults / '+info.resultId+'\n企業ID：'+info.companyId+'\n社員コード：'+(info.employeeCode || '未設定')+'\n保存データ：整理版（社員コード対応）','ok');}).catch(function(err){setStatus('保存に失敗しました。\n'+err.message,'error');});}catch(err){setStatus('結果の表示に失敗しました。\n'+err.message,'error');}});});
 </script></body></html>
