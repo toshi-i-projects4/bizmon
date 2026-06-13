@@ -19,6 +19,9 @@ h1{margin:0}
 .choices{display:grid;gap:12px}
 .choice-btn{width:100%;border:none;border-radius:10px;background:#2563eb;color:#fff;padding:14px 16px;font-size:16px;cursor:pointer;text-align:left}
 .choice-btn:disabled{opacity:.6;cursor:not-allowed}
+.answered-box{background:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #22c55e;border-radius:12px;padding:18px;margin:16px 0;line-height:1.7;color:#166534}
+.answered-title{font-weight:bold;font-size:18px;margin-bottom:8px}
+.result-link{display:inline-block;margin-top:12px;background:#2563eb;color:#fff;text-decoration:none;border-radius:12px;padding:12px 18px;font-weight:bold}
 .cat-group{border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin-bottom:12px;background:#fff}
 .cat-parent{font-weight:bold}
 .cat-children{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}
@@ -41,6 +44,12 @@ h1{margin:0}
 
   <div id="todayText" class="sub"></div>
   <div id="status" class="status">STEP0：HTML読込完了。通常JavaScript起動待ち...</div>
+
+  <div id="answeredArea" class="answered-box" style="display:none">
+    <div class="answered-title">本日は回答済みです</div>
+    <div id="answeredText"></div>
+    <a class="result-link" href="result.html">結果を確認する</a>
+  </div>
 
   <div id="quizArea" style="display:none">
     <div id="categoryText" class="sub"></div>
@@ -204,6 +213,18 @@ function firstNonEmpty(){
     }
   }
   return '';
+}
+
+function saveLocalResult(r){
+  try{
+    localStorage.setItem('currentQuizResult',JSON.stringify(r));
+  }catch(e){
+    console.warn('currentQuizResult の保存に失敗しました。',e);
+  }
+}
+
+function getResultId(user,dateKey){
+  return user.uid+'_'+dateKey;
 }
 
 function loadQuestionRows(callback){
@@ -458,6 +479,60 @@ function saveQuizResultBeforeResultPage(user,resultData){
   });
 }
 
+function checkTodayAlreadyAnswered(user){
+  var dateKey=todayKey();
+  var resultId=getResultId(user,dateKey);
+
+  return db.collection('quizResults').doc(resultId).get().then(function(doc){
+    if(!doc.exists){
+      return {answered:false,resultId:resultId};
+    }
+
+    var data=doc.data() || {};
+    data.resultId=data.resultId || resultId;
+    data.dateKey=data.dateKey || data.date || dateKey;
+    data.date=data.date || data.dateKey || dateKey;
+
+    return {answered:true,resultId:resultId,data:data};
+  });
+}
+
+function showAlreadyAnswered(info){
+  var data=info.data || {};
+  var answeredArea=document.getElementById('answeredArea');
+  var answeredText=document.getElementById('answeredText');
+  var quizArea=document.getElementById('quizArea');
+
+  if(quizArea)quizArea.style.display='none';
+
+  saveLocalResult(data);
+
+  var resultText=firstNonEmpty(data.resultText, data.result==='correct' ? '正解' : '', data.result==='incorrect' ? '不正解' : '');
+  var selected=firstNonEmpty(data.selectedChoice,data.selectedAnswer,data.userAnswer,'未取得');
+  var correct=firstNonEmpty(data.correctChoice,data.correctAnswer,'未取得');
+  var category='';
+  if(firstNonEmpty(data.category1) || firstNonEmpty(data.category2)){
+    category='\nカテゴリー：' + firstNonEmpty(data.category1) + ' ＞ ' + firstNonEmpty(data.category2);
+  }
+
+  answeredText.textContent=
+    '回答日：' + firstNonEmpty(data.dateKey,data.date,todayKey()) + '\n' +
+    '判定：' + firstNonEmpty(resultText,'取得済み') + '\n' +
+    'あなたの回答：' + selected + '\n' +
+    '正解：' + correct +
+    category + '\n\n' +
+    '結果を確認する場合は、下のボタンを押してください。';
+
+  answeredArea.style.display='block';
+
+  setStatus(
+    '本日は既に回答済みです。\n' +
+    '保存先：quizResults / ' + info.resultId + '\n' +
+    '再回答はできません。',
+    'ok'
+  );
+}
+
 function answer(choice){
   if(isSavingAnswer)return;
 
@@ -521,10 +596,8 @@ function answer(choice){
   });
 }
 
-function start(){
-  document.getElementById('todayText').textContent='本日の日付：'+todayKey();
-
-  setStatus('STEP2：questions.csvを読み込み中...');
+function loadAndDisplayQuestion(){
+  setStatus('STEP3：questions.csvを読み込み中...');
 
   loadQuestionRows(function(e,rows){
     if(e){
@@ -534,7 +607,7 @@ function start(){
 
     var allCats=categoriesFromRows(rows);
 
-    setStatus('STEP3：出題カテゴリー設定を確認中...');
+    setStatus('STEP4：出題カテゴリー設定を確認中...');
 
     enabledCats(allCats,function(e,cats){
       if(e){
@@ -580,9 +653,36 @@ function start(){
       document.getElementById('btnC').onclick=function(){answer('C');};
 
       document.getElementById('quizArea').style.display='block';
+      document.getElementById('answeredArea').style.display='none';
 
-      setStatus('STEP4：本日の問題を表示しました。','ok');
+      setStatus('STEP5：本日の問題を表示しました。','ok');
     });
+  });
+}
+
+function start(){
+  document.getElementById('todayText').textContent='本日の日付：'+todayKey();
+
+  setStatus(
+    'STEP2：本日の回答済み状況を確認中...\n' +
+    '確認先：quizResults / ' + currentUser.uid + '_' + todayKey()
+  );
+
+  checkTodayAlreadyAnswered(currentUser).then(function(info){
+    if(info.answered){
+      showAlreadyAnswered(info);
+      return;
+    }
+
+    addStatus('STEP2-1：本日は未回答です。問題を読み込みます。');
+    loadAndDisplayQuestion();
+  }).catch(function(err){
+    setStatus(
+      '本日の回答済み状況の確認に失敗しました。\n' +
+      'Firestore の読込権限または通信状態を確認してください。\n\n' +
+      'エラー内容：\n' + err.message,
+      'error'
+    );
   });
 }
 
