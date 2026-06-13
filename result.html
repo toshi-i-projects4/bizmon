@@ -1,101 +1,488 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>結果</title><style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}.wrap{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{margin:0}.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-link{display:inline-block;margin-top:20px}.status,.box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:14px;line-height:1.7;white-space:pre-wrap}.error{color:#dc2626}.ok{color:#166534}.sub{color:#6b7280;font-size:14px;margin:6px 0 20px}.question-box{background:#eff6ff;border-left:4px solid #2563eb;font-size:20px}.choices{display:grid;gap:12px}.choice-btn{width:100%;border:none;border-radius:10px;background:#2563eb;color:#fff;padding:14px 16px;font-size:16px;cursor:pointer;text-align:left}.cat-group{border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin-bottom:12px;background:#fff}.cat-parent{font-weight:bold}.cat-children{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}.cat-item{display:flex;gap:8px;align-items:center;background:#f9fafb;border:1px solid #e5e7eb;border-radius:999px;padding:8px 10px;font-size:14px}.btn-row{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:18px}.primary-btn,.secondary-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.secondary-btn{background:#f3f4f6;color:#111827}.answer-box{background:#f0fdf4;border-left:4px solid #22c55e;color:#166534;font-weight:bold}.explanation-box{background:#fff7ed;border-left:4px solid #f97316;color:#7c2d12}.result-hero{text-align:center;margin:0 0 12px;padding:0;transition:opacity .3s ease,height .3s ease,margin .3s ease;overflow:hidden}.result-hero.hidden-after{height:0!important;margin:0!important;opacity:0}.result-big-mark{font-size:132px;font-weight:900;line-height:1;letter-spacing:-.04em;opacity:0;transform:scale(.68);animation:resultPopFade 1.6s ease-out forwards}.result-big-mark.correct{color:#16a34a}.result-big-mark.incorrect{color:#dc2626}@keyframes resultPopFade{0%{opacity:0;transform:scale(.62)}22%{opacity:1;transform:scale(1.13)}38%{opacity:1;transform:scale(1)}72%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.96)}}@media(max-width:640px){.header{flex-direction:column;align-items:flex-start}.wrap{padding:24px}.result-big-mark{font-size:112px}}
-</style></head><body><div class="wrap"><div class="header"><h1>結果</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div><div id="status" class="status">結果を読み込み中...</div><div id="content" style="display:none"><div id="resultHero" class="result-hero"><div id="resultBigMark" class="result-big-mark"></div></div><div id="q" class="box question-box"></div><div id="choices" class="box"></div><div id="ans" class="box answer-box"></div><div id="exp" class="box explanation-box"></div></div><a class="bottom-link" href="index.html">← マイページへ戻る</a></div><script>
-var firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",projectId:"bizmon-31ffc"};
-var auth=null; var db=null;
-function setStatus(msg,type){var el=document.getElementById('status');if(!el)return;el.textContent=msg;el.className='status '+(type||'');}
-function addStatus(msg){var el=document.getElementById('status');if(!el)return;el.textContent=(el.textContent?el.textContent+'\n':'')+msg;}
-function loadScript(src,label,callback){var s=document.createElement('script');var done=false;var timer=setTimeout(function(){if(done)return;done=true;callback(new Error(label+' の読込がタイムアウトしました。'));},12000);s.onload=function(){if(done)return;done=true;clearTimeout(timer);callback(null);};s.onerror=function(){if(done)return;done=true;clearTimeout(timer);callback(new Error(label+' の読込に失敗しました。'));};s.src=src+'?v='+new Date().getTime();document.head.appendChild(s);}
-function loadFirebase(callback){setStatus('STEP1：通常JavaScriptは起動しました。Firebase SDKを読み込み中...');loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js','firebase-app-compat',function(e){if(e){callback(e);return;}addStatus('STEP1-1：firebase-app-compat 読込OK');loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js','firebase-auth-compat',function(e){if(e){callback(e);return;}addStatus('STEP1-2：firebase-auth-compat 読込OK');loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js','firebase-firestore-compat',function(e){if(e){callback(e);return;}addStatus('STEP1-3：firebase-firestore-compat 読込OK');try{if(!firebase.apps.length){firebase.initializeApp(firebaseConfig);}auth=firebase.auth();db=firebase.firestore();addStatus('STEP1-4：Firebase初期化OK / '+firebaseConfig.projectId);callback(null);}catch(err){callback(err);}});});});}
-function todayKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function requireLogin(callback){auth.onAuthStateChanged(function(user){if(!user){location.href='login.html';return;}callback(user);});}
-function firstNonEmpty(){for(var i=0;i<arguments.length;i++){var v=arguments[i];if(v!==undefined&&v!==null&&String(v).trim()!=='')return String(v).trim();}return '';}
-function normalizeChoice(v){return firstNonEmpty(v).toUpperCase();}
-function isCorrectResult(r){
-  var result=String(r.result||r.judgement||r.resultText||'').toLowerCase();
-  if(result.indexOf('incorrect')>=0||result.indexOf('wrong')>=0||result.indexOf('不正解')>=0||result.indexOf('×')>=0)return false;
-  if(result.indexOf('correct')>=0||result.indexOf('正解')>=0||result.indexOf('○')>=0)return true;
-  var selected=normalizeChoice(r.selectedChoice||r.selectedAnswer||r.userAnswer);
-  var correct=normalizeChoice(r.correctChoice||r.correctAnswer);
-  return selected&&correct&&selected===correct;
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>結果</title>
+<style>
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}
+.wrap{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}
+.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+h1{margin:0}
+.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}
+.bottom-link{display:inline-block;margin-top:20px}
+.status,.box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:14px;line-height:1.7;white-space:pre-wrap}
+.error{color:#dc2626}
+.ok{color:#166534}
+.sub{color:#6b7280;font-size:14px;margin:6px 0 20px}
+.question-box{background:#eff6ff;border-left:4px solid #2563eb;font-size:20px}
+.choices{display:grid;gap:12px}
+.choice-btn{width:100%;border:none;border-radius:10px;background:#2563eb;color:#fff;padding:14px 16px;font-size:16px;cursor:pointer;text-align:left}
+.cat-group{border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin-bottom:12px;background:#fff}
+.cat-parent{font-weight:bold}
+.cat-children{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}
+.cat-item{display:flex;gap:8px;align-items:center;background:#f9fafb;border:1px solid #e5e7eb;border-radius:999px;padding:8px 10px;font-size:14px}
+.btn-row{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:18px}
+.primary-btn,.secondary-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}
+.primary-btn{background:#2563eb;color:#fff}
+.secondary-btn{background:#f3f4f6;color:#111827}
+.answer-box{background:#f0fdf4;border-left:4px solid #22c55e;color:#166534;font-weight:bold}
+.explanation-box{background:#fff7ed;border-left:4px solid #f97316;color:#7c2d12}
+.result-hero{text-align:center;margin:0 0 12px;padding:0;transition:opacity .3s ease,height .3s ease,margin .3s ease;overflow:hidden}
+.result-hero.hidden-after{height:0!important;margin:0!important;opacity:0}
+.result-big-mark{font-size:132px;font-weight:900;line-height:1;letter-spacing:-.04em;opacity:0;transform:scale(.68);animation:resultPopFade 1.6s ease-out forwards}
+.result-big-mark.correct{color:#16a34a}
+.result-big-mark.incorrect{color:#dc2626}
+@keyframes resultPopFade{0%{opacity:0;transform:scale(.62)}22%{opacity:1;transform:scale(1.13)}38%{opacity:1;transform:scale(1)}72%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.96)}}
+@media(max-width:640px){.header{flex-direction:column;align-items:flex-start}.wrap{padding:24px}.result-big-mark{font-size:112px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>結果</h1>
+    <a class="top-link" href="index.html">← マイページへ戻る</a>
+  </div>
+
+  <div id="status" class="status">結果を読み込み中...</div>
+
+  <div id="content" style="display:none">
+    <div id="resultHero" class="result-hero">
+      <div id="resultBigMark" class="result-big-mark"></div>
+    </div>
+    <div id="q" class="box question-box"></div>
+    <div id="choices" class="box"></div>
+    <div id="ans" class="box answer-box"></div>
+    <div id="exp" class="box explanation-box"></div>
+  </div>
+
+  <a class="bottom-link" href="index.html">← マイページへ戻る</a>
+</div>
+
+<script>
+var firebaseConfig={
+  apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
+  authDomain:"bizmon-31ffc.firebaseapp.com",
+  projectId:"bizmon-31ffc"
+};
+
+var auth=null;
+var db=null;
+
+function setStatus(msg,type){
+  var el=document.getElementById('status');
+  if(!el)return;
+  el.textContent=msg;
+  el.className='status '+(type||'');
 }
-function showResultMark(r){var hero=document.getElementById('resultHero');var mark=document.getElementById('resultBigMark');if(!mark||!hero)return;hero.className='result-hero';var ok=isCorrectResult(r);mark.textContent=ok?'○':'×';mark.className='result-big-mark '+(ok?'correct':'incorrect');setTimeout(function(){hero.className='result-hero hidden-after';},1700);}
-function normalizeResultForDisplay(r){
-  var selectedChoice=normalizeChoice(r.selectedChoice||r.selectedAnswer||r.userAnswer);
-  var correctChoice=normalizeChoice(r.correctChoice||r.correctAnswer);
-  var questionText=firstNonEmpty(r.questionText,r.question);
-  var base={selectedChoice:selectedChoice,correctChoice:correctChoice,result:r.result,judgement:r.judgement,resultText:r.resultText};
-  var ok=isCorrectResult(base);
-  return {
-    questionId:firstNonEmpty(r.questionId,r.id),
-    questionText:questionText,
-    choiceA:firstNonEmpty(r.choiceA,r.a),
-    choiceB:firstNonEmpty(r.choiceB,r.b),
-    choiceC:firstNonEmpty(r.choiceC,r.c),
-    selectedChoice:selectedChoice,
-    correctChoice:correctChoice,
-    category1:firstNonEmpty(r.category1),
-    category2:firstNonEmpty(r.category2),
-    explanation:firstNonEmpty(r.explanation),
-    resultText:ok?'正解':'不正解',
-    result:ok?'correct':'incorrect'
+
+function addStatus(msg){
+  var el=document.getElementById('status');
+  if(!el)return;
+  el.textContent=(el.textContent?el.textContent+'\n':'')+msg;
+}
+
+function loadScript(src,label,callback){
+  var s=document.createElement('script');
+  var done=false;
+  var timer=setTimeout(function(){
+    if(done)return;
+    done=true;
+    callback(new Error(label+' の読込がタイムアウトしました。'));
+  },12000);
+
+  s.onload=function(){
+    if(done)return;
+    done=true;
+    clearTimeout(timer);
+    callback(null);
   };
+
+  s.onerror=function(){
+    if(done)return;
+    done=true;
+    clearTimeout(timer);
+    callback(new Error(label+' の読込に失敗しました。'));
+  };
+
+  s.src=src+'?v='+new Date().getTime();
+  document.head.appendChild(s);
 }
-function show(r){var n=normalizeResultForDisplay(r);showResultMark(n);document.getElementById('q').textContent='問題：'+n.questionText;document.getElementById('choices').textContent='選択肢\nA：'+n.choiceA+'\nB：'+n.choiceB+'\nC：'+n.choiceC;document.getElementById('ans').textContent='判定：'+n.resultText+'\nあなたの回答：'+n.selectedChoice+'\n正解：'+n.correctChoice+'\nカテゴリー：'+n.category1+' ＞ '+n.category2;document.getElementById('exp').textContent='解説：'+n.explanation;document.getElementById('content').style.display='block';}
 
-// 保存データ整理版＋社員コード対応版
-// users/{uid}.employeeCode を quizResults.employeeCode として保存します。
-function saveQuizResultClean(user, r){
-  var n = normalizeResultForDisplay(r);
-  var dateKey = firstNonEmpty(r.date,r.dateKey) || todayKey();
-  var resultId = user.uid + '_' + dateKey;
+function loadFirebase(callback){
+  setStatus('STEP1：通常JavaScriptは起動しました。Firebase SDKを読み込み中...');
 
-  return db.collection('users').doc(user.uid).get().then(function(userDoc){
-    if(!userDoc.exists){throw new Error('users/' + user.uid + ' が見つかりません。Firestoreのusersにログインユーザーを作成してください。');}
-    var userData = userDoc.data() || {};
-    if(!userData.companyId){throw new Error('users/' + user.uid + ' に companyId がありません。');}
+  loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js','firebase-app-compat',function(e){
+    if(e){callback(e);return;}
+    addStatus('STEP1-1：firebase-app-compat 読込OK');
 
-    var saveData = {
-      resultId: resultId,
-      uid: user.uid,
-      email: user.email || userData.email || '',
-      companyId: userData.companyId,
-      companyName: userData.companyName || '',
-      name: userData.name || '',
-      employeeCode: userData.employeeCode || '',
-      department: userData.department || '',
-      position: userData.position || '',
-      role: userData.role || 'user',
+    loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js','firebase-auth-compat',function(e){
+      if(e){callback(e);return;}
+      addStatus('STEP1-2：firebase-auth-compat 読込OK');
 
-      date: dateKey,
-      dateKey: dateKey,
-      questionId: n.questionId,
-      questionText: n.questionText,
-      question: n.questionText,
-      choiceA: n.choiceA,
-      choiceB: n.choiceB,
-      choiceC: n.choiceC,
-      selectedChoice: n.selectedChoice,
-      selectedAnswer: n.selectedChoice,
-      userAnswer: n.selectedChoice,
-      correctChoice: n.correctChoice,
-      correctAnswer: n.correctChoice,
-      isCorrect: n.result === 'correct',
-      result: n.result,
-      resultText: n.resultText,
-      category1: n.category1,
-      category2: n.category2,
-      explanation: n.explanation,
+      loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js','firebase-firestore-compat',function(e){
+        if(e){callback(e);return;}
+        addStatus('STEP1-3：firebase-firestore-compat 読込OK');
 
-      savedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-
-    return db.collection('quizResults').doc(resultId).set(saveData,{merge:true}).then(function(){
-      return {resultId: resultId, companyId: userData.companyId, employeeCode: userData.employeeCode || '', savedData: saveData};
+        try{
+          if(!firebase.apps.length){
+            firebase.initializeApp(firebaseConfig);
+          }
+          auth=firebase.auth();
+          db=firebase.firestore();
+          addStatus('STEP1-4：Firebase初期化OK / '+firebaseConfig.projectId);
+          callback(null);
+        }catch(err){
+          callback(err);
+        }
+      });
     });
   });
 }
 
-loadFirebase(function(e){if(e){setStatus(e.message,'error');return;}requireLogin(function(user){try{var raw=localStorage.getItem('currentQuizResult');if(!raw)throw new Error('回答結果が見つかりません。今日の問題から回答してください。');var r=JSON.parse(raw);show(r);setStatus('Firestoreへ保存中...');saveQuizResultClean(user,r).then(function(info){setStatus('回答結果を保存しました。\n保存先：quizResults / '+info.resultId+'\n企業ID：'+info.companyId+'\n社員コード：'+(info.employeeCode || '未設定')+'\n保存データ：整理版（社員コード対応）','ok');}).catch(function(err){setStatus('保存に失敗しました。\n'+err.message,'error');});}catch(err){setStatus('結果の表示に失敗しました。\n'+err.message,'error');}});});
-</script></body></html>
+function todayKey(){
+  var d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function requireLogin(callback){
+  auth.onAuthStateChanged(function(user){
+    if(!user){
+      location.href='login.html';
+      return;
+    }
+    callback(user);
+  });
+}
+
+function firstNonEmpty(){
+  for(var i=0;i<arguments.length;i++){
+    var v=arguments[i];
+    if(v!==undefined && v!==null && String(v).trim()!==''){
+      return String(v).trim();
+    }
+  }
+  return '';
+}
+
+function normalizeChoice(v){
+  return firstNonEmpty(v).toUpperCase();
+}
+
+function isCorrectResult(r){
+  if(r && r.isCorrect === true)return true;
+  if(r && r.isCorrect === false)return false;
+
+  var result=String((r && (r.result || r.judgement || r.resultText)) || '').toLowerCase();
+
+  if(result.indexOf('incorrect')>=0 || result.indexOf('wrong')>=0 || result.indexOf('不正解')>=0 || result.indexOf('×')>=0){
+    return false;
+  }
+
+  if(result.indexOf('correct')>=0 || result.indexOf('正解')>=0 || result.indexOf('○')>=0){
+    return true;
+  }
+
+  var selected=normalizeChoice(r && (r.selectedChoice || r.selectedAnswer || r.userAnswer));
+  var correct=normalizeChoice(r && (r.correctChoice || r.correctAnswer));
+  return !!(selected && correct && selected===correct);
+}
+
+function normalizeResultForDisplay(r){
+  r=r || {};
+
+  var selectedChoice=normalizeChoice(r.selectedChoice || r.selectedAnswer || r.userAnswer);
+  var correctChoice=normalizeChoice(r.correctChoice || r.correctAnswer);
+  var questionText=firstNonEmpty(r.questionText,r.question);
+
+  var base={
+    isCorrect:r.isCorrect,
+    selectedChoice:selectedChoice,
+    correctChoice:correctChoice,
+    result:r.result,
+    judgement:r.judgement,
+    resultText:r.resultText
+  };
+
+  var ok=isCorrectResult(base);
+
+  return {
+    resultId:firstNonEmpty(r.resultId),
+    uid:firstNonEmpty(r.uid),
+    email:firstNonEmpty(r.email),
+    companyId:firstNonEmpty(r.companyId),
+    companyName:firstNonEmpty(r.companyName),
+    name:firstNonEmpty(r.name),
+    employeeCode:firstNonEmpty(r.employeeCode),
+    department:firstNonEmpty(r.department),
+    position:firstNonEmpty(r.position),
+    role:firstNonEmpty(r.role),
+
+    date:firstNonEmpty(r.date,r.dateKey) || todayKey(),
+    dateKey:firstNonEmpty(r.dateKey,r.date) || todayKey(),
+
+    questionId:firstNonEmpty(r.questionId,r.id),
+    questionText:questionText,
+    question:questionText,
+    choiceA:firstNonEmpty(r.choiceA,r.a),
+    choiceB:firstNonEmpty(r.choiceB,r.b),
+    choiceC:firstNonEmpty(r.choiceC,r.c),
+    selectedChoice:selectedChoice,
+    selectedAnswer:selectedChoice,
+    userAnswer:selectedChoice,
+    correctChoice:correctChoice,
+    correctAnswer:correctChoice,
+    category1:firstNonEmpty(r.category1),
+    category2:firstNonEmpty(r.category2),
+    explanation:firstNonEmpty(r.explanation),
+    isCorrect:ok,
+    resultText:ok?'正解':'不正解',
+    result:ok?'correct':'incorrect'
+  };
+}
+
+function showResultMark(r){
+  var hero=document.getElementById('resultHero');
+  var mark=document.getElementById('resultBigMark');
+  if(!mark || !hero)return;
+
+  hero.className='result-hero';
+  var ok=isCorrectResult(r);
+  mark.textContent=ok?'○':'×';
+  mark.className='result-big-mark '+(ok?'correct':'incorrect');
+
+  setTimeout(function(){
+    hero.className='result-hero hidden-after';
+  },1700);
+}
+
+function show(r){
+  var n=normalizeResultForDisplay(r);
+
+  showResultMark(n);
+
+  document.getElementById('q').textContent='問題：'+(n.questionText || '問題文なし');
+  document.getElementById('choices').textContent='選択肢\nA：'+(n.choiceA || '')+'\nB：'+(n.choiceB || '')+'\nC：'+(n.choiceC || '');
+  document.getElementById('ans').textContent='判定：'+n.resultText+'\nあなたの回答：'+(n.selectedChoice || '未取得')+'\n正解：'+(n.correctChoice || '未取得')+'\nカテゴリー：'+(n.category1 || '')+' ＞ '+(n.category2 || '');
+  document.getElementById('exp').textContent='解説：'+(n.explanation || '解説なし');
+  document.getElementById('content').style.display='block';
+}
+
+function readLocalResult(){
+  try{
+    var raw=localStorage.getItem('currentQuizResult');
+    if(!raw)return null;
+    return JSON.parse(raw);
+  }catch(e){
+    console.warn('localStorage currentQuizResult の読込に失敗しました。',e);
+    return null;
+  }
+}
+
+function saveLocalResult(r){
+  try{
+    localStorage.setItem('currentQuizResult',JSON.stringify(r));
+  }catch(e){
+    console.warn('currentQuizResult の保存に失敗しました。',e);
+  }
+}
+
+function getResultId(user,dateKey){
+  return user.uid+'_'+dateKey;
+}
+
+function loadFirestoreResult(user,dateKey){
+  var resultId=getResultId(user,dateKey);
+  return db.collection('quizResults').doc(resultId).get().then(function(doc){
+    if(!doc.exists)return null;
+    var data=doc.data() || {};
+    data.resultId=data.resultId || resultId;
+    return data;
+  });
+}
+
+function buildSaveData(user,userData,r){
+  var n=normalizeResultForDisplay(r);
+  var dateKey=firstNonEmpty(n.dateKey,n.date) || todayKey();
+  var resultId=getResultId(user,dateKey);
+
+  return {
+    resultId:resultId,
+
+    uid:user.uid,
+    email:user.email || userData.email || n.email || '',
+
+    companyId:userData.companyId || n.companyId || '',
+    companyName:userData.companyName || n.companyName || '',
+    name:userData.name || n.name || '',
+    employeeCode:userData.employeeCode || n.employeeCode || '',
+    department:userData.department || n.department || '',
+    position:userData.position || n.position || '',
+    role:userData.role || n.role || 'user',
+
+    date:dateKey,
+    dateKey:dateKey,
+
+    questionId:n.questionId,
+    questionText:n.questionText,
+    question:n.questionText,
+
+    choiceA:n.choiceA,
+    choiceB:n.choiceB,
+    choiceC:n.choiceC,
+
+    selectedChoice:n.selectedChoice,
+    selectedAnswer:n.selectedChoice,
+    userAnswer:n.selectedChoice,
+
+    correctChoice:n.correctChoice,
+    correctAnswer:n.correctChoice,
+
+    isCorrect:n.isCorrect,
+    result:n.result,
+    resultText:n.resultText,
+
+    category1:n.category1,
+    category2:n.category2,
+    explanation:n.explanation,
+
+    savedFrom:'result.html_insurance',
+    savedAt:firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+}
+
+// result.html は表示中心です。
+// quizResults/{uid_日付} が既に存在する場合は再保存しません。
+// 存在しない場合だけ、localStorage の結果を使って保険保存します。
+function insuranceSaveIfMissing(user,r){
+  var n=normalizeResultForDisplay(r);
+  var dateKey=firstNonEmpty(n.dateKey,n.date) || todayKey();
+  var resultId=getResultId(user,dateKey);
+
+  return db.collection('quizResults').doc(resultId).get().then(function(existingDoc){
+    if(existingDoc.exists){
+      return {
+        status:'exists',
+        resultId:resultId,
+        message:'既に保存済みのため、result.html では再保存しません。'
+      };
+    }
+
+    return db.collection('users').doc(user.uid).get().then(function(userDoc){
+      if(!userDoc.exists){
+        throw new Error('users/' + user.uid + ' が見つかりません。Firestore の users にログインユーザーを作成してください。');
+      }
+
+      var userData=userDoc.data() || {};
+
+      if(!userData.companyId){
+        throw new Error('users/' + user.uid + ' に companyId がありません。');
+      }
+
+      var saveData=buildSaveData(user,userData,n);
+
+      return db.collection('quizResults').doc(resultId).set(saveData,{merge:true}).then(function(){
+        return {
+          status:'saved',
+          resultId:resultId,
+          companyId:userData.companyId,
+          employeeCode:userData.employeeCode || ''
+        };
+      });
+    });
+  });
+}
+
+function runResultPage(user){
+  setStatus(
+    'STEP2：結果データを確認中...\n' +
+    'ログインUID：' + user.uid + '\n' +
+    'ログインメール：' + (user.email || '')
+  );
+
+  var localResult=readLocalResult();
+  var localDateKey=localResult ? firstNonEmpty(localResult.dateKey,localResult.date) : '';
+  var targetDateKey=localDateKey || todayKey();
+
+  if(localResult){
+    addStatus('STEP2-1：localStorage の結果を取得しました。');
+    addStatus('対象日：' + targetDateKey);
+    show(localResult);
+
+    insuranceSaveIfMissing(user,localResult).then(function(info){
+      if(info.status==='exists'){
+        setStatus(
+          '結果を表示しました。\n' +
+          '保存先確認：quizResults / ' + info.resultId + '\n' +
+          '状態：既に保存済みのため再保存なし',
+          'ok'
+        );
+      }else{
+        setStatus(
+          '結果を表示しました。\n' +
+          '保険保存を実行しました。\n' +
+          '保存先：quizResults / ' + info.resultId + '\n' +
+          '企業ID：' + info.companyId + '\n' +
+          '社員コード：' + (info.employeeCode || '未設定'),
+          'ok'
+        );
+      }
+    }).catch(function(err){
+      setStatus(
+        '結果は表示しましたが、保存確認または保険保存に失敗しました。\n' +
+        'カレンダーに反映されない場合は Firestore を確認してください。\n\n' +
+        'エラー内容：\n' + err.message,
+        'error'
+      );
+    });
+
+    return;
+  }
+
+  addStatus('STEP2-1：localStorage に結果がありません。Firestore から本日分を復元します。');
+  addStatus('復元対象：quizResults / ' + getResultId(user,targetDateKey));
+
+  loadFirestoreResult(user,targetDateKey).then(function(firestoreResult){
+    if(!firestoreResult){
+      setStatus(
+        '回答結果が見つかりません。\n' +
+        'localStorage に currentQuizResult がなく、Firestore にも本日分がありませんでした。\n\n' +
+        '確認先：quizResults / ' + getResultId(user,targetDateKey) + '\n\n' +
+        '今日の問題から回答してください。',
+        'error'
+      );
+      return;
+    }
+
+    saveLocalResult(firestoreResult);
+    show(firestoreResult);
+    setStatus(
+      'Firestore から結果を復元して表示しました。\n' +
+      '復元元：quizResults / ' + getResultId(user,targetDateKey) + '\n' +
+      '状態：result.html では再保存なし',
+      'ok'
+    );
+  }).catch(function(err){
+    setStatus(
+      'Firestore からの結果復元に失敗しました。\n' +
+      '確認先：quizResults / ' + getResultId(user,targetDateKey) + '\n\n' +
+      'エラー内容：\n' + err.message,
+      'error'
+    );
+  });
+}
+
+loadFirebase(function(e){
+  if(e){
+    setStatus(e.message,'error');
+    return;
+  }
+
+  requireLogin(function(user){
+    runResultPage(user);
+  });
+});
+</script>
+</body>
+</html>
