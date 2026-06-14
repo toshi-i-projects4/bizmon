@@ -42,6 +42,7 @@
     .status.ok { color: #166534; }
     .status.error { color: #dc2626; }
     .small-note { font-size: 13px; color: #6b7280; line-height: 1.6; margin-top: 6px; }
+    .password-count { font-size: 13px; color: #6b7280; line-height: 1.6; margin-top: 6px; }
     @media (max-width: 720px) {
       body { padding: 18px; }
       .header { flex-direction: column; align-items: flex-start; }
@@ -94,7 +95,11 @@
     <div class="card">
       <p class="section-title">パスワード変更</p>
       <div class="info-box">
-        パスワード変更には、現在のパスワードと新しいパスワードを入力します。新しいパスワードは6文字以上で設定してください。
+        パスワードは15文字以上で設定してください。<br>
+        単語をつなげた「パスフレーズ」を推奨しています。<br>
+        例）todayIwillfinishmyworkearly<br><br>
+        ※英大文字・小文字・数字・記号の組み合わせは必須ではありません<br>
+        ※最大128文字まで設定可能です
       </div>
       <div class="form-grid">
         <div class="label">現在のパスワード</div>
@@ -107,16 +112,17 @@
         <div class="label">新しいパスワード</div>
         <div>
           <div class="password-wrap">
-            <input type="password" id="newPassword" autocomplete="new-password" placeholder="新しいパスワードを入力">
+            <input type="password" id="newPassword" autocomplete="new-password" maxlength="128" placeholder="新しいパスワードを入力">
             <button type="button" class="eye-btn" data-target="newPassword" aria-label="パスワードを表示" title="パスワードを表示">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </button>
           </div>
-          <div class="small-note">6文字以上で入力してください。</div>
+          <div class="small-note">15文字以上で入力してください。英大文字・小文字・数字・記号の組み合わせは必須ではありません。</div>
+          <div id="passwordCount" class="password-count">0 / 128文字</div>
         </div>
         <div class="label">新しいパスワード確認</div>
         <div class="password-wrap">
-          <input type="password" id="newPasswordConfirm" autocomplete="new-password" placeholder="新しいパスワードをもう一度入力">
+          <input type="password" id="newPasswordConfirm" autocomplete="new-password" maxlength="128" placeholder="新しいパスワードをもう一度入力">
           <button type="button" class="eye-btn" data-target="newPasswordConfirm" aria-label="パスワードを表示" title="パスワードを表示">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
           </button>
@@ -141,8 +147,16 @@
     const firebaseConfig = {
       apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
       authDomain: "bizmon-31ffc.firebaseapp.com",
-      projectId: "bizmon-31ffc"
+      databaseURL: "https://bizmon-31ffc-default-rtdb.firebaseio.com",
+      projectId: "bizmon-31ffc",
+      storageBucket: "bizmon-31ffc.firebasestorage.app",
+      messagingSenderId: "535364592474",
+      appId: "1:535364592474:web:1f60b1eb2ad804b1a28963",
+      measurementId: "G-CE1ZDBSVM6"
     };
+
+    const PASSWORD_MIN_LENGTH = 15;
+    const PASSWORD_MAX_LENGTH = 128;
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -155,6 +169,7 @@
     const currentPasswordEl = document.getElementById("currentPassword");
     const newPasswordEl = document.getElementById("newPassword");
     const newPasswordConfirmEl = document.getElementById("newPasswordConfirm");
+    const passwordCountEl = document.getElementById("passwordCount");
     const emailStatusEl = document.getElementById("emailStatus");
     const passwordStatusEl = document.getElementById("passwordStatus");
     const updateEmailBtn = document.getElementById("updateEmailBtn");
@@ -175,6 +190,23 @@
       const credential = EmailAuthProvider.credential(currentUser.email, password);
       await reauthenticateWithCredential(currentUser, credential);
     }
+
+    function validateNewPassword(password) {
+      if (!password) return "新しいパスワードを入力してください。";
+      if (password.length < PASSWORD_MIN_LENGTH) return "新しいパスワードは15文字以上で入力してください。";
+      if (password.length > PASSWORD_MAX_LENGTH) return "新しいパスワードは128文字以内で入力してください。";
+      return "";
+    }
+
+    function updatePasswordCount() {
+      const length = newPasswordEl.value.length;
+      passwordCountEl.textContent = `${length} / ${PASSWORD_MAX_LENGTH}文字`;
+      if (length === 0) passwordCountEl.style.color = "#6b7280";
+      else if (length < PASSWORD_MIN_LENGTH) passwordCountEl.style.color = "#dc2626";
+      else passwordCountEl.style.color = "#166534";
+    }
+
+    newPasswordEl.addEventListener("input", updatePasswordCount);
 
     updateEmailBtn.addEventListener("click", async function () {
       const newEmail = newEmailEl.value.trim();
@@ -219,8 +251,9 @@
         setStatus(passwordStatusEl, "現在のパスワード、新しいパスワード、確認用パスワードを入力してください。", "error");
         return;
       }
-      if (newPassword.length < 6) {
-        setStatus(passwordStatusEl, "新しいパスワードは6文字以上で入力してください。", "error");
+      const passwordError = validateNewPassword(newPassword);
+      if (passwordError) {
+        setStatus(passwordStatusEl, passwordError, "error");
         return;
       }
       if (newPassword !== confirmPassword) {
@@ -235,12 +268,13 @@
         currentPasswordEl.value = "";
         newPasswordEl.value = "";
         newPasswordConfirmEl.value = "";
+        updatePasswordCount();
         setStatus(passwordStatusEl, "パスワードを変更しました。次回ログイン時から新しいパスワードを使用してください。", "ok");
       } catch (error) {
         console.error(error);
         let message = "パスワードの変更に失敗しました。入力内容を確認してください。";
         if (error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") message = "現在のパスワードが正しくありません。";
-        if (error.code === "auth/weak-password") message = "新しいパスワードが弱すぎます。6文字以上で設定してください。";
+        if (error.code === "auth/weak-password") message = "新しいパスワードが弱すぎます。15文字以上のパスフレーズを設定してください。";
         if (error.code === "auth/requires-recent-login") message = "安全のため、再ログイン後にもう一度変更してください。";
         setStatus(passwordStatusEl, message, "error");
       } finally {
