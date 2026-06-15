@@ -5,15 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>回答結果</title>
 <style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}.wrap{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{margin:0}.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-link{display:inline-block;margin-top:20px}.status,.box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:14px;line-height:1.7;white-space:pre-wrap}.error{color:#dc2626}.ok{color:#166534}.sub{color:#6b7280;font-size:14px;margin:6px 0 20px}.question-box{background:#eff6ff;border-left:4px solid #2563eb;font-size:20px}.answer-box{background:#f0fdf4;border-left:4px solid #22c55e;color:#166534;font-weight:bold}.explanation-box{background:#fff7ed;border-left:4px solid #f97316;color:#7c2d12}@media(max-width:640px){.header{flex-direction:column;align-items:flex-start}.wrap{padding:24px}}
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}.wrap{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{margin:0}.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-link{display:inline-block;margin-top:20px}.status,.box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:14px;line-height:1.7;white-space:pre-wrap}.error{color:#dc2626}.ok{color:#166534}.sub{color:#6b7280;font-size:14px;margin:6px 0 20px}.question-box{background:#eff6ff;border-left:4px solid #2563eb;font-size:20px}.answer-box{background:#f0fdf4;border-left:4px solid #22c55e;color:#166534;font-weight:bold}.explanation-box{background:#fff7ed;border-left:4px solid #f97316;color:#7c2d12}.blocked{background:#fff7ed;border:1px solid #fed7aa;border-left:5px solid #f97316;color:#7c2d12}@media(max-width:640px){.header{flex-direction:column;align-items:flex-start}.wrap{padding:24px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="header">
-    <h1>回答結果</h1>
-    <a class="top-link" href="index.html">← マイページへ戻る</a>
-  </div>
+  <div class="header"><h1>回答結果</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div>
   <div id="dateText" class="sub"></div>
   <div id="status" class="status">結果を読み込み中...</div>
   <div id="content" style="display:none">
@@ -31,6 +28,12 @@ function setStatus(msg,type){var el=document.getElementById('status');if(!el)ret
 function loadScript(src,label,callback){var s=document.createElement('script');var done=false;var timer=setTimeout(function(){if(done)return;done=true;callback(new Error(label+' の読込がタイムアウトしました。'));},12000);s.onload=function(){if(done)return;done=true;clearTimeout(timer);callback(null);};s.onerror=function(){if(done)return;done=true;clearTimeout(timer);callback(new Error(label+' の読込に失敗しました。'));};s.src=src+'?v='+new Date().getTime();document.head.appendChild(s);}
 function loadFirebase(callback){setStatus('Firebase SDKを読み込み中...');loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js','firebase-app-compat',function(e){if(e){callback(e);return;}loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js','firebase-auth-compat',function(e){if(e){callback(e);return;}loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js','firebase-firestore-compat',function(e){if(e){callback(e);return;}try{if(!firebase.apps.length){firebase.initializeApp(firebaseConfig);}auth=firebase.auth();db=firebase.firestore();callback(null);}catch(err){callback(err);}});});});}
 function requireLogin(callback){auth.onAuthStateChanged(function(user){if(!user){location.href='login.html';return;}callback(user);});}
+function pad2(n){return String(n).padStart(2,'0');}
+function todayKey(){var d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function prevMonthStartKey(){var d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth())+'-01';}
+function normalizeDateKey(s){s=String(s||'').trim();var m=s.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);if(m)return m[1]+'-'+pad2(m[2])+'-'+pad2(m[3]);return s;}
+function canOpenDetail(dateKey){dateKey=normalizeDateKey(dateKey);return /^\d{4}-\d{2}-\d{2}$/.test(dateKey)&&dateKey>=prevMonthStartKey()&&dateKey<=todayKey();}
+function blockedMessage(){return 'この日の問題・解説の詳細表示期間は終了しています。\n詳細表示できるのは「前月1日以降」のデータです。\nカレンダー上の○×履歴は確認できますが、過去の問題・解説が必要な場合は管理者へお問い合わせください。';}
 function parseCsvLine(line){var out=[];var cur='';var q=false;for(var i=0;i<line.length;i++){var ch=line.charAt(i);if(ch==='"'){if(q&&line.charAt(i+1)==='"'){cur+='"';i++;}else{q=!q;}}else if(ch===','&&!q){out.push(cur);cur='';}else{cur+=ch;}}out.push(cur);return out;}
 function normalizeText(v){return String(v||'').replace(/^問題\s*[:：]\s*/,'').replace(/\s+/g,'').trim();}
 function loadQuestionRows(callback){var xhr=new XMLHttpRequest();xhr.open('GET','questions.csv?v='+new Date().getTime(),true);xhr.overrideMimeType('text/plain; charset=UTF-8');xhr.onreadystatechange=function(){if(xhr.readyState!==4)return;if(xhr.status!==200){callback(null,[]);return;}try{var text=xhr.responseText||'';if(text.length>0&&text.charCodeAt(0)===65279)text=text.substring(1);var lines=text.split(/\r?\n/).filter(function(l){return l.trim()!=='';});if(lines.length<=1){callback(null,[]);return;}var header=parseCsvLine(lines[0]).map(function(v){return v.trim().toLowerCase();});var idx={id:header.indexOf('id'),category1:header.indexOf('category1'),category2:header.indexOf('category2'),question:header.indexOf('question'),a:header.indexOf('a'),b:header.indexOf('b'),c:header.indexOf('c'),answer:header.indexOf('answer'),explanation:header.indexOf('explanation'),active:header.indexOf('active')};if(idx.id<0||idx.question<0){callback(null,[]);return;}var rows=[];for(var i=1;i<lines.length;i++){var cols=parseCsvLine(lines[i]);rows.push({id:idx.id>=0?cols[idx.id]:'',category1:idx.category1>=0?cols[idx.category1]:'',category2:idx.category2>=0?cols[idx.category2]:'',question:idx.question>=0?cols[idx.question]:'',a:idx.a>=0?cols[idx.a]:'',b:idx.b>=0?cols[idx.b]:'',c:idx.c>=0?cols[idx.c]:'',answer:idx.answer>=0?String(cols[idx.answer]||'').trim().toUpperCase():'',explanation:idx.explanation>=0?cols[idx.explanation]:'',active:idx.active>=0?String(cols[idx.active]||'true').toLowerCase():'true'});}callback(null,rows);}catch(e){callback(null,[]);}};xhr.onerror=function(){callback(null,[]);};xhr.send();}
@@ -38,95 +41,14 @@ function findQuestionInCsv(saved, rows){if(!rows||!rows.length)return null;var q
 function pick(data, keys){for(var i=0;i<keys.length;i++){var k=keys[i];if(data&&data[k]!==undefined&&data[k]!==null&&String(data[k]).trim()!=='')return data[k];}return '';}
 function isCorrectValue(saved){if(saved&&saved.isCorrect===true)return true;if(saved&&saved.isCorrect===false)return false;var v=String(pick(saved,['result','judgement','judge','resultText'])).toLowerCase();if(v.indexOf('incorrect')>=0||v.indexOf('wrong')>=0||v.indexOf('不正解')>=0||v.indexOf('×')>=0)return false;if(v.indexOf('correct')>=0||v.indexOf('正解')>=0||v.indexOf('○')>=0)return true;var s=String(pick(saved,['selectedChoice','userAnswer','selectedAnswer'])).trim().toUpperCase();var c=String(pick(saved,['correctChoice','correctAnswer','answer'])).trim().toUpperCase();return !!(s&&c&&s===c);}
 function resultTextFromSaved(saved){if(saved&&saved.resultText)return saved.resultText;if(isCorrectValue(saved))return '正解';return '不正解';}
-var targetDate=new URLSearchParams(location.search).get('date')||'';
+var targetDate=normalizeDateKey(new URLSearchParams(location.search).get('date')||'');
 document.getElementById('dateText').textContent=targetDate;
-function show(saved, csvRow){
-  var question=pick(saved,['questionText','question','quizQuestion','title','text','q']) || (csvRow?csvRow.question:'');
-  var choiceA=pick(saved,['choiceA','answerA','a']) || (csvRow?csvRow.a:'');
-  var choiceB=pick(saved,['choiceB','answerB','b']) || (csvRow?csvRow.b:'');
-  var choiceC=pick(saved,['choiceC','answerC','c']) || (csvRow?csvRow.c:'');
-  var selected=pick(saved,['selectedChoice','userAnswer','selectedAnswer','selected','answerText','userAnswerText','yourAnswer']);
-  var correct=pick(saved,['correctChoice','correctAnswer','correct','correctText','rightAnswer','answer']) || (csvRow?csvRow.answer:'');
-  var judgement=resultTextFromSaved(saved);
-  var category1=pick(saved,['category1']) || (csvRow?csvRow.category1:'');
-  var category2=pick(saved,['category2']) || (csvRow?csvRow.category2:'');
-  var explanation=pick(saved,['explanation','commentary','kaisetsu','description','comment']) || (csvRow?csvRow.explanation:'');
-  document.getElementById('q').textContent='問題：'+question;
-  document.getElementById('choices').textContent='選択肢\nA：'+choiceA+'\nB：'+choiceB+'\nC：'+choiceC;
-  document.getElementById('ans').textContent='判定：'+judgement+'\nあなたの回答：'+selected+'\n正解：'+correct+'\nカテゴリー：'+category1+' ＞ '+category2;
-  document.getElementById('exp').textContent='解説：'+explanation;
-  document.getElementById('content').style.display='block';
-  document.getElementById('status').style.display='none';
-}
-
-function normalizeSavedDate(saved){return String((saved&&saved.dateKey)|| (saved&&saved.date) || '').trim();}
-
-function loadResultByDocId(user){
-  return db.collection('quizResults').doc(user.uid+'_'+targetDate).get().then(function(snap){
-    if(!snap.exists)return null;
-    var data=snap.data()||{};
-    data.resultId=data.resultId||snap.id;
-    return data;
-  });
-}
-
-function loadResultBySingleField(user,field){
-  return db.collection('quizResults')
-    .where('uid','==',user.uid)
-    .where(field,'==',targetDate)
-    .limit(1)
-    .get()
-    .then(function(qs){
-      if(qs.empty)return null;
-      var data=qs.docs[0].data()||{};
-      data.resultId=data.resultId||qs.docs[0].id;
-      return data;
-    });
-}
-
-function loadResultByUidScan(user){
-  return db.collection('quizResults')
-    .where('uid','==',user.uid)
-    .get()
-    .then(function(qs){
-      var found=null;
-      qs.forEach(function(docSnap){
-        if(found)return;
-        var data=docSnap.data()||{};
-        var key=normalizeSavedDate(data);
-        if(key===targetDate){
-          data.resultId=data.resultId||docSnap.id;
-          found=data;
-        }
-      });
-      return found;
-    });
-}
-
-function loadResult(user){
-  if(!targetDate){setStatus('日付が指定されていません。','error');return;}
-  setStatus('結果を読み込み中...\n対象日：'+targetDate+'\n確認順：ドキュメントID → dateKey → date → uid全件走査');
-
-  loadResultByDocId(user)
-    .then(function(saved){
-      if(saved)return saved;
-      return loadResultBySingleField(user,'dateKey');
-    })
-    .then(function(saved){
-      if(saved)return saved;
-      return loadResultBySingleField(user,'date');
-    })
-    .then(function(saved){
-      if(saved)return saved;
-      return loadResultByUidScan(user);
-    })
-    .then(function(saved){
-      if(!saved)throw new Error('この日の結果が見つかりませんでした。対象日：'+targetDate);
-      loadQuestionRows(function(e,rows){var csvRow=findQuestionInCsv(saved,rows);show(saved,csvRow);});
-    })
-    .catch(function(err){setStatus('結果の読み込みに失敗しました。\n'+err.message,'error');});
-}
-
+function show(saved, csvRow){var question=pick(saved,['questionText','question','quizQuestion','title','text','q']) || (csvRow?csvRow.question:'');var choiceA=pick(saved,['choiceA','answerA','a']) || (csvRow?csvRow.a:'');var choiceB=pick(saved,['choiceB','answerB','b']) || (csvRow?csvRow.b:'');var choiceC=pick(saved,['choiceC','answerC','c']) || (csvRow?csvRow.c:'');var selected=pick(saved,['selectedChoice','userAnswer','selectedAnswer','selected','answerText','userAnswerText','yourAnswer']);var correct=pick(saved,['correctChoice','correctAnswer','correct','correctText','rightAnswer','answer']) || (csvRow?csvRow.answer:'');var judgement=resultTextFromSaved(saved);var category1=pick(saved,['category1']) || (csvRow?csvRow.category1:'');var category2=pick(saved,['category2']) || (csvRow?csvRow.category2:'');var explanation=pick(saved,['explanation','commentary','kaisetsu','description','comment']) || (csvRow?csvRow.explanation:'');document.getElementById('q').textContent='問題：'+question;document.getElementById('choices').textContent='選択肢\nA：'+choiceA+'\nB：'+choiceB+'\nC：'+choiceC;document.getElementById('ans').textContent='判定：'+judgement+'\nあなたの回答：'+selected+'\n正解：'+correct+'\nカテゴリー：'+category1+' ＞ '+category2;document.getElementById('exp').textContent='解説：'+explanation;document.getElementById('content').style.display='block';document.getElementById('status').style.display='none';}
+function loadCurrentUserData(user){return db.collection('users').doc(user.uid).get().then(function(snap){if(!snap.exists)throw new Error('users/'+user.uid+' が見つかりません。');return snap.data()||{};});}
+function loadResultByDocId(user){return db.collection('quizResults').doc(user.uid+'_'+targetDate).get().then(function(snap){if(!snap.exists)return null;var data=snap.data()||{};data.resultId=data.resultId||snap.id;return data;});}
+function loadResultByDateKey(user,userData){var q=db.collection('quizResults').where('uid','==',user.uid).where('dateKey','==',targetDate).limit(1);if(userData&&userData.companyId){q=db.collection('quizResults').where('companyId','==',userData.companyId).where('uid','==',user.uid).where('dateKey','==',targetDate).limit(1);}return q.get().then(function(qs){if(qs.empty)return null;var data=qs.docs[0].data()||{};data.resultId=data.resultId||qs.docs[0].id;return data;});}
+function loadResultByDate(user,userData){var q=db.collection('quizResults').where('uid','==',user.uid).where('date','==',targetDate).limit(1);if(userData&&userData.companyId){q=db.collection('quizResults').where('companyId','==',userData.companyId).where('uid','==',user.uid).where('date','==',targetDate).limit(1);}return q.get().then(function(qs){if(qs.empty)return null;var data=qs.docs[0].data()||{};data.resultId=data.resultId||qs.docs[0].id;return data;});}
+function loadResult(user){if(!targetDate){setStatus('日付が指定されていません。','error');return;}if(!canOpenDetail(targetDate)){setStatus(blockedMessage()+'\n\n対象日：'+targetDate,'error');return;}setStatus('結果を読み込み中...\n対象日：'+targetDate+'\n確認順：ドキュメントID → dateKey → date');loadCurrentUserData(user).then(function(userData){return loadResultByDocId(user).then(function(saved){if(saved)return saved;return loadResultByDateKey(user,userData);}).then(function(saved){if(saved)return saved;return loadResultByDate(user,userData);});}).then(function(saved){if(!saved)throw new Error('この日の結果が見つかりませんでした。対象日：'+targetDate);loadQuestionRows(function(e,rows){var csvRow=findQuestionInCsv(saved,rows);show(saved,csvRow);});}).catch(function(err){setStatus('結果の読み込みに失敗しました。\n'+err.message,'error');});}
 loadFirebase(function(e){if(e){setStatus(e.message,'error');return;}requireLogin(function(user){loadResult(user);});});
 </script>
 </body>
