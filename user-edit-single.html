@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ユーザー管理（個別）</title>
+<title>ユーザー管理（個別）｜ビズもん</title>
 <style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:1120px;margin:0 auto}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}h1{margin:0;font-size:28px}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:20px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}.section-title{font-size:18px;font-weight:bold;margin:0 0 14px}.description{font-size:14px;line-height:1.7;color:#6b7280;margin:0 0 18px}.info-box{background:#eff6ff;border-left:4px solid #2563eb;border-radius:10px;padding:14px 16px;color:#1e3a8a;font-size:14px;line-height:1.7;margin-bottom:18px;white-space:pre-wrap}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;color:#92400e;font-size:14px;line-height:1.7;margin-top:16px}.form-grid{display:grid;grid-template-columns:220px 1fr;gap:16px 18px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;font-size:15px;box-sizing:border-box;background:#fff;color:#111827}input[readonly]{background:#f9fafb;color:#6b7280}textarea{min-height:96px;resize:vertical;line-height:1.6}.button-row{display:flex;justify-content:flex-end;gap:12px;margin-top:22px;flex-wrap:wrap}.primary-btn,.secondary-btn,.danger-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.secondary-btn{background:#f3f4f6;color:#111827;border:1px solid #d1d5db}.danger-btn{background:#dc2626;color:#fff}.status{min-height:24px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap}.status.ok{color:#166534}.status.error{color:#dc2626}.status.note{color:#374151}.table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px}.data-table{width:100%;border-collapse:collapse;font-size:14px;min-width:900px}.data-table th,.data-table td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top}.data-table th{background:#f9fafb;color:#374151;font-weight:bold}.data-table tr:hover td{background:#f9fafb}.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:bold}.badge.active{background:#dcfce7;color:#166534}.badge.inactive{background:#fee2e2;color:#991b1b}.badge.admin{background:#dbeafe;color:#1e40af}.badge.user{background:#f3f4f6;color:#374151}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{max-width:280px}.confirm-box,.preview-box{background:#fff7ed;border-left:4px solid #f97316;border-radius:10px;padding:14px 16px;color:#7c2d12;font-size:14px;line-height:1.7;margin-top:16px;white-space:pre-wrap}.preview-box{background:#eff6ff;border-left-color:#2563eb;color:#1e3a8a}.hidden{display:none!important}.small{font-size:12px;color:#6b7280;line-height:1.6}.muted{color:#6b7280}.selected-row td{background:#eff6ff!important}@media(max-width:760px){body{padding:18px}.header{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr;gap:8px 0}.button-row{flex-direction:column}.primary-btn,.secondary-btn,.danger-btn{width:100%}.toolbar input,.toolbar select{max-width:none}}
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:1160px;margin:0 auto}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}h1{margin:0;font-size:28px}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:20px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}.section-title{font-size:18px;font-weight:bold;margin:0 0 14px}.description{font-size:14px;line-height:1.7;color:#6b7280;margin:0 0 18px}.info-box{background:#eff6ff;border-left:4px solid #2563eb;border-radius:10px;padding:14px 16px;color:#1e3a8a;font-size:14px;line-height:1.7;margin-bottom:18px;white-space:pre-wrap}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;color:#92400e;font-size:14px;line-height:1.7;margin-top:16px;white-space:pre-wrap}.form-grid{display:grid;grid-template-columns:220px 1fr;gap:16px 18px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;font-size:15px;box-sizing:border-box;background:#fff;color:#111827}input[readonly]{background:#f9fafb;color:#6b7280}textarea{min-height:96px;resize:vertical;line-height:1.6}.invite-textarea{min-height:240px;font-family:"BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff}.button-row{display:flex;justify-content:flex-end;gap:12px;margin-top:22px;flex-wrap:wrap}.primary-btn,.secondary-btn,.danger-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.primary-btn:hover{background:#1d4ed8}.secondary-btn{background:#f3f4f6;color:#111827;border:1px solid #d1d5db}.secondary-btn:hover{background:#e5e7eb}.danger-btn{background:#dc2626;color:#fff}.danger-btn:hover{background:#b91c1c}.primary-btn:disabled,.secondary-btn:disabled,.danger-btn:disabled{opacity:.45;cursor:not-allowed}.status{min-height:24px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap}.status.ok{color:#166534}.status.error{color:#dc2626}.status.note{color:#374151}.table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px}.data-table{width:100%;border-collapse:collapse;font-size:14px;min-width:980px}.data-table th,.data-table td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top;white-space:nowrap}.data-table th{background:#f9fafb;color:#374151;font-weight:bold}.data-table tr:hover td{background:#f9fafb}.selected-row td{background:#eff6ff!important}.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:bold}.badge.pending{background:#fef3c7;color:#92400e}.badge.registered{background:#dcfce7;color:#166534}.badge.cancelled{background:#fee2e2;color:#991b1b}.badge.active{background:#dcfce7;color:#166534}.badge.inactive{background:#fee2e2;color:#991b1b}.badge.admin{background:#dbeafe;color:#1e40af}.badge.user{background:#f3f4f6;color:#374151}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{max-width:300px}.confirm-box,.preview-box{background:#fff7ed;border-left:4px solid #f97316;border-radius:10px;padding:14px 16px;color:#7c2d12;font-size:14px;line-height:1.7;margin-top:16px;white-space:pre-wrap}.preview-box{background:#eff6ff;border-left-color:#2563eb;color:#1e3a8a}.hidden{display:none!important}.small{font-size:12px;color:#6b7280;line-height:1.6}.muted{color:#6b7280}.tab-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.tab-btn{border:1px solid #d1d5db;background:#fff;color:#374151;border-radius:999px;padding:9px 14px;font-weight:bold;cursor:pointer}.tab-btn.active{background:#2563eb;color:#fff;border-color:#2563eb}@media(max-width:760px){body{padding:18px}.header{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr;gap:8px 0}.button-row{flex-direction:column}.primary-btn,.secondary-btn,.danger-btn{width:100%}.toolbar input,.toolbar select{max-width:none;width:100%}}
 </style>
 </head>
 <body style="display:none;">
@@ -14,38 +14,100 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
   <div id="accessStatus" class="info-box">管理者権限を確認中...</div>
 
   <div class="card">
-    <p class="section-title">ユーザー検索・選択</p>
-    <p class="description">自社ユーザーの確認・変更・無効化を行います。履歴保持のため、完全削除ではなく「無効化」を基本にします。</p>
-    <div class="toolbar">
-      <input id="search" placeholder="社員コード・氏名・メール・部署で検索">
-      <select id="filterStatus"><option value="all">すべて</option><option value="active">有効のみ</option><option value="inactive">無効のみ</option></select>
-      <select id="filterRole"><option value="all">権限すべて</option><option value="admin">管理者のみ</option><option value="user">一般のみ</option></select>
-      <button class="secondary-btn" id="reloadBtn" type="button">再読み込み</button>
-      <button class="secondary-btn" id="exportBtn" type="button">CSVダウンロード</button>
+    <p class="section-title">管理対象の切替</p>
+    <p class="description">pendingUsers方式に合わせ、招待中ユーザーと本登録済みユーザーを分けて管理します。新規招待は user-register.html、複数名の招待は user-edit-bulk.html を利用してください。</p>
+    <div class="tab-row">
+      <button class="tab-btn active" type="button" id="showPendingBtn">招待中・初回登録待ち</button>
+      <button class="tab-btn" type="button" id="showUsersBtn">本登録済みユーザー</button>
     </div>
-    <div class="table-wrap"><table class="data-table"><thead><tr><th>選択</th><th>社員コード</th><th>氏名</th><th>メール</th><th>部署</th><th>役職</th><th>権限</th><th>状態</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    <div class="info-box">・招待中ユーザー：pendingUsers の内容を個別に更新・取消できます。
+・本登録済みユーザー：users の部署・役職・権限・状態などを個別に更新できます。
+・この画面では Firebase Authentication の新規作成や削除は行いません。</div>
   </div>
 
-  <div class="card">
-    <p class="section-title">選択中ユーザーの編集</p>
-    <p class="description">既存ユーザーは一覧から選択してください。新規登録する場合は、先に Firebase Authentication にユーザーを作成し、その UID を入力してから保存します。</p>
-    <div class="form-grid">
-      <div class="label">UID</div><input id="uid" placeholder="Firebase Authentication の UID">
-      <div class="label">社員コード</div><input id="employeeCode" placeholder="例：A0001">
-      <div class="label">氏名</div><input id="name" placeholder="例：寺田">
-      <div class="label">メールアドレス</div><input id="email" type="email" placeholder="例：user@example.com">
-      <div class="label">企業ID</div><input id="companyId" readonly>
-      <div class="label">企業名</div><input id="companyName" readonly>
-      <div class="label">部署</div><input id="department" placeholder="例：人事部">
-      <div class="label">役職</div><input id="position" placeholder="例：一般、課長、部長">
-      <div class="label">権限</div><select id="role"><option value="user">一般</option><option value="admin">管理者</option></select>
-      <div class="label">状態</div><select id="statusSelect"><option value="active">有効</option><option value="inactive">無効</option></select>
-      <div class="label">申込者</div><select id="isApplicant"><option value="false">いいえ</option><option value="true">はい</option></select>
-      <div class="label">備考</div><textarea id="note" placeholder="任意入力"></textarea>
+  <div id="pendingSection">
+    <div class="card">
+      <p class="section-title">招待中・登録済み予定者の検索</p>
+      <p class="description">自社の pendingUsers を検索し、選択して編集します。registered のユーザーは本人登録済みのため、この画面では更新・取消できません。</p>
+      <div class="toolbar">
+        <input id="pendingSearch" placeholder="社員コード・氏名・メール・部署で検索">
+        <select id="pendingFilterStatus"><option value="all">すべて</option><option value="pending">招待中</option><option value="registered">登録済み</option><option value="cancelled">取消</option></select>
+        <button class="secondary-btn" id="reloadPendingBtn" type="button">再読み込み</button>
+        <button class="secondary-btn" id="exportPendingBtn" type="button">CSVダウンロード</button>
+      </div>
+      <div class="table-wrap"><table class="data-table"><thead><tr><th>選択</th><th>メール</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>権限</th><th>状態</th><th>登録UID</th></tr></thead><tbody id="pendingTbody"></tbody></table></div>
     </div>
-    <div class="warning-box">注意：この画面で編集できるのは Firestore の users 情報です。Firebase Authentication 側のメールアドレス・パスワード変更や新規Auth作成は、この画面だけでは行いません。</div>
-    <div class="button-row"><button class="secondary-btn" id="newBtn" type="button">新規入力</button><button class="primary-btn" id="saveBtn" type="button">変更を保存</button><button class="danger-btn" id="disableBtn" type="button">無効化する</button></div>
-    <div id="confirmBox" class="confirm-box hidden"></div><div id="status" class="status"></div>
+
+    <div class="card">
+      <p class="section-title">選択中の招待情報を編集</p>
+      <p class="description">pendingUsers の情報を個別に更新します。招待メール文面の再作成もできます。</p>
+      <div class="form-grid">
+        <div class="label">メールアドレス</div><input id="pEmail" readonly>
+        <div class="label">社員コード</div><input id="pEmployeeCode" placeholder="例：B0002">
+        <div class="label">氏名</div><input id="pName" placeholder="例：山田 太郎">
+        <div class="label">企業ID</div><input id="pCompanyId" readonly>
+        <div class="label">企業名</div><input id="pCompanyName" readonly>
+        <div class="label">部署</div><input id="pDepartment" placeholder="例：営業部">
+        <div class="label">役職</div><input id="pPosition" placeholder="例：一般、主任、課長、部長">
+        <div class="label">権限</div><select id="pRole"><option value="user">一般</option><option value="admin">管理者</option></select>
+        <div class="label">申込者</div><select id="pIsApplicant"><option value="false">いいえ</option><option value="true">はい</option></select>
+        <div class="label">状態</div><select id="pStatus"><option value="pending">招待中</option><option value="cancelled">取消</option></select>
+        <div class="label">登録UID</div><input id="pRegisteredUid" readonly>
+        <div class="label">備考</div><textarea id="pNote" placeholder="任意入力"></textarea>
+      </div>
+      <div class="warning-box">registered の招待情報は、本人が初回登録済みのため更新・取消できません。更新が必要な場合は「本登録済みユーザー」側で users 情報を編集してください。</div>
+      <div class="button-row"><button class="secondary-btn" id="pClearBtn" type="button">選択解除</button><button class="secondary-btn" id="pInviteMailBtn" type="button">招待メール文面を作成</button><button class="primary-btn" id="pSaveBtn" type="button">招待情報を保存</button><button class="danger-btn" id="pCancelBtn" type="button">招待を取消</button></div>
+      <div id="pendingConfirmBox" class="confirm-box hidden"></div><div id="pendingStatusMessage" class="status"></div>
+    </div>
+
+    <div class="card hidden" id="inviteMailCard">
+      <p class="section-title">招待メール案内文</p>
+      <p class="description">選択中の招待情報をもとに作成した案内文です。コピーまたはメール作成に使用してください。</p>
+      <div class="form-grid">
+        <div class="label">送信先</div><input id="inviteTo" readonly>
+        <div class="label">件名</div><input id="inviteSubject" readonly>
+        <div class="label">本文</div><textarea id="inviteBody" class="invite-textarea" readonly></textarea>
+      </div>
+      <div class="button-row"><button class="secondary-btn" type="button" id="copyInviteBtn">本文をコピー</button><button class="secondary-btn" type="button" id="mailtoBtn">メールを作成</button></div>
+      <div id="inviteStatus" class="status"></div>
+    </div>
+  </div>
+
+  <div id="usersSection" class="hidden">
+    <div class="card">
+      <p class="section-title">本登録済みユーザーの検索</p>
+      <p class="description">自社 users を検索し、選択して編集します。完全削除ではなく無効化を基本にします。</p>
+      <div class="toolbar">
+        <input id="userSearch" placeholder="社員コード・氏名・メール・部署で検索">
+        <select id="userFilterStatus"><option value="all">すべて</option><option value="active">有効のみ</option><option value="inactive">無効のみ</option></select>
+        <select id="userFilterRole"><option value="all">権限すべて</option><option value="admin">管理者のみ</option><option value="user">一般のみ</option></select>
+        <button class="secondary-btn" id="reloadUsersBtn" type="button">再読み込み</button>
+        <button class="secondary-btn" id="exportUsersBtn" type="button">CSVダウンロード</button>
+      </div>
+      <div class="table-wrap"><table class="data-table"><thead><tr><th>選択</th><th>社員コード</th><th>氏名</th><th>メール</th><th>部署</th><th>役職</th><th>権限</th><th>状態</th></tr></thead><tbody id="usersTbody"></tbody></table></div>
+    </div>
+
+    <div class="card">
+      <p class="section-title">選択中ユーザーの編集</p>
+      <p class="description">本登録済みユーザーの Firestore users 情報を編集します。メールアドレスやUIDは原則変更しない運用を推奨します。</p>
+      <div class="form-grid">
+        <div class="label">UID</div><input id="uUid" readonly>
+        <div class="label">社員コード</div><input id="uEmployeeCode" placeholder="例：B0002">
+        <div class="label">氏名</div><input id="uName" placeholder="例：山田 太郎">
+        <div class="label">メールアドレス</div><input id="uEmail" type="email" readonly>
+        <div class="label">企業ID</div><input id="uCompanyId" readonly>
+        <div class="label">企業名</div><input id="uCompanyName" readonly>
+        <div class="label">部署</div><input id="uDepartment" placeholder="例：営業部">
+        <div class="label">役職</div><input id="uPosition" placeholder="例：一般、主任、課長、部長">
+        <div class="label">権限</div><select id="uRole"><option value="user">一般</option><option value="admin">管理者</option></select>
+        <div class="label">状態</div><select id="uStatus"><option value="active">有効</option><option value="inactive">無効</option></select>
+        <div class="label">申込者</div><select id="uIsApplicant"><option value="false">いいえ</option><option value="true">はい</option></select>
+        <div class="label">備考</div><textarea id="uNote" placeholder="任意入力"></textarea>
+      </div>
+      <div class="warning-box">注意：この画面で編集できるのは Firestore の users 情報です。Firebase Authentication 側のメールアドレス・パスワード変更やAuth削除は行いません。</div>
+      <div class="button-row"><button class="secondary-btn" id="uClearBtn" type="button">選択解除</button><button class="primary-btn" id="uSaveBtn" type="button">変更を保存</button><button class="danger-btn" id="uDisableBtn" type="button">無効化する</button></div>
+      <div id="userConfirmBox" class="confirm-box hidden"></div><div id="userStatusMessage" class="status"></div>
+    </div>
   </div>
 
   <div class="card"><p class="section-title">操作ログ</p><p class="description">この画面を開いている間の操作履歴です。</p><div class="table-wrap"><table class="data-table"><thead><tr><th>日時</th><th>操作</th><th>内容</th></tr></thead><tbody id="logTbody"></tbody></table></div></div>
@@ -55,11 +117,11 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,collection,query,where,getDocs,doc,getDoc,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFirestore,collection,query,where,getDocs,doc,getDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",projectId:"bizmon-31ffc"};
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
 const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFirestore(app);
-let loginUser=null;let loginUserData=null;let allUsers=[];let selectedUid="";let logs=[];
+let loginUser=null;let loginUserData=null;let allPending=[];let allUsers=[];let selectedPendingEmail="";let selectedUserUid="";let logs=[];let pendingCancelConfirm=false;let userDisableConfirm=false;let lastInvite={email:"",subject:"",body:""};
 const $=id=>document.getElementById(id);
 
 function nowText(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0")}
@@ -68,67 +130,54 @@ function normalizeEmail(v){return String(v||"").trim().toLowerCase()}
 function normalizeText(v){return String(v||"").trim()}
 function showPage(message){document.body.style.display="block";$("accessStatus").textContent=message||"管理者権限を確認しました。"}
 function redirectToIndex(message){alert(message||"このページは管理者のみ利用できます。");location.href="index.html"}
-function setStatus(m,t){$("status").textContent=m;$("status").className="status "+(t||"")}
-function statusBadge(status){return String(status)==="inactive"?'<span class="badge inactive">無効</span>':'<span class="badge active">有効</span>'}
-function roleBadge(role){return String(role)==="admin"?'<span class="badge admin">管理者</span>':'<span class="badge user">一般</span>'}
-function csvCell(v){v=String(v==null?"":v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
-function usersToCsv(users){const header=["uid","employeeCode","name","email","companyId","companyName","department","position","role","status","isApplicant","note"];const lines=[header.join(",")];users.forEach(u=>lines.push(header.map(k=>csvCell(u[k]??"")).join(",")));return "\ufeff"+lines.join("\n")}
-function downloadText(filename,text,type){const blob=new Blob([text],{type:type||"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+function setPendingStatus(m,t){$("pendingStatusMessage").textContent=m;$("pendingStatusMessage").className="status "+(t||"")}
+function setUserStatus(m,t){$("userStatusMessage").textContent=m;$("userStatusMessage").className="status "+(t||"")}
+function setInviteStatus(m,t){$("inviteStatus").textContent=m;$("inviteStatus").className="status "+(t||"")}
+function badge(text,type){return `<span class="badge ${type}">${esc(text)}</span>`}
 function addLog(action,detail){logs.unshift({time:nowText(),action,detail});logs=logs.slice(0,100);renderLogs()}
 function renderLogs(){const rows=logs.length?logs.map(l=>`<tr><td>${esc(l.time)}</td><td>${esc(l.action)}</td><td>${esc(l.detail)}</td></tr>`).join(""):'<tr><td colspan="3">操作ログはありません。</td></tr>';$("logTbody").innerHTML=rows}
+function csvCell(v){v=String(v==null?"":v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function downloadText(filename,text,type){const blob=new Blob([text],{type:type||"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+function pendingToCsv(rows){const header=["email","employeeCode","name","companyId","companyName","department","position","role","status","isApplicant","registeredUid","note"];const lines=[header.join(",")];rows.forEach(u=>lines.push(header.map(k=>csvCell(u[k]??"")).join(",")));return "\ufeff"+lines.join("\n")}
+function usersToCsv(rows){const header=["uid","employeeCode","name","email","companyId","companyName","department","position","role","status","isApplicant","note"];const lines=[header.join(",")];rows.forEach(u=>lines.push(header.map(k=>csvCell(u[k]??"")).join(",")));return "\ufeff"+lines.join("\n")}
+function getSignupUrl(){const base=location.origin+location.pathname.replace(/[^\/]*$/,"");return base+"employee-signup.html"}
+function buildInviteMail(data){const signupUrl=getSignupUrl();const loginUrl=location.origin+location.pathname.replace(/[^\/]*$/,"login.html");const subject="【ビズもん】初回登録のお願い";const body=`${data.name} 様\n\nビズもんの初回登録をお願いします。\n\n以下のURLを開き、会社に登録されているメールアドレスで初回登録してください。\n\n${signupUrl}\n\n【登録時のメールアドレス】\n${data.email}\n\nパスワードは15文字以上で設定してください。\n単語をつなげた「パスフレーズ」を推奨しています。\n例）todayIwillfinishmyworkearly\n\n※英大文字・小文字・数字・記号の組み合わせは必須ではありません。\n※最大128文字まで設定可能です。\n\n初回登録後は、以下のログイン画面からログインしてください。\n${loginUrl}\n\nビズもん`;return{email:data.email,subject,body}}
+function showInviteMail(data){lastInvite=buildInviteMail(data);$("inviteTo").value=lastInvite.email;$("inviteSubject").value=lastInvite.subject;$("inviteBody").value=lastInvite.body;$("inviteMailCard").classList.remove("hidden");setInviteStatus("招待メール文面を作成しました。","ok");$("inviteMailCard").scrollIntoView({behavior:"smooth",block:"start"})}
+async function copyInviteBody(){try{await navigator.clipboard.writeText(lastInvite.body);setInviteStatus("招待メール本文をコピーしました。","ok")}catch(e){$("inviteBody").focus();$("inviteBody").select();setInviteStatus("自動コピーできませんでした。本文欄を選択しましたので、手動でコピーしてください。","error")}}
+function openMailto(){if(!lastInvite.email){setInviteStatus("送信先メールアドレスがありません。","error");return}location.href="mailto:"+encodeURIComponent(lastInvite.email)+"?subject="+encodeURIComponent(lastInvite.subject)+"&body="+encodeURIComponent(lastInvite.body);setInviteStatus("メールソフトを起動しました。送信前に内容を確認してください。","note")}
 
-async function checkAdminAccess(user){
-  const snap=await getDoc(doc(db,"users",user.uid));
-  if(!snap.exists()){redirectToIndex("users にログインユーザー情報がありません。");return false}
-  const data=snap.data()||{};
-  if(data.role!=="admin"){redirectToIndex("このページは管理者のみ利用できます。");return false}
-  if(!data.companyId){redirectToIndex("管理者の companyId が未設定です。");return false}
-  loginUser=user;loginUserData=data;
-  showPage("管理者権限を確認しました。\nログイン中："+(user.email||"")+"\n企業："+(data.companyName||data.companyId));
-  $("companyId").value=data.companyId||"";$("companyName").value=data.companyName||"";
-  return true;
-}
+async function checkAdminAccess(user){const snap=await getDoc(doc(db,"users",user.uid));if(!snap.exists()){redirectToIndex("users にログインユーザー情報がありません。");return false}const data=snap.data()||{};if(data.role!=="admin"){redirectToIndex("このページは管理者のみ利用できます。");return false}if(data.status!=="active"){redirectToIndex("無効な管理者アカウントです。");return false}if(!data.companyId){redirectToIndex("管理者の companyId が未設定です。");return false}loginUser=user;loginUserData=data;showPage("管理者権限を確認しました。\nログイン中："+(user.email||"")+"\n企業："+(data.companyName||data.companyId));return true}
 
-async function loadUsers(){
-  setStatus("ユーザー一覧を読み込み中...","note");
-  const q=query(collection(db,"users"),where("companyId","==",loginUserData.companyId));
-  const snap=await getDocs(q);
-  allUsers=[];
-  snap.forEach(ds=>{const d=ds.data()||{};allUsers.push({uid:ds.id,employeeCode:d.employeeCode||d.employeeId||"",name:d.name||"",email:d.email||"",companyId:d.companyId||"",companyName:d.companyName||"",department:d.department||"",position:d.position||"",role:d.role||"user",status:d.status||"active",isApplicant:!!d.isApplicant,note:d.note||""})});
-  allUsers.sort((a,b)=>String(a.employeeCode).localeCompare(String(b.employeeCode),"ja")||String(a.name).localeCompare(String(b.name),"ja"));
-  renderUsers();setStatus("ユーザー一覧を読み込みました。","ok");
-}
+function showTab(tab){const pending=tab==="pending";$("pendingSection").classList.toggle("hidden",!pending);$("usersSection").classList.toggle("hidden",pending);$("showPendingBtn").classList.toggle("active",pending);$("showUsersBtn").classList.toggle("active",!pending)}
+async function loadPendingUsers(){const q=query(collection(db,"pendingUsers"),where("companyId","==",loginUserData.companyId));const snap=await getDocs(q);allPending=[];snap.forEach(ds=>{const d=ds.data()||{};allPending.push({id:ds.id,email:d.email||ds.id,employeeCode:d.employeeCode||"",name:d.name||"",companyId:d.companyId||"",companyName:d.companyName||"",department:d.department||"",position:d.position||"",role:d.role||"user",status:d.status||"pending",isApplicant:d.isApplicant===true,note:d.note||"",registeredUid:d.registeredUid||""})});allPending.sort((a,b)=>String(a.employeeCode).localeCompare(String(b.employeeCode),"ja")||String(a.name).localeCompare(String(b.name),"ja"));renderPendingUsers()}
+async function loadUsers(){const q=query(collection(db,"users"),where("companyId","==",loginUserData.companyId));const snap=await getDocs(q);allUsers=[];snap.forEach(ds=>{const d=ds.data()||{};allUsers.push({uid:ds.id,employeeCode:d.employeeCode||d.employeeId||"",name:d.name||"",email:d.email||"",companyId:d.companyId||"",companyName:d.companyName||"",department:d.department||"",position:d.position||"",role:d.role||"user",status:d.status||"active",isApplicant:d.isApplicant===true,note:d.note||""})});allUsers.sort((a,b)=>String(a.employeeCode).localeCompare(String(b.employeeCode),"ja")||String(a.name).localeCompare(String(b.name),"ja"));renderUsers()}
+async function reloadAll(){await loadPendingUsers();await loadUsers()}
 
-function filteredUsers(){const q=normalizeText($("search").value).toLowerCase();const fs=$("filterStatus").value;const fr=$("filterRole").value;return allUsers.filter(u=>(fs==="all"||u.status===fs)&&(fr==="all"||u.role===fr)&&(!q||[u.employeeCode,u.name,u.email,u.department,u.position].some(v=>String(v||"").toLowerCase().includes(q))))}
-function renderUsers(){const users=filteredUsers();$("tbody").innerHTML=users.length?users.map(u=>`<tr class="${u.uid===selectedUid?'selected-row':''}"><td><button class="secondary-btn" type="button" data-uid="${esc(u.uid)}">選択</button></td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${roleBadge(u.role)}</td><td>${statusBadge(u.status)}</td></tr>`).join(""):'<tr><td colspan="8">該当するユーザーはありません。</td></tr>';document.querySelectorAll("button[data-uid]").forEach(btn=>btn.addEventListener("click",()=>selectUser(btn.dataset.uid)))}
-function selectUser(uid){const u=allUsers.find(x=>x.uid===uid);if(!u)return;selectedUid=uid;$("uid").value=u.uid;$("uid").readOnly=true;$("employeeCode").value=u.employeeCode||"";$("name").value=u.name||"";$("email").value=u.email||"";$("companyId").value=u.companyId||loginUserData.companyId||"";$("companyName").value=u.companyName||loginUserData.companyName||"";$("department").value=u.department||"";$("position").value=u.position||"";$("role").value=u.role||"user";$("statusSelect").value=u.status||"active";$("isApplicant").value=u.isApplicant?"true":"false";$("note").value=u.note||"";$("disableBtn").dataset.confirm="";$("confirmBox").classList.add("hidden");setStatus("選択中："+(u.name||u.email||u.uid),"note");renderUsers()}
-function clearEditor(){selectedUid="";$("uid").readOnly=false;["uid","employeeCode","name","email","department","position","note"].forEach(id=>$(id).value="");$("companyId").value=loginUserData.companyId||"";$("companyName").value=loginUserData.companyName||"";$("role").value="user";$("statusSelect").value="active";$("isApplicant").value="false";$("confirmBox").classList.add("hidden");$("disableBtn").dataset.confirm="";setStatus("新規入力モードです。Auth登録済みUIDを入力してください。","note");renderUsers()}
-function validateInput(data,isNew){if(!data.uid)return "UIDを入力してください。";if(!data.employeeCode)return "社員コードを入力してください。";if(!data.name)return "氏名を入力してください。";if(!data.email)return "メールアドレスを入力してください。";if(!["admin","user"].includes(data.role))return "権限が不正です。";if(!["active","inactive"].includes(data.status))return "状態が不正です。";const dup=allUsers.find(u=>u.uid!==data.uid&&(u.employeeCode===data.employeeCode||normalizeEmail(u.email)===normalizeEmail(data.email)));if(dup)return "社員コードまたはメールアドレスが他のユーザーと重複しています。";return ""}
-async function saveEdit(){
-  const uid=normalizeText($("uid").value);
-  const isNew=!selectedUid;
-  const data={uid,employeeCode:normalizeText($("employeeCode").value),name:normalizeText($("name").value),email:normalizeEmail($("email").value),companyId:loginUserData.companyId,companyName:loginUserData.companyName||"",department:normalizeText($("department").value),position:normalizeText($("position").value),role:$("role").value,status:$("statusSelect").value,isApplicant:$("isApplicant").value==="true",note:normalizeText($("note").value),updatedAt:serverTimestamp(),updatedBy:loginUser.uid};
-  const err=validateInput(data,isNew);if(err){setStatus(err,"error");return}
-  try{
-    setStatus("保存中...","note");
-    const ref=doc(db,"users",uid);
-    if(isNew){data.createdAt=serverTimestamp();data.createdBy=loginUser.uid;await setDoc(ref,data,{merge:false});addLog("個別追加",data.employeeCode+" / "+data.name)}
-    else{await updateDoc(ref,data);addLog("個別更新",data.employeeCode+" / "+data.name)}
-    selectedUid=uid;$("uid").readOnly=true;setStatus("保存しました。","ok");await loadUsers();selectUser(uid);
-  }catch(e){console.error(e);setStatus("保存に失敗しました。\n"+e.message,"error")}
-}
-async function disableUser(){
-  if(!selectedUid){setStatus("無効化するユーザーを選択してください。","error");return}
-  const u=allUsers.find(x=>x.uid===selectedUid);if(!u){setStatus("対象ユーザーが見つかりません。","error");return}
-  $("confirmBox").classList.remove("hidden");$("confirmBox").textContent="確認："+u.employeeCode+" / "+u.name+" を無効化します。完全削除は行いません。もう一度『無効化する』を押すと実行します。";
-  if($("disableBtn").dataset.confirm==="yes"){
-    try{await updateDoc(doc(db,"users",selectedUid),{status:"inactive",updatedAt:serverTimestamp(),updatedBy:loginUser.uid});addLog("無効化",u.employeeCode+" / "+u.name);$("disableBtn").dataset.confirm="";$("confirmBox").classList.add("hidden");setStatus("ユーザーを無効化しました。","ok");await loadUsers();selectUser(selectedUid)}catch(e){console.error(e);setStatus("無効化に失敗しました。\n"+e.message,"error")}
-  }else{$("disableBtn").dataset.confirm="yes";setTimeout(()=>{$("disableBtn").dataset.confirm=""},5000)}
-}
+function filteredPending(){const q=normalizeText($("pendingSearch").value).toLowerCase();const st=$("pendingFilterStatus").value;return allPending.filter(u=>(st==="all"||u.status===st)&&(!q||[u.email,u.employeeCode,u.name,u.department,u.position].some(v=>String(v||"").toLowerCase().includes(q))))}
+function filteredUsers(){const q=normalizeText($("userSearch").value).toLowerCase();const fs=$("userFilterStatus").value;const fr=$("userFilterRole").value;return allUsers.filter(u=>(fs==="all"||u.status===fs)&&(fr==="all"||u.role===fr)&&(!q||[u.uid,u.employeeCode,u.name,u.email,u.department,u.position].some(v=>String(v||"").toLowerCase().includes(q))))}
+function renderPendingUsers(){const rows=filteredPending();$("pendingTbody").innerHTML=rows.length?rows.map(u=>`<tr class="${u.email===selectedPendingEmail?'selected-row':''}"><td><button class="secondary-btn" type="button" data-pemail="${esc(u.email)}">選択</button></td><td>${esc(u.email)}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${badge(u.status,u.status)}</td><td>${esc(u.registeredUid)}</td></tr>`).join(""):'<tr><td colspan="9">該当する招待情報はありません。</td></tr>';document.querySelectorAll("button[data-pemail]").forEach(btn=>btn.addEventListener("click",()=>selectPending(btn.dataset.pemail)))}
+function renderUsers(){const rows=filteredUsers();$("usersTbody").innerHTML=rows.length?rows.map(u=>`<tr class="${u.uid===selectedUserUid?'selected-row':''}"><td><button class="secondary-btn" type="button" data-uid="${esc(u.uid)}">選択</button></td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${u.status==="inactive"?badge("無効","inactive"):badge("有効","active")}</td></tr>`).join(""):'<tr><td colspan="8">該当するユーザーはありません。</td></tr>';document.querySelectorAll("button[data-uid]").forEach(btn=>btn.addEventListener("click",()=>selectUser(btn.dataset.uid)))}
 
-$("saveBtn").addEventListener("click",saveEdit);$("newBtn").addEventListener("click",clearEditor);$("disableBtn").addEventListener("click",disableUser);$("search").addEventListener("input",renderUsers);$("filterStatus").addEventListener("change",renderUsers);$("filterRole").addEventListener("change",renderUsers);$("reloadBtn").addEventListener("click",()=>loadUsers().catch(e=>setStatus("再読み込みに失敗しました。\n"+e.message,"error")));$("exportBtn").addEventListener("click",()=>downloadText("users_"+(loginUserData.companyId||"company")+".csv",usersToCsv(filteredUsers()),"text/csv;charset=utf-8"));renderLogs();
+function clearPendingEditor(){selectedPendingEmail="";["pEmail","pEmployeeCode","pName","pDepartment","pPosition","pRegisteredUid","pNote"].forEach(id=>$(id).value="");$("pCompanyId").value=loginUserData?loginUserData.companyId||"":"";$("pCompanyName").value=loginUserData?loginUserData.companyName||"":"";$("pRole").value="user";$("pIsApplicant").value="false";$("pStatus").value="pending";$("pendingConfirmBox").classList.add("hidden");$("pSaveBtn").disabled=true;$("pCancelBtn").disabled=true;$("pInviteMailBtn").disabled=true;setPendingStatus("招待情報を一覧から選択してください。","note");renderPendingUsers()}
+function selectPending(email){const u=allPending.find(x=>x.email===email);if(!u)return;selectedPendingEmail=email;$("pEmail").value=u.email;$("pEmployeeCode").value=u.employeeCode;$("pName").value=u.name;$("pCompanyId").value=u.companyId;$("pCompanyName").value=u.companyName;$("pDepartment").value=u.department;$("pPosition").value=u.position;$("pRole").value=u.role||"user";$("pIsApplicant").value=u.isApplicant?"true":"false";$("pStatus").value=u.status==="cancelled"?"cancelled":"pending";$("pRegisteredUid").value=u.registeredUid||"";$("pNote").value=u.note||"";const editable=u.status!=="registered";$("pSaveBtn").disabled=!editable;$("pCancelBtn").disabled=!editable;$("pInviteMailBtn").disabled=u.status!=="pending";setPendingStatus(editable?"選択中："+(u.name||u.email):"登録済みのため、この画面では編集できません。","note");renderPendingUsers()}
+function validatePendingInput(data){if(!selectedPendingEmail)return"編集する招待情報を選択してください。";if(!data.employeeCode)return"社員コードを入力してください。";if(!data.name)return"氏名を入力してください。";if(!["user","admin"].includes(data.role))return"権限が不正です。";if(!["pending","cancelled"].includes(data.status))return"状態が不正です。";const dupCode=allPending.find(u=>u.email!==selectedPendingEmail&&u.employeeCode===data.employeeCode&&u.status!=="cancelled");if(dupCode)return"社員コードが他の招待情報と重複しています。";const dupUser=allUsers.find(u=>u.employeeCode===data.employeeCode&&normalizeEmail(u.email)!==normalizeEmail(selectedPendingEmail));if(dupUser)return"社員コードが本登録済みユーザーと重複しています。";return""}
+async function savePending(){const current=allPending.find(u=>u.email===selectedPendingEmail);if(!current){setPendingStatus("対象の招待情報が見つかりません。","error");return}if(current.status==="registered"){setPendingStatus("登録済みの招待情報は編集できません。","error");return}const data={employeeCode:normalizeText($("pEmployeeCode").value),name:normalizeText($("pName").value),companyId:loginUserData.companyId,companyName:loginUserData.companyName||"",department:normalizeText($("pDepartment").value),position:normalizeText($("pPosition").value),role:$("pRole").value,status:$("pStatus").value,isApplicant:$("pIsApplicant").value==="true",note:normalizeText($("pNote").value),updatedAt:serverTimestamp(),updatedBy:loginUser.uid};const err=validatePendingInput(data);if(err){setPendingStatus(err,"error");return}try{setPendingStatus("招待情報を保存中...","note");await updateDoc(doc(db,"pendingUsers",selectedPendingEmail),data);addLog("招待情報更新",selectedPendingEmail+" / "+data.name);setPendingStatus("招待情報を保存しました。","ok");await loadPendingUsers();selectPending(selectedPendingEmail)}catch(e){console.error(e);setPendingStatus("保存に失敗しました。\n"+(e.code||"")+"\n"+(e.message||e),"error")}}
+async function cancelPending(){const current=allPending.find(u=>u.email===selectedPendingEmail);if(!current){setPendingStatus("取消する招待情報を選択してください。","error");return}if(current.status==="registered"){setPendingStatus("登録済みの招待情報は取消できません。","error");return}$("pendingConfirmBox").classList.remove("hidden");$("pendingConfirmBox").textContent="確認："+current.email+" / "+current.name+" の招待を取消します。もう一度『招待を取消』を押すと実行します。";if(!pendingCancelConfirm){pendingCancelConfirm=true;setTimeout(()=>pendingCancelConfirm=false,5000);return}try{await updateDoc(doc(db,"pendingUsers",selectedPendingEmail),{status:"cancelled",note:normalizeText($("pNote").value)||"招待取消",updatedAt:serverTimestamp(),updatedBy:loginUser.uid});addLog("招待取消",current.email+" / "+current.name);pendingCancelConfirm=false;$("pendingConfirmBox").classList.add("hidden");setPendingStatus("招待を取消しました。","ok");await loadPendingUsers();selectPending(selectedPendingEmail)}catch(e){console.error(e);setPendingStatus("取消に失敗しました。\n"+(e.code||"")+"\n"+(e.message||e),"error")}}
+function createInviteForSelected(){const current=allPending.find(u=>u.email===selectedPendingEmail);if(!current){setPendingStatus("招待メールを作成する招待情報を選択してください。","error");return}if(current.status!=="pending"){setPendingStatus("招待メールは status が pending の場合のみ作成できます。","error");return}showInviteMail(current)}
 
-onAuthStateChanged(auth,async user=>{if(!user){location.href="login.html";return}try{const ok=await checkAdminAccess(user);if(ok){await loadUsers();clearEditor()}}catch(e){console.error(e);redirectToIndex("権限確認に失敗しました。もう一度ログインしてください。")}});
+function clearUserEditor(){selectedUserUid="";["uUid","uEmployeeCode","uName","uEmail","uDepartment","uPosition","uNote"].forEach(id=>$(id).value="");$("uCompanyId").value=loginUserData?loginUserData.companyId||"":"";$("uCompanyName").value=loginUserData?loginUserData.companyName||"":"";$("uRole").value="user";$("uStatus").value="active";$("uIsApplicant").value="false";$("userConfirmBox").classList.add("hidden");$("uSaveBtn").disabled=true;$("uDisableBtn").disabled=true;setUserStatus("本登録済みユーザーを一覧から選択してください。","note");renderUsers()}
+function selectUser(uid){const u=allUsers.find(x=>x.uid===uid);if(!u)return;selectedUserUid=uid;$("uUid").value=u.uid;$("uEmployeeCode").value=u.employeeCode||"";$("uName").value=u.name||"";$("uEmail").value=u.email||"";$("uCompanyId").value=u.companyId||loginUserData.companyId||"";$("uCompanyName").value=u.companyName||loginUserData.companyName||"";$("uDepartment").value=u.department||"";$("uPosition").value=u.position||"";$("uRole").value=u.role||"user";$("uStatus").value=u.status||"active";$("uIsApplicant").value=u.isApplicant?"true":"false";$("uNote").value=u.note||"";$("uSaveBtn").disabled=false;$("uDisableBtn").disabled=false;setUserStatus("選択中："+(u.name||u.email||u.uid),"note");renderUsers()}
+function validateUserInput(data){if(!selectedUserUid)return"編集するユーザーを選択してください。";if(!data.employeeCode)return"社員コードを入力してください。";if(!data.name)return"氏名を入力してください。";if(!["user","admin"].includes(data.role))return"権限が不正です。";if(!["active","inactive"].includes(data.status))return"状態が不正です。";const dup=allUsers.find(u=>u.uid!==selectedUserUid&&u.employeeCode===data.employeeCode);if(dup)return"社員コードが他の本登録済みユーザーと重複しています。";return""}
+async function saveUser(){if(!selectedUserUid){setUserStatus("編集するユーザーを選択してください。","error");return}const data={uid:selectedUserUid,employeeCode:normalizeText($("uEmployeeCode").value),name:normalizeText($("uName").value),email:normalizeEmail($("uEmail").value),companyId:loginUserData.companyId,companyName:loginUserData.companyName||"",department:normalizeText($("uDepartment").value),position:normalizeText($("uPosition").value),role:$("uRole").value,status:$("uStatus").value,isApplicant:$("uIsApplicant").value==="true",note:normalizeText($("uNote").value),updatedAt:serverTimestamp(),updatedBy:loginUser.uid};const err=validateUserInput(data);if(err){setUserStatus(err,"error");return}try{setUserStatus("ユーザー情報を保存中...","note");await updateDoc(doc(db,"users",selectedUserUid),data);addLog("ユーザー更新",data.employeeCode+" / "+data.name);setUserStatus("ユーザー情報を保存しました。","ok");await loadUsers();selectUser(selectedUserUid)}catch(e){console.error(e);setUserStatus("保存に失敗しました。\n"+(e.code||"")+"\n"+(e.message||e),"error")}}
+async function disableUser(){const u=allUsers.find(x=>x.uid===selectedUserUid);if(!u){setUserStatus("無効化するユーザーを選択してください。","error");return}$("userConfirmBox").classList.remove("hidden");$("userConfirmBox").textContent="確認："+u.employeeCode+" / "+u.name+" を無効化します。完全削除は行いません。もう一度『無効化する』を押すと実行します。";if(!userDisableConfirm){userDisableConfirm=true;setTimeout(()=>userDisableConfirm=false,5000);return}try{await updateDoc(doc(db,"users",selectedUserUid),{status:"inactive",updatedAt:serverTimestamp(),updatedBy:loginUser.uid});addLog("ユーザー無効化",u.employeeCode+" / "+u.name);userDisableConfirm=false;$("userConfirmBox").classList.add("hidden");setUserStatus("ユーザーを無効化しました。","ok");await loadUsers();selectUser(selectedUserUid)}catch(e){console.error(e);setUserStatus("無効化に失敗しました。\n"+(e.code||"")+"\n"+(e.message||e),"error")}}
+
+$("showPendingBtn").addEventListener("click",()=>showTab("pending"));$("showUsersBtn").addEventListener("click",()=>showTab("users"));
+$("pendingSearch").addEventListener("input",renderPendingUsers);$("pendingFilterStatus").addEventListener("change",renderPendingUsers);$("reloadPendingBtn").addEventListener("click",()=>loadPendingUsers().catch(e=>setPendingStatus("再読み込みに失敗しました。\n"+e.message,"error")));$("exportPendingBtn").addEventListener("click",()=>downloadText("pendingUsers_"+(loginUserData.companyId||"company")+".csv",pendingToCsv(filteredPending()),"text/csv;charset=utf-8"));
+$("pClearBtn").addEventListener("click",clearPendingEditor);$("pSaveBtn").addEventListener("click",savePending);$("pCancelBtn").addEventListener("click",cancelPending);$("pInviteMailBtn").addEventListener("click",createInviteForSelected);$("copyInviteBtn").addEventListener("click",copyInviteBody);$("mailtoBtn").addEventListener("click",openMailto);
+$("userSearch").addEventListener("input",renderUsers);$("userFilterStatus").addEventListener("change",renderUsers);$("userFilterRole").addEventListener("change",renderUsers);$("reloadUsersBtn").addEventListener("click",()=>loadUsers().catch(e=>setUserStatus("再読み込みに失敗しました。\n"+e.message,"error")));$("exportUsersBtn").addEventListener("click",()=>downloadText("users_"+(loginUserData.companyId||"company")+".csv",usersToCsv(filteredUsers()),"text/csv;charset=utf-8"));
+$("uClearBtn").addEventListener("click",clearUserEditor);$("uSaveBtn").addEventListener("click",saveUser);$("uDisableBtn").addEventListener("click",disableUser);renderLogs();showTab("pending");
+
+onAuthStateChanged(auth,async user=>{if(!user){location.href="login.html";return}try{const ok=await checkAdminAccess(user);if(ok){await reloadAll();clearPendingEditor();clearUserEditor()}}catch(e){console.error(e);redirectToIndex("権限確認に失敗しました。もう一度ログインしてください。")}});
 </script>
 </body>
 </html>
