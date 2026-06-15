@@ -1,142 +1,446 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>回答レポート</title>
-<style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}.wrap{max-width:1280px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box}.header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}h1{margin:0;font-size:26px}.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-link{display:inline-block;margin-top:22px}.status{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:16px;line-height:1.7;white-space:pre-wrap}.ok{color:#166534}.error{color:#dc2626}.info-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.info-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px}.info-label{font-size:12px;color:#6b7280;margin-bottom:4px}.info-value{font-size:18px;font-weight:bold}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.tab-btn{border:1px solid #d1d5db;border-radius:999px;padding:10px 18px;font-weight:bold;cursor:pointer;background:#f3f4f6;color:#374151}.tab-btn.active{background:#2563eb;color:#fff;border-color:#2563eb}.filter-box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin:16px 0}.filter-title{font-weight:bold;margin-bottom:12px;color:#374151}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;align-items:end}.control-item label{display:block;font-size:12px;color:#6b7280;font-weight:bold;margin-bottom:5px}input,select{width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;background:#fff}.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:bold;cursor:pointer;background:#2563eb;color:#fff;min-height:40px}.btn.secondary{background:#f3f4f6;color:#111827;border:1px solid #d1d5db}.table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px;margin-top:14px}table{width:100%;border-collapse:collapse;min-width:1080px;background:#fff}th,td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top;font-size:14px;white-space:nowrap}th{background:#f3f4f6;font-weight:bold;color:#374151;position:sticky;top:0;z-index:1}tr:hover td{background:#f9fafb}.question-cell{white-space:normal;min-width:280px;max-width:440px;line-height:1.5}.badge{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:bold;font-size:13px}.badge.ok{background:#dcfce7;color:#166534}.badge.ng{background:#fee2e2;color:#991b1b}.badge.warn{background:#fef3c7;color:#92400e}.empty{text-align:center;padding:28px;color:#6b7280}.note{font-size:12px;color:#6b7280;margin-top:10px;line-height:1.6}.hidden{display:none!important}@media(max-width:640px){body{padding:14px}.wrap{padding:20px;margin:12px auto}h1{font-size:22px}.btn-row{display:grid}.btn{width:100%}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ビズもん｜レポート</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --warning-bg: #fff7ed;
+      --warning-border: #fdba74;
+      --warning-text: #9a3412;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    header h1 { margin: 0; font-size: 20px; }
+    header .sub { color: var(--muted); font-size: 13px; }
+    main { max-width: 1180px; margin: 20px auto; padding: 0 16px 40px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; align-items: end; }
+    .col-2 { grid-column: span 2; }
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-12 { grid-column: span 12; }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 14px;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { background: var(--primary-dark); }
+    button.secondary { background: #374151; }
+    button.ghost { background: #e5e7eb; color: #111827; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .notice {
+      border: 1px solid var(--warning-border);
+      background: var(--warning-bg);
+      color: var(--warning-text);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .muted { color: var(--muted); font-size: 13px; }
+    .error { color: var(--danger); font-weight: 700; }
+    .success { color: var(--success); font-weight: 700; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .stat { background: #f9fafb; border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+    .stat .label { color: var(--muted); font-size: 13px; }
+    .stat .value { font-size: 26px; font-weight: 800; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 10px 8px; text-align: left; vertical-align: top; }
+    th { background: #f9fafb; color: #374151; position: sticky; top: 0; z-index: 1; }
+    .table-wrap { max-height: 560px; overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .pill-ok { background: #dcfce7; color: #166534; }
+    .pill-ng { background: #fee2e2; color: #991b1b; }
+    .hidden { display: none !important; }
+    @media (max-width: 780px) {
+      .col-2, .col-3, .col-4, .col-6 { grid-column: span 12; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      header { align-items: flex-start; }
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="header"><h1>回答レポート</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div>
-  <div id="status" class="status">レポートを読み込み中...</div>
+  <header>
+    <div>
+      <h1>ビズもん｜レポート</h1>
+      <div class="sub">取得範囲を制限して Firestore 読み取り数を抑える本番向け版</div>
+    </div>
+    <div class="muted" id="loginInfo">ログイン確認中...</div>
+  </header>
 
-  <div class="info-row" id="summary" style="display:none;">
-    <div class="info-card"><div class="info-label">企業</div><div class="info-value" id="companyName">-</div></div>
-    <div class="info-card"><div class="info-label" id="countLabel">表示件数</div><div class="info-value" id="totalCount">0</div></div>
-    <div class="info-card"><div class="info-label" id="subCountLabel">正解数</div><div class="info-value" id="correctCount">0</div></div>
-    <div class="info-card"><div class="info-label" id="rateLabel">正解率</div><div class="info-value" id="correctRate">0%</div></div>
-  </div>
-
-  <div class="tabs" id="tabs" style="display:none;">
-    <button class="tab-btn active" id="answeredTab" type="button">回答結果一覧</button>
-    <button class="tab-btn" id="unansweredTab" type="button">未回答者一覧</button>
-  </div>
-
-  <section id="answeredSection">
-    <div class="filter-box" id="answeredFilterBox" style="display:none;">
-      <div class="filter-title">回答結果の絞り込み条件</div>
-      <div class="controls">
-        <div class="control-item"><label for="startDate">開始日</label><input id="startDate" type="date"></div>
-        <div class="control-item"><label for="endDate">終了日</label><input id="endDate" type="date"></div>
-        <div class="control-item"><label for="departmentFilter">部署</label><select id="departmentFilter"><option value="all">すべて</option></select></div>
-        <div class="control-item"><label for="positionFilter">役職</label><select id="positionFilter"><option value="all">すべて</option></select></div>
-        <div class="control-item"><label for="resultFilter">判定</label><select id="resultFilter"><option value="all">すべて</option><option value="correct">正解のみ</option><option value="incorrect">不正解のみ</option></select></div>
-        <div class="control-item"><label for="searchInput">検索</label><input id="searchInput" type="text" placeholder="社員コード・氏名・問題で検索"></div>
-        <div class="control-item"><label>&nbsp;</label><div class="btn-row"><button class="btn" id="applyBtn" type="button">表示更新</button><button class="btn secondary" id="clearBtn" type="button">条件クリア</button><button class="btn secondary" id="reloadBtn" type="button">再読み込み</button><button class="btn" id="csvBtn" type="button">CSVダウンロード</button></div></div>
+  <main>
+    <section class="card">
+      <div class="notice">
+        <strong>表示ルール：</strong><br>
+        通常画面で取得できるデータは「今月」または「前月」を基本とします。任意期間は最大100日までですが、2か月以前の詳細データ・長期間CSVは別途出力対応の対象です。
       </div>
-    </div>
-    <div class="table-wrap" id="answeredTableWrap" style="display:none;">
-      <table><thead><tr><th>回答日</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>カテゴリー</th><th>問題</th><th>回答</th><th>正解</th><th>判定</th></tr></thead><tbody id="resultBody"></tbody></table>
-    </div>
-  </section>
+    </section>
 
-  <section id="unansweredSection" class="hidden">
-    <div class="filter-box" id="unansweredFilterBox">
-      <div class="filter-title">未回答者の絞り込み条件</div>
-      <div class="controls">
-        <div class="control-item"><label for="targetDate">対象日</label><input id="targetDate" type="date"></div>
-        <div class="control-item"><label for="unansweredDepartmentFilter">部署</label><select id="unansweredDepartmentFilter"><option value="all">すべて</option></select></div>
-        <div class="control-item"><label for="unansweredPositionFilter">役職</label><select id="unansweredPositionFilter"><option value="all">すべて</option></select></div>
-        <div class="control-item"><label for="unansweredSearchInput">検索</label><input id="unansweredSearchInput" type="text" placeholder="社員コード・氏名・メールで検索"></div>
-        <div class="control-item"><label>&nbsp;</label><div class="btn-row"><button class="btn" id="unansweredApplyBtn" type="button">表示更新</button><button class="btn secondary" id="unansweredClearBtn" type="button">条件クリア</button><button class="btn secondary" id="unansweredReloadBtn" type="button">再読み込み</button><button class="btn" id="unansweredCsvBtn" type="button">CSVダウンロード</button></div></div>
+    <section class="card">
+      <div class="grid">
+        <div class="col-3">
+          <label for="periodPreset">期間</label>
+          <select id="periodPreset">
+            <option value="thisMonth">今月</option>
+            <option value="prevMonth">前月</option>
+            <option value="last30">直近30日</option>
+            <option value="last90">直近90日</option>
+            <option value="custom">任意指定（最大100日）</option>
+          </select>
+        </div>
+        <div class="col-3">
+          <label for="startDate">開始日</label>
+          <input type="date" id="startDate" />
+        </div>
+        <div class="col-3">
+          <label for="endDate">終了日</label>
+          <input type="date" id="endDate" />
+        </div>
+        <div class="col-3">
+          <button id="loadBtn">検索</button>
+          <button id="csvBtn" class="secondary" disabled>CSV出力</button>
+        </div>
+        <div class="col-12 muted" id="periodHelp"></div>
+        <div class="col-12 error hidden" id="errorBox"></div>
       </div>
-      <div class="note">※対象日の quizResults に回答が存在しない active ユーザーを未回答者として表示します。</div>
-    </div>
-    <div class="table-wrap" id="unansweredTableWrap">
-      <table><thead><tr><th>対象日</th><th>社員コード</th><th>氏名</th><th>メール</th><th>部署</th><th>役職</th><th>権限</th><th>状態</th></tr></thead><tbody id="unansweredBody"></tbody></table>
-    </div>
-  </section>
+    </section>
 
-  <a class="bottom-link" href="index.html">← マイページへ戻る</a>
-</div>
+    <section class="stats" id="statsBox">
+      <div class="stat"><div class="label">回答数</div><div class="value" id="totalCount">-</div></div>
+      <div class="stat"><div class="label">正解数</div><div class="value" id="correctCount">-</div></div>
+      <div class="stat"><div class="label">不正解数</div><div class="value" id="incorrectCount">-</div></div>
+      <div class="stat"><div class="label">正答率</div><div class="value" id="correctRate">-</div></div>
+    </section>
 
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,collection,query,where,getDocs,doc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",projectId:"bizmon-31ffc"};
-const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFirestore(app);
-let currentUserData=null, allResults=[], filteredResults=[], allUsers=[], filteredUnanswered=[], currentMode='answered';
-const $=id=>document.getElementById(id);
-function setStatus(msg,type){const el=$('status');el.textContent=msg;el.className='status '+(type||'');}
-function escapeHtml(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function formatDateValue(value,fallback){if(value&&typeof value.toDate==='function'){const d=value.toDate();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}return fallback||'';}
-function toDateKeyFromTimestamp(value,fallback){if(value&&typeof value.toDate==='function'){const d=value.toDate();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}return fallback||'';}
-function firstNonEmpty(){for(let i=0;i<arguments.length;i++){const v=arguments[i];if(v!==undefined&&v!==null&&String(v).trim()!=='')return String(v).trim();}return '';}
-function normalizeChoice(v){return firstNonEmpty(v).toUpperCase();}
-function judgeCorrect(d){
-  d=d||{};
-  if(d.isCorrect===true)return true;
-  if(d.isCorrect===false)return false;
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+        <h2 style="font-size:18px;margin:0;">回答明細</h2>
+        <div class="muted" id="resultInfo">検索すると表示されます</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>氏名</th>
+              <th>社員番号</th>
+              <th>メール</th>
+              <th>カテゴリ</th>
+              <th>問題ID</th>
+              <th>正誤</th>
+            </tr>
+          </thead>
+          <tbody id="resultBody">
+            <tr><td colspan="7" class="muted">まだデータを取得していません。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-  const result=String(firstNonEmpty(d.result,d.resultText,d.judgement,d.judge)).toLowerCase();
-  if(result.includes('incorrect')||result.includes('wrong')||result.includes('不正解')||result.includes('×'))return false;
-  if(result.includes('correct')||result.includes('正解')||result.includes('○'))return true;
+    <section class="card">
+      <h2 style="font-size:18px;margin-top:0;">過去データ出力について</h2>
+      <p class="muted" style="line-height:1.8;">
+        2か月以前の詳細データや長期間のCSV出力が必要な場合は、運営側で別途出力して提供する運用を想定しています。
+        画面から常時全件取得しないことで、Firestore の読み取り数と運用コストを抑えます。
+      </p>
+      <button class="ghost" id="copyRequestBtn">過去データ出力依頼文をコピー</button>
+      <div class="success hidden" id="copyMsg" style="margin-top:8px;">コピーしました。</div>
+    </section>
+  </main>
 
-  const selected=normalizeChoice(d.selectedChoice||d.selectedAnswer||d.userAnswer||d.selected||d.answerText||d.userAnswerText||d.yourAnswer);
-  const correct=normalizeChoice(d.correctChoice||d.correctAnswer||d.correct||d.rightAnswer);
-  return !!(selected&&correct&&selected===correct);
-}
-function resultTextOf(d){return judgeCorrect(d)?'正解':'不正解';}
-function normalizeResult(ds){
-  const d=ds.data()||{};
-  const dateKey=firstNonEmpty(d.dateKey,d.date,toDateKeyFromTimestamp(d.savedAt,''));
-  const isCorrect=judgeCorrect(d);
-  return {
-    id:ds.id,
-    uid:d.uid||'',
-    dateKey,
-    savedAtText:formatDateValue(d.savedAt,dateKey),
-    employeeCode:d.employeeCode||'',
-    name:d.name||'',
-    department:d.department||'',
-    position:d.position||'',
-    category:(d.category1||'')+(d.category2?' ＞ '+d.category2:''),
-    question:d.questionText||d.question||'',
-    selectedAnswer:firstNonEmpty(d.selectedAnswer,d.selectedChoice,d.userAnswer,d.selected,d.answerText,d.userAnswerText,d.yourAnswer),
-    correctAnswer:firstNonEmpty(d.correctAnswer,d.correctChoice,d.correct,d.rightAnswer),
-    isCorrect:isCorrect,
-    result:d.result || (isCorrect?'correct':'incorrect'),
-    resultText:d.resultText || resultTextOf(d),
-    companyId:d.companyId||'',
-    companyName:d.companyName||''
-  };
-}
-function normalizeUser(ds){const d=ds.data()||{};return {uid:ds.id,employeeCode:d.employeeCode||d.employeeId||'',name:d.name||'',email:d.email||'',department:d.department||'',position:d.position||'',role:d.role||'user',status:d.status||'active',companyId:d.companyId||'',companyName:d.companyName||''};}
-async function loadCurrentUser(user){const snap=await getDoc(doc(db,'users',user.uid));if(!snap.exists())throw new Error('users/'+user.uid+' が見つかりません。');const data=snap.data()||{};if(data.role!=='admin')throw new Error('このレポート画面は管理者のみ利用できます。現在のrole：'+(data.role||'未設定'));if(!data.companyId)throw new Error('users/'+user.uid+' に companyId がありません。');currentUserData=data;return data;}
-async function loadReportData(){setStatus('回答結果とユーザー情報を読み込み中...');const companyId=currentUserData.companyId;const [rs,us]=await Promise.all([getDocs(query(collection(db,'quizResults'),where('companyId','==',companyId))),getDocs(query(collection(db,'users'),where('companyId','==',companyId)))]);allResults=[];rs.forEach(ds=>allResults.push(normalizeResult(ds)));allResults.sort((a,b)=>String(b.dateKey).localeCompare(String(a.dateKey),'ja')||String(a.employeeCode).localeCompare(String(b.employeeCode),'ja'));allUsers=[];us.forEach(ds=>allUsers.push(normalizeUser(ds)));allUsers.sort((a,b)=>String(a.employeeCode).localeCompare(String(b.employeeCode),'ja')||String(a.name).localeCompare(String(b.name),'ja'));populateSelects();applyFilters();applyUnansweredFilters();$('summary').style.display='grid';$('tabs').style.display='flex';$('answeredFilterBox').style.display='block';$('answeredTableWrap').style.display='block';setStatus('回答結果とユーザー情報を読み込みました。','ok');}
-function uniqueValues(list,key){const set={};list.forEach(r=>{const v=(r[key]||'').trim();if(v)set[v]=true;});return Object.keys(set).sort((a,b)=>a.localeCompare(b,'ja'));}
-function setSelectOptions(id,values){const s=$(id);const cur=s.value;s.innerHTML='<option value="all">すべて</option>'+values.map(v=>'<option value="'+escapeHtml(v)+'">'+escapeHtml(v)+'</option>').join('');s.value=values.includes(cur)?cur:'all';}
-function populateSelects(){setSelectOptions('departmentFilter',uniqueValues(allResults,'department'));setSelectOptions('positionFilter',uniqueValues(allResults,'position'));setSelectOptions('unansweredDepartmentFilter',uniqueValues(allUsers,'department'));setSelectOptions('unansweredPositionFilter',uniqueValues(allUsers,'position'));if(!$('targetDate').value)$('targetDate').value=todayKey();}
-function applyFilters(){const keyword=($('searchInput').value||'').trim().toLowerCase();const resultFilter=$('resultFilter').value, department=$('departmentFilter').value, position=$('positionFilter').value, startDate=$('startDate').value, endDate=$('endDate').value;filteredResults=allResults.filter(r=>{const text=[r.employeeCode,r.name,r.department,r.position,r.category,r.question,r.selectedAnswer,r.correctAnswer,r.resultText,r.result].join(' ').toLowerCase();return (!keyword||text.includes(keyword))&&(resultFilter==='all'||(resultFilter==='correct'?r.isCorrect===true:r.isCorrect===false))&&(department==='all'||r.department===department)&&(position==='all'||r.position===position)&&(!startDate||String(r.dateKey)>=startDate)&&(!endDate||String(r.dateKey)<=endDate);});renderTable();if(currentMode==='answered')renderSummary();}
-function clearFilters(){$('startDate').value='';$('endDate').value='';$('departmentFilter').value='all';$('positionFilter').value='all';$('resultFilter').value='all';$('searchInput').value='';applyFilters();}
-function getAnsweredUidSetForDate(dateKey){const set={};allResults.forEach(r=>{if(r.dateKey===dateKey&&r.uid)set[r.uid]=true;});return set;}
-function applyUnansweredFilters(){const target=$('targetDate').value||todayKey();const department=$('unansweredDepartmentFilter').value, position=$('unansweredPositionFilter').value, keyword=($('unansweredSearchInput').value||'').trim().toLowerCase();const answeredSet=getAnsweredUidSetForDate(target);filteredUnanswered=allUsers.filter(u=>{const text=[u.employeeCode,u.name,u.email,u.department,u.position,u.role,u.status].join(' ').toLowerCase();return u.status==='active'&&!answeredSet[u.uid]&&(department==='all'||u.department===department)&&(position==='all'||u.position===position)&&(!keyword||text.includes(keyword));});renderUnansweredTable();if(currentMode==='unanswered')renderSummary();}
-function clearUnansweredFilters(){$('targetDate').value=todayKey();$('unansweredDepartmentFilter').value='all';$('unansweredPositionFilter').value='all';$('unansweredSearchInput').value='';applyUnansweredFilters();}
-function renderSummary(){$('companyName').textContent=currentUserData.companyName||currentUserData.companyId||'-';if(currentMode==='answered'){const total=filteredResults.length;const correct=filteredResults.filter(r=>r.isCorrect===true).length;const rate=total?Math.round(correct/total*100):0;$('countLabel').textContent='表示件数';$('subCountLabel').textContent='正解数';$('rateLabel').textContent='正解率';$('totalCount').textContent=String(total);$('correctCount').textContent=String(correct);$('correctRate').textContent=rate+'%';}else{const target=$('targetDate').value||todayKey();const activeUsers=allUsers.filter(u=>u.status==='active');const answeredSet=getAnsweredUidSetForDate(target);const answeredCount=Object.keys(answeredSet).filter(uid=>activeUsers.some(u=>u.uid===uid)).length;const denominator=activeUsers.length;const answerRate=denominator?Math.round(answeredCount/denominator*100):0;$('countLabel').textContent='未回答者数';$('subCountLabel').textContent='対象activeユーザー';$('rateLabel').textContent='回答率';$('totalCount').textContent=String(filteredUnanswered.length);$('correctCount').textContent=String(denominator);$('correctRate').textContent=answerRate+'%';}}
-function renderTable(){const body=$('resultBody');if(!filteredResults.length){body.innerHTML='<tr><td colspan="10" class="empty">表示できる回答結果がありません。</td></tr>';return;}body.innerHTML=filteredResults.map(r=>'<tr><td>'+escapeHtml(r.savedAtText||r.dateKey)+'</td><td>'+escapeHtml(r.employeeCode)+'</td><td>'+escapeHtml(r.name)+'</td><td>'+escapeHtml(r.department)+'</td><td>'+escapeHtml(r.position)+'</td><td>'+escapeHtml(r.category)+'</td><td class="question-cell">'+escapeHtml(r.question)+'</td><td>'+escapeHtml(r.selectedAnswer)+'</td><td>'+escapeHtml(r.correctAnswer)+'</td><td><span class="badge '+(r.isCorrect?'ok':'ng')+'">'+escapeHtml(r.resultText)+'</span></td></tr>').join('');}
-function renderUnansweredTable(){const body=$('unansweredBody');const target=$('targetDate').value||todayKey();if(!filteredUnanswered.length){body.innerHTML='<tr><td colspan="8" class="empty">未回答者はいません。</td></tr>';return;}body.innerHTML=filteredUnanswered.map(u=>'<tr><td>'+escapeHtml(target)+'</td><td>'+escapeHtml(u.employeeCode)+'</td><td>'+escapeHtml(u.name)+'</td><td>'+escapeHtml(u.email)+'</td><td>'+escapeHtml(u.department)+'</td><td>'+escapeHtml(u.position)+'</td><td>'+escapeHtml(u.role==='admin'?'管理者':'一般')+'</td><td><span class="badge warn">未回答</span></td></tr>').join('');}
-function csvEscape(v){const s=String(v==null?'':v);return '"'+s.replace(/"/g,'""')+'"';}
-function downloadCsv(filename,header,rows){const csv=[header].concat(rows).map(row=>row.map(csvEscape).join(',')).join('\r\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}
-function downloadCsvAnswered(){const header=['回答日','社員コード','氏名','部署','役職','カテゴリー','問題','回答','正解','判定'];const rows=filteredResults.map(r=>[r.savedAtText||r.dateKey,r.employeeCode,r.name,r.department,r.position,r.category,r.question,r.selectedAnswer,r.correctAnswer,r.resultText]);downloadCsv('quiz_report_'+(currentUserData.companyId||'company')+'_'+todayKey().replaceAll('-','')+'.csv',header,rows);}
-function downloadCsvUnanswered(){const target=$('targetDate').value||todayKey();const header=['対象日','社員コード','氏名','メール','部署','役職','権限','状態'];const rows=filteredUnanswered.map(u=>[target,u.employeeCode,u.name,u.email,u.department,u.position,u.role==='admin'?'管理者':'一般','未回答']);downloadCsv('quiz_unanswered_'+(currentUserData.companyId||'company')+'_'+target.replaceAll('-','')+'.csv',header,rows);}
-function switchMode(mode){currentMode=mode;$('answeredTab').classList.toggle('active',mode==='answered');$('unansweredTab').classList.toggle('active',mode==='unanswered');$('answeredSection').classList.toggle('hidden',mode!=='answered');$('unansweredSection').classList.toggle('hidden',mode!=='unanswered');renderSummary();}
-$('answeredTab').addEventListener('click',()=>switchMode('answered'));$('unansweredTab').addEventListener('click',()=>switchMode('unanswered'));$('applyBtn').addEventListener('click',applyFilters);$('clearBtn').addEventListener('click',clearFilters);$('reloadBtn').addEventListener('click',()=>loadReportData().catch(e=>setStatus('レポートの再読み込みに失敗しました。\n'+e.message,'error')));$('csvBtn').addEventListener('click',downloadCsvAnswered);$('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')applyFilters();});['resultFilter','departmentFilter','positionFilter','startDate','endDate'].forEach(id=>$(id).addEventListener('change',applyFilters));$('unansweredApplyBtn').addEventListener('click',applyUnansweredFilters);$('unansweredClearBtn').addEventListener('click',clearUnansweredFilters);$('unansweredReloadBtn').addEventListener('click',()=>loadReportData().catch(e=>setStatus('未回答者一覧の再読み込みに失敗しました。\n'+e.message,'error')));$('unansweredCsvBtn').addEventListener('click',downloadCsvUnanswered);$('unansweredSearchInput').addEventListener('keydown',e=>{if(e.key==='Enter')applyUnansweredFilters();});['targetDate','unansweredDepartmentFilter','unansweredPositionFilter'].forEach(id=>$(id).addEventListener('change',applyUnansweredFilters));
-onAuthStateChanged(auth,async user=>{if(!user){location.href='login.html';return;}try{await loadCurrentUser(user);await loadReportData();}catch(e){setStatus('レポートの読み込みに失敗しました。\n'+e.message,'error');}});
-</script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // TODO: 既存のビズもん Firebase 設定に置き換えてください。
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const MAX_CUSTOM_DAYS = 100;
+    let currentUser = null;
+    let currentUserData = null;
+    let currentCompanyId = null;
+    let loadedRows = [];
+
+    const $ = (id) => document.getElementById(id);
+    const pad2 = (n) => String(n).padStart(2, "0");
+    const toDateKey = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    const parseDateKey = (s) => {
+      const [y, m, d] = s.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    };
+    const addDays = (d, days) => {
+      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      x.setDate(x.getDate() + days);
+      return x;
+    };
+    const daysDiffInclusive = (startKey, endKey) => {
+      const s = parseDateKey(startKey);
+      const e = parseDateKey(endKey);
+      return Math.floor((e - s) / 86400000) + 1;
+    };
+    const getThisMonthRange = () => {
+      const now = new Date();
+      return { start: toDateKey(new Date(now.getFullYear(), now.getMonth(), 1)), end: toDateKey(now) };
+    };
+    const getPrevMonthRange = () => {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const end = new Date(now.getFullYear(), now.getMonth(), 0);
+      return { start: toDateKey(start), end: toDateKey(end) };
+    };
+    const getLastDaysRange = (days) => {
+      const now = new Date();
+      return { start: toDateKey(addDays(now, -(days - 1))), end: toDateKey(now) };
+    };
+
+    function setError(message) {
+      if (!message) { $("errorBox").classList.add("hidden"); $("errorBox").textContent = ""; return; }
+      $("errorBox").textContent = message;
+      $("errorBox").classList.remove("hidden");
+    }
+
+    function applyPreset() {
+      const preset = $("periodPreset").value;
+      let range;
+      if (preset === "thisMonth") range = getThisMonthRange();
+      if (preset === "prevMonth") range = getPrevMonthRange();
+      if (preset === "last30") range = getLastDaysRange(30);
+      if (preset === "last90") range = getLastDaysRange(90);
+      if (preset === "custom") {
+        $("startDate").disabled = false;
+        $("endDate").disabled = false;
+        $("periodHelp").textContent = "任意指定は最大100日までです。長期間データは別途出力対応としてください。";
+        return;
+      }
+      $("startDate").value = range.start;
+      $("endDate").value = range.end;
+      $("startDate").disabled = true;
+      $("endDate").disabled = true;
+      $("periodHelp").textContent = `${range.start} ～ ${range.end} の範囲だけを Firestore から取得します。`;
+      setError("");
+    }
+
+    function validatePeriod() {
+      const start = $("startDate").value;
+      const end = $("endDate").value;
+      if (!start || !end) return "開始日と終了日を指定してください。";
+      if (start > end) return "開始日は終了日以前の日付にしてください。";
+      const days = daysDiffInclusive(start, end);
+      if (days > MAX_CUSTOM_DAYS) return `取得期間は最大${MAX_CUSTOM_DAYS}日までです。`;
+      return "";
+    }
+
+    async function loadCurrentUserData(user) {
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists()) throw new Error("users/{uid} が見つかりません。先にユーザー登録を確認してください。");
+      return snap.data();
+    }
+
+    function getVisibleRows(rows) {
+      return rows.sort((a, b) => String(b.dateKey || "").localeCompare(String(a.dateKey || "")));
+    }
+
+    function renderStats(rows) {
+      const total = rows.length;
+      const correct = rows.filter(r => r.isCorrect === true || r.correct === true).length;
+      const incorrect = total - correct;
+      const rate = total ? Math.round((correct / total) * 1000) / 10 : 0;
+      $("totalCount").textContent = total;
+      $("correctCount").textContent = correct;
+      $("incorrectCount").textContent = incorrect;
+      $("correctRate").textContent = total ? `${rate}%` : "-";
+    }
+
+    function renderTable(rows) {
+      const body = $("resultBody");
+      body.innerHTML = "";
+      if (!rows.length) {
+        body.innerHTML = `<tr><td colspan="7" class="muted">指定期間の回答データはありません。</td></tr>`;
+        return;
+      }
+      for (const r of getVisibleRows(rows)) {
+        const ok = r.isCorrect === true || r.correct === true;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${escapeHtml(r.dateKey || formatAnsweredAt(r.answeredAt) || "")}</td>
+          <td>${escapeHtml(r.displayName || r.name || r.userName || "")}</td>
+          <td>${escapeHtml(r.employeeCode || "")}</td>
+          <td>${escapeHtml(r.email || "")}</td>
+          <td>${escapeHtml([r.category1, r.category2].filter(Boolean).join(" / "))}</td>
+          <td>${escapeHtml(r.questionId || "")}</td>
+          <td><span class="pill ${ok ? "pill-ok" : "pill-ng"}">${ok ? "○ 正解" : "× 不正解"}</span></td>
+        `;
+        body.appendChild(tr);
+      }
+    }
+
+    function formatAnsweredAt(v) {
+      try {
+        if (v && typeof v.toDate === "function") return toDateKey(v.toDate());
+      } catch (_) {}
+      return "";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function loadReport() {
+      setError("");
+      const err = validatePeriod();
+      if (err) { setError(err); return; }
+      if (!currentCompanyId) { setError("companyId が取得できません。users/{uid}.companyId を確認してください。"); return; }
+
+      const start = $("startDate").value;
+      const end = $("endDate").value;
+      $("loadBtn").disabled = true;
+      $("loadBtn").textContent = "取得中...";
+      $("csvBtn").disabled = true;
+      $("resultInfo").textContent = `${start} ～ ${end} を取得中...`;
+
+      try {
+        const q = query(
+          collection(db, "quizResults"),
+          where("companyId", "==", currentCompanyId),
+          where("dateKey", ">=", start),
+          where("dateKey", "<=", end)
+        );
+        const snap = await getDocs(q);
+        loadedRows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderStats(loadedRows);
+        renderTable(loadedRows);
+        $("resultInfo").textContent = `${loadedRows.length}件取得しました（${start} ～ ${end}）。`;
+        $("csvBtn").disabled = loadedRows.length === 0;
+      } catch (e) {
+        console.error(e);
+        setError(`取得に失敗しました：${e.code || e.message || e}`);
+        $("resultInfo").textContent = "取得に失敗しました。";
+      } finally {
+        $("loadBtn").disabled = false;
+        $("loadBtn").textContent = "検索";
+      }
+    }
+
+    function downloadCsv() {
+      if (!loadedRows.length) return;
+      const headers = ["dateKey", "displayName", "employeeCode", "email", "category1", "category2", "questionId", "isCorrect"];
+      const lines = [headers.join(",")];
+      for (const r of loadedRows) {
+        lines.push(headers.map(h => csvCell(r[h])).join(","));
+      }
+      const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `bizmon_report_${currentCompanyId}_${$("startDate").value}_${$("endDate").value}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function csvCell(v) {
+      const s = String(v ?? "").replaceAll('"', '""');
+      return `"${s}"`;
+    }
+
+    function copyPastDataRequest() {
+      const text = `過去データ出力を依頼します。\n\n会社ID：${currentCompanyId || ""}\n対象期間：____年__月__日 ～ ____年__月__日\n出力形式：CSV\n用途：\n備考：`;
+      navigator.clipboard.writeText(text).then(() => {
+        $("copyMsg").classList.remove("hidden");
+        setTimeout(() => $("copyMsg").classList.add("hidden"), 2500);
+      });
+    }
+
+    $("periodPreset").addEventListener("change", applyPreset);
+    $("loadBtn").addEventListener("click", loadReport);
+    $("csvBtn").addEventListener("click", downloadCsv);
+    $("copyRequestBtn").addEventListener("click", copyPastDataRequest);
+
+    applyPreset();
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.href = "login.html";
+        return;
+      }
+      currentUser = user;
+      try {
+        currentUserData = await loadCurrentUserData(user);
+        currentCompanyId = currentUserData.companyId;
+        $("loginInfo").textContent = `${currentUserData.displayName || currentUserData.name || user.email}｜${currentCompanyId || "companyId未設定"}`;
+        await loadReport();
+      } catch (e) {
+        console.error(e);
+        $("loginInfo").textContent = user.email;
+        setError(e.message || String(e));
+      }
+    });
+  </script>
 </body>
 </html>
