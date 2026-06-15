@@ -3,43 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ユーザー新規登録</title>
+<title>ユーザー招待登録｜ビズもん</title>
 <style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:1080px;margin:0 auto}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}h1{margin:0;font-size:28px}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:20px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}.section-title{font-size:18px;font-weight:bold;margin:0 0 14px}.description{font-size:14px;line-height:1.7;color:#6b7280;margin:0 0 18px}.info-box{background:#eff6ff;border-left:4px solid #2563eb;border-radius:10px;padding:14px 16px;color:#1e3a8a;font-size:14px;line-height:1.7;margin-bottom:18px;white-space:pre-wrap}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;color:#92400e;font-size:14px;line-height:1.7;margin-top:16px;white-space:pre-wrap}.form-grid{display:grid;grid-template-columns:220px 1fr;gap:16px 18px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;font-size:15px;box-sizing:border-box;background:#fff;color:#111827}input[readonly]{background:#f9fafb;color:#6b7280}textarea{min-height:96px;resize:vertical;line-height:1.6}.button-row{display:flex;justify-content:flex-end;gap:12px;margin-top:22px;flex-wrap:wrap}.primary-btn,.secondary-btn,.danger-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.secondary-btn{background:#f3f4f6;color:#111827;border:1px solid #d1d5db}.danger-btn{background:#dc2626;color:#fff}.status{min-height:24px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap}.status.ok{color:#166534}.status.error{color:#dc2626}.status.note{color:#374151}.table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px}.data-table{width:100%;border-collapse:collapse;font-size:14px;min-width:900px}.data-table th,.data-table td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top;white-space:nowrap}.data-table th{background:#f9fafb;color:#374151;font-weight:bold}.data-table tr:hover td{background:#f9fafb}.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:bold}.badge.active{background:#dcfce7;color:#166534}.badge.inactive{background:#fee2e2;color:#991b1b}.badge.admin{background:#dbeafe;color:#1e40af}.badge.user{background:#f3f4f6;color:#374151}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{max-width:280px}.hidden{display:none!important}.small{font-size:12px;color:#6b7280;line-height:1.6}@media(max-width:760px){body{padding:18px}.header{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr;gap:8px 0}.button-row{flex-direction:column}.primary-btn,.secondary-btn,.danger-btn{width:100%}.toolbar input,.toolbar select{max-width:none}}
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:1080px;margin:0 auto}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}h1{margin:0;font-size:28px}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:20px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}.section-title{font-size:18px;font-weight:bold;margin:0 0 14px}.description{font-size:14px;line-height:1.7;color:#6b7280;margin:0 0 18px}.info-box{background:#eff6ff;border-left:4px solid #2563eb;border-radius:10px;padding:14px 16px;color:#1e3a8a;font-size:14px;line-height:1.7;margin-bottom:18px;white-space:pre-wrap}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;color:#92400e;font-size:14px;line-height:1.7;margin-top:16px;white-space:pre-wrap}.form-grid{display:grid;grid-template-columns:220px 1fr;gap:16px 18px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;font-size:15px;box-sizing:border-box;background:#fff;color:#111827}input[readonly]{background:#f9fafb;color:#6b7280}textarea{min-height:96px;resize:vertical;line-height:1.6}.button-row{display:flex;justify-content:flex-end;gap:12px;margin-top:22px;flex-wrap:wrap}.primary-btn,.secondary-btn,.danger-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.primary-btn:hover{background:#1d4ed8}.secondary-btn{background:#f3f4f6;color:#111827;border:1px solid #d1d5db}.danger-btn{background:#dc2626;color:#fff}.status{min-height:24px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap}.status.ok{color:#166534}.status.error{color:#dc2626}.status.note{color:#374151}.table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px}.data-table{width:100%;border-collapse:collapse;font-size:14px;min-width:980px}.data-table th,.data-table td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top;white-space:nowrap}.data-table th{background:#f9fafb;color:#374151;font-weight:bold}.data-table tr:hover td{background:#f9fafb}.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:bold}.badge.pending{background:#fef3c7;color:#92400e}.badge.registered{background:#dcfce7;color:#166534}.badge.cancelled{background:#fee2e2;color:#991b1b}.badge.admin{background:#dbeafe;color:#1e40af}.badge.user{background:#f3f4f6;color:#374151}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{max-width:280px}.hidden{display:none!important}.small{font-size:12px;color:#6b7280;line-height:1.6}.muted{color:#6b7280}@media(max-width:760px){body{padding:18px}.header{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr;gap:8px 0}.button-row{flex-direction:column}.primary-btn,.secondary-btn,.danger-btn{width:100%}.toolbar input,.toolbar select{max-width:none}}
 </style>
 </head>
 <body style="display:none;">
 <div class="page">
-  <div class="header"><h1>ユーザー新規登録</h1><a class="back-link" href="index.html">← マイページへ戻る</a></div>
+  <div class="header"><h1>ユーザー招待登録</h1><a class="back-link" href="index.html">← マイページへ戻る</a></div>
   <div id="accessStatus" class="info-box">管理者権限を確認中...</div>
 
   <div class="card">
-    <p class="section-title">新規ユーザー情報</p>
-    <p class="description">Firestore の users に新規ユーザー情報を登録します。companyId / companyName はログイン中管理者の会社情報を自動付与します。</p>
-    <div class="info-box">重要：この画面では Firebase Authentication のユーザー作成は行いません。
-先に Firebase Authentication でユーザーを作成し、発行された UID を下の「UID」に入力してください。</div>
+    <p class="section-title">新規招待ユーザー情報</p>
+    <p class="description">この画面では Firebase Authentication のユーザー作成は行わず、初回登録待ちの従業員情報を pendingUsers に登録します。従業員本人が初回登録を行うと UID が発行され、users に本登録されます。</p>
+    <div class="info-box">今回の方式：pendingUsers方式
+
+1. 管理者がこの画面で従業員を招待登録します。
+2. 従業員本人が初回登録画面でメールアドレスとパスワードを設定します。
+3. Firebase Authentication の UID が発行されます。
+4. pendingUsers と照合し、users/{uid} に自動登録されます。
+
+※この画面では UID 入力は不要です。</div>
     <div class="form-grid">
-      <div class="label">UID</div><input id="uid" placeholder="Firebase Authentication の UID">
-      <div class="label">社員コード</div><input id="employeeCode" placeholder="例：A0004">
+      <div class="label">社員コード</div><input id="employeeCode" placeholder="例：B0002">
       <div class="label">氏名</div><input id="name" placeholder="例：山田 太郎">
-      <div class="label">メールアドレス</div><input id="email" type="email" placeholder="例：user@example.com">
+      <div class="label">メールアドレス</div><input id="email" type="email" autocomplete="email" placeholder="例：user@example.com">
       <div class="label">企業ID</div><input id="companyId" readonly>
       <div class="label">企業名</div><input id="companyName" readonly>
       <div class="label">部署</div><input id="department" placeholder="例：営業部">
       <div class="label">役職</div><input id="position" placeholder="例：一般、主任、課長、部長">
       <div class="label">権限</div><select id="role"><option value="user">一般</option><option value="admin">管理者</option></select>
-      <div class="label">状態</div><select id="statusSelect"><option value="active">有効</option></select>
       <div class="label">申込者</div><select id="isApplicant"><option value="false">いいえ</option><option value="true">はい</option></select>
+      <div class="label">招待状態</div><input id="pendingStatus" value="pending" readonly>
       <div class="label">備考</div><textarea id="note" placeholder="任意入力"></textarea>
     </div>
-    <div class="warning-box">新規登録は status: active のみです。退職者・停止者は、登録後にユーザー管理（個別）または（一括）で無効化してください。</div>
-    <div class="button-row"><button class="secondary-btn" id="clearBtn" type="button">入力をクリア</button><button class="primary-btn" id="registerBtn" type="button">登録する</button></div>
+    <div class="warning-box">注意：この画面で登録した時点では、まだログイン用アカウント（Firebase Authentication）は作成されません。従業員本人が初回登録を完了すると users に本登録されます。</div>
+    <div class="button-row"><button class="secondary-btn" id="clearBtn" type="button">入力をクリア</button><button class="primary-btn" id="registerBtn" type="button">招待登録する</button></div>
     <div id="status" class="status"></div>
   </div>
 
   <div class="card">
-    <p class="section-title">登録済み自社ユーザー</p>
-    <div class="toolbar"><input id="search" placeholder="社員コード・氏名・メール・部署で検索"><button class="secondary-btn" id="reloadBtn" type="button">再読み込み</button><button class="secondary-btn" id="exportBtn" type="button">CSVダウンロード</button></div>
+    <p class="section-title">招待中・登録済み予定者</p>
+    <p class="description">自社の pendingUsers を表示します。本人登録が完了すると status が registered になります。</p>
+    <div class="toolbar"><input id="search" placeholder="社員コード・氏名・メール・部署で検索"><select id="filterStatus"><option value="all">すべて</option><option value="pending">招待中</option><option value="registered">登録済み</option><option value="cancelled">取消</option></select><button class="secondary-btn" id="reloadBtn" type="button">再読み込み</button><button class="secondary-btn" id="exportBtn" type="button">CSVダウンロード</button></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>メール</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>権限</th><th>申込者</th><th>状態</th><th>登録UID</th></tr></thead><tbody id="pendingTbody"></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <p class="section-title">本登録済み自社ユーザー</p>
+    <p class="description">Firestore の users に登録済みの自社ユーザーです。</p>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>UID</th><th>社員コード</th><th>氏名</th><th>メール</th><th>部署</th><th>役職</th><th>権限</th><th>状態</th></tr></thead><tbody id="userTbody"></tbody></table></div>
   </div>
   <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
@@ -48,11 +60,13 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,collection,query,where,getDocs,doc,getDoc,setDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",projectId:"bizmon-31ffc"};
+import{getFirestore,collection,query,where,getDocs,doc,getDoc,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
 const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFirestore(app);
-let loginUser=null;let loginUserData=null;let allUsers=[];
+let loginUser=null;let loginUserData=null;let allPending=[];let allUsers=[];
 const $=id=>document.getElementById(id);
+
 function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
 function normalizeEmail(v){return String(v||"").trim().toLowerCase()}
 function normalizeText(v){return String(v||"").trim()}
@@ -62,16 +76,87 @@ function showPage(message){document.body.style.display="block";$("accessStatus")
 function badge(text,type){return `<span class="badge ${type}">${esc(text)}</span>`}
 function csvCell(v){v=String(v==null?"":v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 function downloadText(filename,text,type){const blob=new Blob([text],{type:type||"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
-function usersToCsv(users){const header=["uid","employeeCode","name","email","companyId","companyName","department","position","role","status","isApplicant","note"];const lines=[header.join(",")];users.forEach(u=>lines.push(header.map(k=>csvCell(u[k]??"")).join(",")));return "\ufeff"+lines.join("\n")}
-async function checkAdminAccess(user){const snap=await getDoc(doc(db,"users",user.uid));if(!snap.exists()){redirectToIndex("users にログインユーザー情報がありません。");return false}const data=snap.data()||{};if(data.role!=="admin"){redirectToIndex("このページは管理者のみ利用できます。");return false}if(!data.companyId){redirectToIndex("管理者の companyId が未設定です。");return false}loginUser=user;loginUserData=data;$("companyId").value=data.companyId||"";$("companyName").value=data.companyName||"";showPage("管理者権限を確認しました。\nログイン中："+(user.email||"")+"\n企業："+(data.companyName||data.companyId));return true}
-async function loadUsers(){setStatus("自社ユーザーを読み込み中...","note");const q=query(collection(db,"users"),where("companyId","==",loginUserData.companyId));const snap=await getDocs(q);allUsers=[];snap.forEach(ds=>{const d=ds.data()||{};allUsers.push({uid:ds.id,employeeCode:d.employeeCode||d.employeeId||"",name:d.name||"",email:d.email||"",companyId:d.companyId||"",companyName:d.companyName||"",department:d.department||"",position:d.position||"",role:d.role||"user",status:d.status||"active",isApplicant:!!d.isApplicant,note:d.note||""})});allUsers.sort((a,b)=>String(a.employeeCode).localeCompare(String(b.employeeCode),"ja")||String(a.name).localeCompare(String(b.name),"ja"));renderUsers();setStatus("自社ユーザーを読み込みました。","ok")}
-function filteredUsers(){const q=normalizeText($("search").value).toLowerCase();return allUsers.filter(u=>!q||[u.uid,u.employeeCode,u.name,u.email,u.department,u.position].some(v=>String(v||"").toLowerCase().includes(q)))}
-function renderUsers(){const users=filteredUsers();$("userTbody").innerHTML=users.length?users.map(u=>`<tr><td>${esc(u.uid)}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${u.status==="inactive"?badge("無効","inactive"):badge("有効","active")}</td></tr>`).join(""):'<tr><td colspan="8">登録済みユーザーはありません。</td></tr>'}
-function clearForm(){["uid","employeeCode","name","email","department","position","note"].forEach(id=>$(id).value="");$("companyId").value=loginUserData.companyId||"";$("companyName").value=loginUserData.companyName||"";$("role").value="user";$("statusSelect").value="active";$("isApplicant").value="false";setStatus("","")}
-function validate(data){if(!data.uid)return "UIDを入力してください。";if(!data.employeeCode)return "社員コードを入力してください。";if(!data.name)return "氏名を入力してください。";if(!data.email)return "メールアドレスを入力してください。";if(!["user","admin"].includes(data.role))return "権限が不正です。";if(allUsers.some(u=>u.uid===data.uid))return "このUIDは既に登録されています。";if(allUsers.some(u=>u.employeeCode===data.employeeCode))return "この社員コードは既に登録されています。";if(allUsers.some(u=>normalizeEmail(u.email)===normalizeEmail(data.email)))return "このメールアドレスは既に登録されています。";return ""}
-async function registerUser(){const data={uid:normalizeText($("uid").value),employeeCode:normalizeText($("employeeCode").value),name:normalizeText($("name").value),email:normalizeEmail($("email").value),companyId:loginUserData.companyId,companyName:loginUserData.companyName||"",department:normalizeText($("department").value),position:normalizeText($("position").value),role:$("role").value,status:"active",isApplicant:$("isApplicant").value==="true",note:normalizeText($("note").value),createdAt:serverTimestamp(),createdBy:loginUser.uid,updatedAt:serverTimestamp(),updatedBy:loginUser.uid};const err=validate(data);if(err){setStatus(err,"error");return}try{setStatus("登録中...","note");await setDoc(doc(db,"users",data.uid),data,{merge:false});setStatus("ユーザーを登録しました。","ok");clearForm();await loadUsers()}catch(e){console.error(e);setStatus("登録に失敗しました。\n"+e.message,"error")}}
-$("registerBtn").addEventListener("click",registerUser);$("clearBtn").addEventListener("click",clearForm);$("reloadBtn").addEventListener("click",()=>loadUsers().catch(e=>setStatus("再読み込みに失敗しました。\n"+e.message,"error")));$("exportBtn").addEventListener("click",()=>downloadText("users_"+(loginUserData.companyId||"company")+".csv",usersToCsv(filteredUsers()),"text/csv;charset=utf-8"));$("search").addEventListener("input",renderUsers);
-onAuthStateChanged(auth,async user=>{if(!user){location.href="login.html";return}try{const ok=await checkAdminAccess(user);if(ok){await loadUsers();clearForm()}}catch(e){console.error(e);redirectToIndex("権限確認に失敗しました。もう一度ログインしてください。")}});
+function pendingToCsv(rows){const header=["email","employeeCode","name","companyId","companyName","department","position","role","status","isApplicant","registeredUid","note"];const lines=[header.join(",")];rows.forEach(u=>lines.push(header.map(k=>csvCell(u[k]??"")).join(",")));return "\ufeff"+lines.join("\n")}
+
+async function checkAdminAccess(user){
+  const snap=await getDoc(doc(db,"users",user.uid));
+  if(!snap.exists()){redirectToIndex("users にログインユーザー情報がありません。");return false}
+  const data=snap.data()||{};
+  if(data.role!=="admin"){redirectToIndex("このページは管理者のみ利用できます。");return false}
+  if(data.status!=="active"){redirectToIndex("無効な管理者アカウントです。");return false}
+  if(!data.companyId){redirectToIndex("管理者の companyId が未設定です。");return false}
+  loginUser=user;loginUserData=data;
+  $("companyId").value=data.companyId||"";$("companyName").value=data.companyName||"";
+  showPage("管理者権限を確認しました。\nログイン中："+(user.email||"")+"\n企業："+(data.companyName||data.companyId));
+  return true;
+}
+
+async function loadPendingUsers(){
+  setStatus("招待予定者を読み込み中...","note");
+  const q=query(collection(db,"pendingUsers"),where("companyId","==",loginUserData.companyId));
+  const snap=await getDocs(q);
+  allPending=[];
+  snap.forEach(ds=>{const d=ds.data()||{};allPending.push({id:ds.id,email:d.email||ds.id,employeeCode:d.employeeCode||"",name:d.name||"",companyId:d.companyId||"",companyName:d.companyName||"",department:d.department||"",position:d.position||"",role:d.role||"user",status:d.status||"pending",isApplicant:d.isApplicant===true,note:d.note||"",registeredUid:d.registeredUid||""})});
+  allPending.sort((a,b)=>String(a.employeeCode).localeCompare(String(b.employeeCode),"ja")||String(a.name).localeCompare(String(b.name),"ja"));
+  renderPendingUsers();
+  setStatus("招待予定者を読み込みました。","ok");
+}
+
+async function loadUsers(){
+  const q=query(collection(db,"users"),where("companyId","==",loginUserData.companyId));
+  const snap=await getDocs(q);
+  allUsers=[];
+  snap.forEach(ds=>{const d=ds.data()||{};allUsers.push({uid:ds.id,employeeCode:d.employeeCode||d.employeeId||"",name:d.name||"",email:d.email||"",department:d.department||"",position:d.position||"",role:d.role||"user",status:d.status||"active"})});
+  allUsers.sort((a,b)=>String(a.employeeCode).localeCompare(String(b.employeeCode),"ja")||String(a.name).localeCompare(String(b.name),"ja"));
+  renderUsers();
+}
+
+function filteredPending(){const q=normalizeText($("search").value).toLowerCase();const st=$("filterStatus").value;return allPending.filter(u=>(st==="all"||u.status===st)&&(!q||[u.email,u.employeeCode,u.name,u.department,u.position].some(v=>String(v||"").toLowerCase().includes(q))))}
+function renderPendingUsers(){const rows=filteredPending();$("pendingTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${esc(u.email)}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${u.isApplicant?"はい":"いいえ"}</td><td>${badge(u.status,u.status)}</td><td>${esc(u.registeredUid)}</td></tr>`).join(""):'<tr><td colspan="9">招待予定者はありません。</td></tr>'}
+function renderUsers(){const rows=allUsers;$("userTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${esc(u.uid)}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${esc(u.status)}</td></tr>`).join(""):'<tr><td colspan="8">本登録済みユーザーはありません。</td></tr>'}
+
+function clearForm(){["employeeCode","name","email","department","position","note"].forEach(id=>$(id).value="");$("companyId").value=loginUserData.companyId||"";$("companyName").value=loginUserData.companyName||"";$("role").value="user";$("isApplicant").value="false";$("pendingStatus").value="pending";setStatus("","")}
+function validate(data){if(!data.employeeCode)return "社員コードを入力してください。";if(!data.name)return "氏名を入力してください。";if(!data.email)return "メールアドレスを入力してください。";if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email))return "メールアドレスの形式が正しくありません。";if(!["user","admin"].includes(data.role))return "権限が不正です。";if(allPending.some(u=>u.email===data.email&&u.status!=="cancelled"))return "このメールアドレスは既に招待登録されています。";if(allPending.some(u=>u.employeeCode===data.employeeCode&&u.status!=="cancelled"))return "この社員コードは既に招待登録されています。";if(allUsers.some(u=>normalizeEmail(u.email)===data.email))return "このメールアドレスは既に本登録済みです。";if(allUsers.some(u=>u.employeeCode===data.employeeCode))return "この社員コードは既に本登録済みです。";return ""}
+
+async function registerPendingUser(){
+  const email=normalizeEmail($("email").value);
+  const data={
+    email,
+    employeeCode:normalizeText($("employeeCode").value),
+    name:normalizeText($("name").value),
+    companyId:loginUserData.companyId,
+    companyName:loginUserData.companyName||"",
+    department:normalizeText($("department").value),
+    position:normalizeText($("position").value),
+    role:$("role").value,
+    status:"pending",
+    isApplicant:$("isApplicant").value==="true",
+    note:normalizeText($("note").value),
+    registeredAt:null,
+    registeredUid:"",
+    createdAt:serverTimestamp(),
+    createdBy:loginUser.uid,
+    updatedAt:serverTimestamp(),
+    updatedBy:loginUser.uid
+  };
+  const err=validate(data);if(err){setStatus(err,"error");return}
+  try{
+    setStatus("招待登録中...","note");
+    await setDoc(doc(db,"pendingUsers",email),data,{merge:false});
+    setStatus("招待登録しました。従業員本人に初回登録画面を案内してください。","ok");
+    clearForm();
+    await loadPendingUsers();
+  }catch(e){console.error(e);setStatus("招待登録に失敗しました。\n"+(e.code||"")+"\n"+(e.message||e),"error")}
+}
+
+$("registerBtn").addEventListener("click",registerPendingUser);
+$("clearBtn").addEventListener("click",clearForm);
+$("reloadBtn").addEventListener("click",async()=>{try{await loadPendingUsers();await loadUsers();}catch(e){setStatus("再読み込みに失敗しました。\n"+e.message,"error")}});
+$("exportBtn").addEventListener("click",()=>downloadText("pendingUsers_"+(loginUserData.companyId||"company")+".csv",pendingToCsv(filteredPending()),"text/csv;charset=utf-8"));
+$("search").addEventListener("input",renderPendingUsers);
+$("filterStatus").addEventListener("change",renderPendingUsers);
+
+onAuthStateChanged(auth,async user=>{if(!user){location.href="login.html";return}try{const ok=await checkAdminAccess(user);if(ok){await loadPendingUsers();await loadUsers();clearForm()}}catch(e){console.error(e);redirectToIndex("権限確認に失敗しました。もう一度ログインしてください。")}});
 </script>
 </body>
 </html>
