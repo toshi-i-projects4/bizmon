@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ユーザー招待登録｜ビズもん</title>
 <style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:1080px;margin:0 auto}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}h1{margin:0;font-size:28px}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:20px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}.section-title{font-size:18px;font-weight:bold;margin:0 0 14px}.description{font-size:14px;line-height:1.7;color:#6b7280;margin:0 0 18px}.info-box{background:#eff6ff;border-left:4px solid #2563eb;border-radius:10px;padding:14px 16px;color:#1e3a8a;font-size:14px;line-height:1.7;margin-bottom:18px;white-space:pre-wrap}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;color:#92400e;font-size:14px;line-height:1.7;margin-top:16px;white-space:pre-wrap}.form-grid{display:grid;grid-template-columns:220px 1fr;gap:16px 18px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;font-size:15px;box-sizing:border-box;background:#fff;color:#111827}input[readonly]{background:#f9fafb;color:#6b7280}textarea{min-height:96px;resize:vertical;line-height:1.6}.button-row{display:flex;justify-content:flex-end;gap:12px;margin-top:22px;flex-wrap:wrap}.primary-btn,.secondary-btn,.danger-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.primary-btn:hover{background:#1d4ed8}.secondary-btn{background:#f3f4f6;color:#111827;border:1px solid #d1d5db}.danger-btn{background:#dc2626;color:#fff}.status{min-height:24px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap}.status.ok{color:#166534}.status.error{color:#dc2626}.status.note{color:#374151}.table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px}.data-table{width:100%;border-collapse:collapse;font-size:14px;min-width:980px}.data-table th,.data-table td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top;white-space:nowrap}.data-table th{background:#f9fafb;color:#374151;font-weight:bold}.data-table tr:hover td{background:#f9fafb}.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:bold}.badge.pending{background:#fef3c7;color:#92400e}.badge.registered{background:#dcfce7;color:#166534}.badge.cancelled{background:#fee2e2;color:#991b1b}.badge.admin{background:#dbeafe;color:#1e40af}.badge.user{background:#f3f4f6;color:#374151}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{max-width:280px}.hidden{display:none!important}.small{font-size:12px;color:#6b7280;line-height:1.6}.muted{color:#6b7280}@media(max-width:760px){body{padding:18px}.header{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr;gap:8px 0}.button-row{flex-direction:column}.primary-btn,.secondary-btn,.danger-btn{width:100%}.toolbar input,.toolbar select{max-width:none}}
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:1080px;margin:0 auto}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}h1{margin:0;font-size:28px}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:20px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}.section-title{font-size:18px;font-weight:bold;margin:0 0 14px}.description{font-size:14px;line-height:1.7;color:#6b7280;margin:0 0 18px}.info-box{background:#eff6ff;border-left:4px solid #2563eb;border-radius:10px;padding:14px 16px;color:#1e3a8a;font-size:14px;line-height:1.7;margin-bottom:18px;white-space:pre-wrap}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;color:#92400e;font-size:14px;line-height:1.7;margin-top:16px;white-space:pre-wrap}.form-grid{display:grid;grid-template-columns:220px 1fr;gap:16px 18px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;font-size:15px;box-sizing:border-box;background:#fff;color:#111827}input[readonly]{background:#f9fafb;color:#6b7280}textarea{min-height:96px;resize:vertical;line-height:1.6}.invite-textarea{min-height:250px;font-family:"BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff}.button-row{display:flex;justify-content:flex-end;gap:12px;margin-top:22px;flex-wrap:wrap}.primary-btn,.secondary-btn,.danger-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.primary-btn:hover{background:#1d4ed8}.secondary-btn{background:#f3f4f6;color:#111827;border:1px solid #d1d5db}.secondary-btn:hover{background:#e5e7eb}.danger-btn{background:#dc2626;color:#fff}.status{min-height:24px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap}.status.ok{color:#166534}.status.error{color:#dc2626}.status.note{color:#374151}.table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px}.data-table{width:100%;border-collapse:collapse;font-size:14px;min-width:980px}.data-table th,.data-table td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top;white-space:nowrap}.data-table th{background:#f9fafb;color:#374151;font-weight:bold}.data-table tr:hover td{background:#f9fafb}.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:bold}.badge.pending{background:#fef3c7;color:#92400e}.badge.registered{background:#dcfce7;color:#166534}.badge.cancelled{background:#fee2e2;color:#991b1b}.badge.admin{background:#dbeafe;color:#1e40af}.badge.user{background:#f3f4f6;color:#374151}.toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{max-width:280px}.hidden{display:none!important}.small{font-size:12px;color:#6b7280;line-height:1.6}.muted{color:#6b7280}.invite-actions{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}@media(max-width:760px){body{padding:18px}.header{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr;gap:8px 0}.button-row,.invite-actions{flex-direction:column}.primary-btn,.secondary-btn,.danger-btn{width:100%}.toolbar input,.toolbar select{max-width:none}}
 </style>
 </head>
 <body style="display:none;">
@@ -42,6 +42,21 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
     <div id="status" class="status"></div>
   </div>
 
+  <div class="card hidden" id="inviteMailCard">
+    <p class="section-title">招待メール案内文</p>
+    <p class="description">招待登録が完了しました。以下の本文をコピーして、対象者へメール等で送信してください。「メールを作成」を押すと、端末のメールソフトが開きます。</p>
+    <div class="form-grid">
+      <div class="label">送信先</div><input id="inviteTo" readonly>
+      <div class="label">件名</div><input id="inviteSubject" readonly>
+      <div class="label">本文</div><textarea id="inviteBody" class="invite-textarea" readonly></textarea>
+    </div>
+    <div class="invite-actions">
+      <button class="secondary-btn" type="button" id="copyInviteBtn">本文をコピー</button>
+      <button class="secondary-btn" type="button" id="mailtoBtn">メールを作成</button>
+    </div>
+    <div id="inviteStatus" class="status"></div>
+  </div>
+
   <div class="card">
     <p class="section-title">招待中・登録済み予定者</p>
     <p class="description">自社の pendingUsers を表示します。本人登録が完了すると status が registered になります。</p>
@@ -60,23 +75,51 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,collection,query,where,getDocs,doc,getDoc,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFirestore,collection,query,where,getDocs,doc,getDoc,setDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
 const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFirestore(app);
-let loginUser=null;let loginUserData=null;let allPending=[];let allUsers=[];
+let loginUser=null;let loginUserData=null;let allPending=[];let allUsers=[];let lastInvite={email:"",subject:"",body:""};
 const $=id=>document.getElementById(id);
 
 function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
 function normalizeEmail(v){return String(v||"").trim().toLowerCase()}
 function normalizeText(v){return String(v||"").trim()}
 function setStatus(msg,type){$("status").textContent=msg;$("status").className="status "+(type||"")}
+function setInviteStatus(msg,type){$("inviteStatus").textContent=msg;$("inviteStatus").className="status "+(type||"")}
 function redirectToIndex(message){alert(message||"このページは管理者のみ利用できます。");location.href="index.html"}
 function showPage(message){document.body.style.display="block";$("accessStatus").textContent=message||"管理者権限を確認しました。"}
 function badge(text,type){return `<span class="badge ${type}">${esc(text)}</span>`}
 function csvCell(v){v=String(v==null?"":v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 function downloadText(filename,text,type){const blob=new Blob([text],{type:type||"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
 function pendingToCsv(rows){const header=["email","employeeCode","name","companyId","companyName","department","position","role","status","isApplicant","registeredUid","note"];const lines=[header.join(",")];rows.forEach(u=>lines.push(header.map(k=>csvCell(u[k]??"")).join(",")));return "\ufeff"+lines.join("\n")}
+function getSignupUrl(){const base=location.origin+location.pathname.replace(/[^\/]*$/,"");return base+"employee-signup.html"}
+function buildInviteMail(data){const signupUrl=getSignupUrl();const subject="【ビズもん】初回登録のお願い";const body=`${data.name} 様
+
+ビズもんの初回登録をお願いします。
+
+以下のURLを開き、会社に登録されているメールアドレスで初回登録してください。
+
+${signupUrl}
+
+【登録時のメールアドレス】
+${data.email}
+
+パスワードは15文字以上で設定してください。
+単語をつなげた「パスフレーズ」を推奨しています。
+例）todayIwillfinishmyworkearly
+
+※英大文字・小文字・数字・記号の組み合わせは必須ではありません。
+※最大128文字まで設定可能です。
+
+初回登録後は、以下のログイン画面からログインしてください。
+${location.origin+location.pathname.replace(/[^\/]*$/,"login.html")}
+
+ビズもん`;
+return{email:data.email,subject,body}}
+function showInviteMail(data){lastInvite=buildInviteMail(data);$("inviteTo").value=lastInvite.email;$("inviteSubject").value=lastInvite.subject;$("inviteBody").value=lastInvite.body;$("inviteMailCard").classList.remove("hidden");setInviteStatus("招待メール文面を作成しました。本文をコピー、またはメールを作成してください。","ok");$("inviteMailCard").scrollIntoView({behavior:"smooth",block:"start"})}
+async function copyInviteBody(){try{await navigator.clipboard.writeText(lastInvite.body);setInviteStatus("招待メール本文をコピーしました。","ok")}catch(e){$("inviteBody").focus();$("inviteBody").select();setInviteStatus("自動コピーできませんでした。本文欄を選択しましたので、手動でコピーしてください。","error")}}
+function openMailto(){if(!lastInvite.email){setInviteStatus("送信先メールアドレスがありません。","error");return}const url="mailto:"+encodeURIComponent(lastInvite.email)+"?subject="+encodeURIComponent(lastInvite.subject)+"&body="+encodeURIComponent(lastInvite.body);location.href=url;setInviteStatus("メールソフトを起動しました。送信前に内容を確認してください。","note")}
 
 async function checkAdminAccess(user){
   const snap=await getDoc(doc(db,"users",user.uid));
@@ -143,7 +186,8 @@ async function registerPendingUser(){
   try{
     setStatus("招待登録中...","note");
     await setDoc(doc(db,"pendingUsers",email),data,{merge:false});
-    setStatus("招待登録しました。従業員本人に初回登録画面を案内してください。","ok");
+    setStatus("招待登録しました。招待メール文面を作成しました。","ok");
+    showInviteMail(data);
     clearForm();
     await loadPendingUsers();
   }catch(e){console.error(e);setStatus("招待登録に失敗しました。\n"+(e.code||"")+"\n"+(e.message||e),"error")}
@@ -151,6 +195,8 @@ async function registerPendingUser(){
 
 $("registerBtn").addEventListener("click",registerPendingUser);
 $("clearBtn").addEventListener("click",clearForm);
+$("copyInviteBtn").addEventListener("click",copyInviteBody);
+$("mailtoBtn").addEventListener("click",openMailto);
 $("reloadBtn").addEventListener("click",async()=>{try{await loadPendingUsers();await loadUsers();}catch(e){setStatus("再読み込みに失敗しました。\n"+e.message,"error")}});
 $("exportBtn").addEventListener("click",()=>downloadText("pendingUsers_"+(loginUserData.companyId||"company")+".csv",pendingToCsv(filteredPending()),"text/csv;charset=utf-8"));
 $("search").addEventListener("input",renderPendingUsers);
