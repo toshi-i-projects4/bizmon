@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>初回登録｜ビズもん</title>
+<style>
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:20px;box-sizing:border-box}.card{width:100%;max-width:560px;background:#fff;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.10);padding:34px;box-sizing:border-box}h1{margin:0 0 10px;text-align:center;font-size:28px;color:#111827}.lead{margin:0 0 22px;text-align:center;color:#6b7280;font-size:14px;line-height:1.7}.field-label{display:block;margin:16px 0 8px;font-size:14px;font-weight:bold;color:#374151}.text-input{width:100%;height:46px;padding:0 12px;border:1px solid #d1d5db;border-radius:10px;box-sizing:border-box;font-size:15px;outline:none;background:#fff}.text-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}.password-wrap{position:relative}.password-wrap .text-input{padding-right:48px}.password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;border-radius:8px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6b7280;padding:0}.password-toggle:hover{background:#f3f4f6;color:#111827}.password-toggle svg{width:22px;height:22px;display:block}.policy-box{background:#eff6ff;border-left:4px solid #2563eb;border-radius:10px;padding:14px 16px;color:#1e3a8a;font-size:14px;line-height:1.7;margin:18px 0;white-space:pre-wrap}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:12px 14px;color:#92400e;font-size:13px;line-height:1.7;margin:16px 0;white-space:pre-wrap}.count{font-size:13px;margin-top:6px;color:#6b7280}.primary-btn{width:100%;margin-top:22px;height:48px;border:none;border-radius:12px;background:#2563eb;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}.primary-btn:hover{background:#1d4ed8}.primary-btn:disabled{opacity:.65;cursor:not-allowed}.status-message{min-height:22px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap;text-align:left;word-break:break-word}.status-message.error{color:#dc2626}.status-message.ok{color:#166534}.status-message.note{color:#374151}.link-row{text-align:center;margin-top:20px}.link-row a{color:#2563eb;text-decoration:none;font-size:14px;font-weight:bold}.link-row a:hover{text-decoration:underline}.small{font-size:12px;color:#6b7280;line-height:1.6;margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>初回登録</h1>
+    <p class="lead">会社から案内されたメールアドレスで、ビズもんの利用を開始します。</p>
+
+    <div class="policy-box">パスワードは15文字以上で設定してください。
+単語をつなげた「パスフレーズ」を推奨しています。
+例）todayIwillfinishmyworkearly
+
+※英大文字・小文字・数字・記号の組み合わせは必須ではありません
+※最大128文字まで設定可能です</div>
+
+    <label class="field-label" for="email">メールアドレス</label>
+    <input id="email" class="text-input" type="email" autocomplete="email" placeholder="会社に登録されたメールアドレスを入力">
+    <div class="small">管理者が招待登録したメールアドレスと一致している必要があります。</div>
+
+    <label class="field-label" for="password">パスワード</label>
+    <div class="password-wrap">
+      <input id="password" class="text-input" type="password" autocomplete="new-password" maxlength="128" placeholder="新しいパスワードを入力">
+      <button type="button" class="password-toggle" data-target="password" aria-label="パスワードを表示" title="パスワードを表示">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      </button>
+    </div>
+    <div id="passwordCount" class="count">0 / 128文字</div>
+
+    <label class="field-label" for="confirmPassword">パスワード（確認）</label>
+    <div class="password-wrap">
+      <input id="confirmPassword" class="text-input" type="password" autocomplete="new-password" maxlength="128" placeholder="同じパスワードをもう一度入力">
+      <button type="button" class="password-toggle" data-target="confirmPassword" aria-label="パスワードを表示" title="パスワードを表示">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      </button>
+    </div>
+
+    <div class="warning-box">初回登録の対象者として会社側に招待登録されていないメールアドレスでは登録できません。</div>
+
+    <button type="button" id="signupBtn" class="primary-btn">初回登録する</button>
+    <div id="statusMessage" class="status-message note"></div>
+
+    <div class="link-row"><a href="login.html">ログイン画面へ戻る</a></div>
+  </div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,sendEmailVerification,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
+const PASSWORD_MIN_LENGTH=15;
+const PASSWORD_MAX_LENGTH=128;
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+auth.languageCode="ja";
+
+const $=id=>document.getElementById(id);
+const emailEl=$("email");
+const passwordEl=$("password");
+const confirmPasswordEl=$("confirmPassword");
+const passwordCountEl=$("passwordCount");
+const signupBtn=$("signupBtn");
+const statusMessage=$("statusMessage");
+
+function setStatus(message,type){statusMessage.textContent=message;statusMessage.className="status-message "+(type||"")}
+function normalizeEmail(v){return String(v||"").trim().toLowerCase()}
+function validatePassword(password){if(!password)return"パスワードを入力してください。";if(password.length<PASSWORD_MIN_LENGTH)return"パスワードは15文字以上で設定してください。";if(password.length>PASSWORD_MAX_LENGTH)return"パスワードは128文字以内で設定してください。";return""}
+function updatePasswordCount(){const len=passwordEl.value.length;passwordCountEl.textContent=`${len} / ${PASSWORD_MAX_LENGTH}文字`;if(len===0)passwordCountEl.style.color="#6b7280";else if(len<PASSWORD_MIN_LENGTH)passwordCountEl.style.color="#dc2626";else passwordCountEl.style.color="#166534"}
+async function getPendingUser(email){const ref=doc(db,"pendingUsers",email);const snap=await getDoc(ref);if(!snap.exists())return null;return snap.data()||null}
+
+async function createUserFromPending(user,pending,email){
+  const userData={
+    uid:user.uid,
+    employeeCode:pending.employeeCode||"",
+    name:pending.name||"",
+    email:email,
+    companyId:pending.companyId||"",
+    companyName:pending.companyName||"",
+    department:pending.department||"",
+    position:pending.position||"",
+    role:pending.role||"user",
+    status:"active",
+    isApplicant:pending.isApplicant===true,
+    note:pending.note||"",
+    createdAt:serverTimestamp(),
+    createdBy:user.uid,
+    updatedAt:serverTimestamp(),
+    updatedBy:user.uid
+  };
+  await setDoc(doc(db,"users",user.uid),userData,{merge:false});
+  await updateDoc(doc(db,"pendingUsers",email),{
+    status:"registered",
+    registeredAt:serverTimestamp(),
+    registeredUid:user.uid,
+    updatedAt:serverTimestamp(),
+    updatedBy:user.uid
+  });
+}
+
+async function signup(){
+  const email=normalizeEmail(emailEl.value);
+  const password=passwordEl.value;
+  const confirmPassword=confirmPasswordEl.value;
+  setStatus("","");
+
+  if(!email){setStatus("メールアドレスを入力してください。","error");emailEl.focus();return}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){setStatus("メールアドレスの形式が正しくありません。","error");emailEl.focus();return}
+  const passwordError=validatePassword(password);
+  if(passwordError){setStatus(passwordError,"error");passwordEl.focus();return}
+  if(password!==confirmPassword){setStatus("パスワードと確認用パスワードが一致していません。","error");confirmPasswordEl.focus();return}
+
+  try{
+    signupBtn.disabled=true;
+    signupBtn.textContent="確認中...";
+
+    // 先にログイン状態を整理します。既に別ユーザーでログインしている場合の誤登録を防ぎます。
+    if(auth.currentUser){await signOut(auth)}
+
+    signupBtn.textContent="アカウント作成中...";
+    const credential=await createUserWithEmailAndPassword(auth,email,password);
+    const user=credential.user;
+
+    signupBtn.textContent="招待情報確認中...";
+    const pending=await getPendingUser(email);
+    if(!pending){
+      setStatus("このメールアドレスは初回登録対象として登録されていません。会社の管理者に確認してください。\n\n※Firebase Authentication のアカウントは作成済みです。管理者に連絡してください。","error");
+      return;
+    }
+    if(pending.status!=="pending"){
+      setStatus("このメールアドレスは初回登録待ちの状態ではありません。状態："+(pending.status||"未設定")+"\n既に登録済みの場合はログイン画面からログインしてください。","error");
+      return;
+    }
+    if((pending.email||"").toLowerCase()!==email){
+      setStatus("招待情報のメールアドレスが一致しません。会社の管理者に確認してください。","error");
+      return;
+    }
+
+    signupBtn.textContent="ユーザー情報登録中...";
+    await createUserFromPending(user,pending,email);
+
+    try{await sendEmailVerification(user)}catch(e){console.warn("email verification skipped",e)}
+
+    setStatus("初回登録が完了しました。\nログイン画面から、登録したメールアドレスとパスワードでログインしてください。\n確認メールが届いている場合は、メール内のリンクから確認を完了してください。","ok");
+    emailEl.value="";
+    passwordEl.value="";
+    confirmPasswordEl.value="";
+    updatePasswordCount();
+  }catch(error){
+    console.error(error);
+    const code=error&&error.code?error.code:"unknown";
+    let message="初回登録に失敗しました。時間をおいて再度お試しください。";
+    if(code==="auth/email-already-in-use")message="このメールアドレスは既に認証登録されています。ログイン画面からログインしてください。ログインできない場合は、パスワード再設定を行ってください。";
+    if(code==="auth/invalid-email")message="メールアドレスの形式が正しくありません。";
+    if(code==="auth/weak-password")message="パスワードが弱すぎます。15文字以上のパスフレーズを設定してください。";
+    if(code==="permission-denied")message="登録情報の保存権限がありません。管理者に連絡してください。";
+    setStatus(message+"\n\nエラーコード："+code+"\n詳細："+(error.message||""),"error");
+  }finally{
+    signupBtn.disabled=false;
+    signupBtn.textContent="初回登録する";
+  }
+}
+
+passwordEl.addEventListener("input",updatePasswordCount);
+signupBtn.addEventListener("click",signup);
+[emailEl,passwordEl,confirmPasswordEl].forEach(el=>el.addEventListener("keydown",e=>{if(e.key==="Enter")signup()}));
+document.querySelectorAll(".password-toggle").forEach(btn=>btn.addEventListener("click",()=>{const input=$(btn.dataset.target);if(!input)return;const hidden=input.type==="password";input.type=hidden?"text":"password";btn.setAttribute("aria-label",hidden?"パスワードを非表示":"パスワードを表示");btn.setAttribute("title",hidden?"パスワードを非表示":"パスワードを表示");input.focus()}));
+
+onAuthStateChanged(auth,user=>{if(user){setStatus("既にログイン中です。初回登録を行う場合は、処理時に一度ログアウトして登録します。","note")}});
+</script>
+</body>
+</html>
