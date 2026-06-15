@@ -5,442 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ビズもん｜レポート</title>
   <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --bg: #f6f8fb;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --border: #d1d5db;
-      --danger: #dc2626;
-      --success: #16a34a;
-      --warning-bg: #fff7ed;
-      --warning-border: #fdba74;
-      --warning-text: #9a3412;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    header {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    header h1 { margin: 0; font-size: 20px; }
-    header .sub { color: var(--muted); font-size: 13px; }
-    main { max-width: 1180px; margin: 20px auto; padding: 0 16px 40px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-      padding: 18px;
-      margin-bottom: 16px;
-    }
-    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; align-items: end; }
-    .col-2 { grid-column: span 2; }
-    .col-3 { grid-column: span 3; }
-    .col-4 { grid-column: span 4; }
-    .col-6 { grid-column: span 6; }
-    .col-12 { grid-column: span 12; }
-    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-    input, select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: #fff;
-      font-size: 14px;
-    }
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 10px 14px;
-      background: var(--primary);
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    button:hover { background: var(--primary-dark); }
-    button.secondary { background: #374151; }
-    button.ghost { background: #e5e7eb; color: #111827; }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
-    .notice {
-      border: 1px solid var(--warning-border);
-      background: var(--warning-bg);
-      color: var(--warning-text);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-    .muted { color: var(--muted); font-size: 13px; }
-    .error { color: var(--danger); font-weight: 700; }
-    .success { color: var(--success); font-weight: 700; }
-    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-    .stat { background: #f9fafb; border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
-    .stat .label { color: var(--muted); font-size: 13px; }
-    .stat .value { font-size: 26px; font-weight: 800; margin-top: 4px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { border-bottom: 1px solid #e5e7eb; padding: 10px 8px; text-align: left; vertical-align: top; }
-    th { background: #f9fafb; color: #374151; position: sticky; top: 0; z-index: 1; }
-    .table-wrap { max-height: 560px; overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
-    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-    .pill-ok { background: #dcfce7; color: #166534; }
-    .pill-ng { background: #fee2e2; color: #991b1b; }
-    .hidden { display: none !important; }
-    @media (max-width: 780px) {
-      .col-2, .col-3, .col-4, .col-6 { grid-column: span 12; }
-      .stats { grid-template-columns: 1fr 1fr; }
-      header { align-items: flex-start; }
-    }
+    :root{--primary:#2563eb;--primary-dark:#1d4ed8;--bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--border:#d1d5db;--danger:#dc2626;--success:#16a34a;--warning-bg:#fff7ed;--warning-border:#fdba74;--warning-text:#9a3412}*{box-sizing:border-box}body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",system-ui,sans-serif;background:var(--bg);color:var(--text)}header{background:#fff;border-bottom:1px solid var(--border);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}header h1{margin:0;font-size:20px}header .sub{color:var(--muted);font-size:13px}main{max-width:1180px;margin:20px auto;padding:0 16px 40px}.card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 24px rgba(15,23,42,.06);padding:18px;margin-bottom:16px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;align-items:end}.col-3{grid-column:span 3}.col-12{grid-column:span 12}label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}input,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:14px}button{border:none;border-radius:10px;padding:10px 14px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer;font-size:14px}button:hover{background:var(--primary-dark)}button.secondary{background:#374151}button.ghost{background:#e5e7eb;color:#111827}button:disabled{opacity:.55;cursor:not-allowed}.notice{border:1px solid var(--warning-border);background:var(--warning-bg);color:var(--warning-text);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.7}.muted{color:var(--muted);font-size:13px}.error{color:var(--danger);font-weight:700}.success{color:var(--success);font-weight:700}.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px}.stat .label{color:var(--muted);font-size:13px}.stat .value{font-size:26px;font-weight:800;margin-top:4px}.table-wrap{max-height:560px;overflow:auto;border:1px solid var(--border);border-radius:12px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid #e5e7eb;padding:10px 8px;text-align:left;vertical-align:top}th{background:#f9fafb;color:#374151;position:sticky;top:0;z-index:1}.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700}.pill-ok{background:#dcfce7;color:#166534}.pill-ng{background:#fee2e2;color:#991b1b}@media(max-width:780px){.col-3{grid-column:span 12}.stats{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <h1>ビズもん｜レポート</h1>
-      <div class="sub">取得範囲を制限して Firestore 読み取り数を抑える本番向け版</div>
+<header>
+  <div><h1>ビズもん｜レポート</h1><div class="sub">本番向け：期間指定でFirestore読み取り数を抑制</div></div>
+  <div class="muted" id="loginInfo">ログイン確認中...</div>
+</header>
+<main>
+  <section class="card"><div class="notice"><strong>表示ルール：</strong><br>通常画面で取得できるデータは「今月」「前月」「直近30日」「直近90日」または任意指定最大100日です。2か月以前の詳細データ・長期間CSVは別途出力対応を想定します。</div></section>
+  <section class="card">
+    <div class="grid">
+      <div class="col-3"><label for="periodPreset">期間</label><select id="periodPreset"><option value="thisMonth">今月</option><option value="prevMonth">前月</option><option value="last30">直近30日</option><option value="last90">直近90日</option><option value="custom">任意指定（最大100日）</option></select></div>
+      <div class="col-3"><label for="startDate">開始日</label><input type="date" id="startDate"></div>
+      <div class="col-3"><label for="endDate">終了日</label><input type="date" id="endDate"></div>
+      <div class="col-3"><button id="loadBtn">検索</button> <button id="csvBtn" class="secondary" disabled>CSV出力</button></div>
+      <div class="col-12 muted" id="periodHelp"></div><div class="col-12 error hidden" id="errorBox"></div>
     </div>
-    <div class="muted" id="loginInfo">ログイン確認中...</div>
-  </header>
-
-  <main>
-    <section class="card">
-      <div class="notice">
-        <strong>表示ルール：</strong><br>
-        通常画面で取得できるデータは「今月」または「前月」を基本とします。任意期間は最大100日までですが、2か月以前の詳細データ・長期間CSVは別途出力対応の対象です。
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="grid">
-        <div class="col-3">
-          <label for="periodPreset">期間</label>
-          <select id="periodPreset">
-            <option value="thisMonth">今月</option>
-            <option value="prevMonth">前月</option>
-            <option value="last30">直近30日</option>
-            <option value="last90">直近90日</option>
-            <option value="custom">任意指定（最大100日）</option>
-          </select>
-        </div>
-        <div class="col-3">
-          <label for="startDate">開始日</label>
-          <input type="date" id="startDate" />
-        </div>
-        <div class="col-3">
-          <label for="endDate">終了日</label>
-          <input type="date" id="endDate" />
-        </div>
-        <div class="col-3">
-          <button id="loadBtn">検索</button>
-          <button id="csvBtn" class="secondary" disabled>CSV出力</button>
-        </div>
-        <div class="col-12 muted" id="periodHelp"></div>
-        <div class="col-12 error hidden" id="errorBox"></div>
-      </div>
-    </section>
-
-    <section class="stats" id="statsBox">
-      <div class="stat"><div class="label">回答数</div><div class="value" id="totalCount">-</div></div>
-      <div class="stat"><div class="label">正解数</div><div class="value" id="correctCount">-</div></div>
-      <div class="stat"><div class="label">不正解数</div><div class="value" id="incorrectCount">-</div></div>
-      <div class="stat"><div class="label">正答率</div><div class="value" id="correctRate">-</div></div>
-    </section>
-
-    <section class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-        <h2 style="font-size:18px;margin:0;">回答明細</h2>
-        <div class="muted" id="resultInfo">検索すると表示されます</div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>日付</th>
-              <th>氏名</th>
-              <th>社員番号</th>
-              <th>メール</th>
-              <th>カテゴリ</th>
-              <th>問題ID</th>
-              <th>正誤</th>
-            </tr>
-          </thead>
-          <tbody id="resultBody">
-            <tr><td colspan="7" class="muted">まだデータを取得していません。</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2 style="font-size:18px;margin-top:0;">過去データ出力について</h2>
-      <p class="muted" style="line-height:1.8;">
-        2か月以前の詳細データや長期間のCSV出力が必要な場合は、運営側で別途出力して提供する運用を想定しています。
-        画面から常時全件取得しないことで、Firestore の読み取り数と運用コストを抑えます。
-      </p>
-      <button class="ghost" id="copyRequestBtn">過去データ出力依頼文をコピー</button>
-      <div class="success hidden" id="copyMsg" style="margin-top:8px;">コピーしました。</div>
-    </section>
-  </main>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    // TODO: 既存のビズもん Firebase 設定に置き換えてください。
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const MAX_CUSTOM_DAYS = 100;
-    let currentUser = null;
-    let currentUserData = null;
-    let currentCompanyId = null;
-    let loadedRows = [];
-
-    const $ = (id) => document.getElementById(id);
-    const pad2 = (n) => String(n).padStart(2, "0");
-    const toDateKey = (d) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-    const parseDateKey = (s) => {
-      const [y, m, d] = s.split("-").map(Number);
-      return new Date(y, m - 1, d);
-    };
-    const addDays = (d, days) => {
-      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      x.setDate(x.getDate() + days);
-      return x;
-    };
-    const daysDiffInclusive = (startKey, endKey) => {
-      const s = parseDateKey(startKey);
-      const e = parseDateKey(endKey);
-      return Math.floor((e - s) / 86400000) + 1;
-    };
-    const getThisMonthRange = () => {
-      const now = new Date();
-      return { start: toDateKey(new Date(now.getFullYear(), now.getMonth(), 1)), end: toDateKey(now) };
-    };
-    const getPrevMonthRange = () => {
-      const now = new Date();
-      const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      const end = new Date(now.getFullYear(), now.getMonth(), 0);
-      return { start: toDateKey(start), end: toDateKey(end) };
-    };
-    const getLastDaysRange = (days) => {
-      const now = new Date();
-      return { start: toDateKey(addDays(now, -(days - 1))), end: toDateKey(now) };
-    };
-
-    function setError(message) {
-      if (!message) { $("errorBox").classList.add("hidden"); $("errorBox").textContent = ""; return; }
-      $("errorBox").textContent = message;
-      $("errorBox").classList.remove("hidden");
-    }
-
-    function applyPreset() {
-      const preset = $("periodPreset").value;
-      let range;
-      if (preset === "thisMonth") range = getThisMonthRange();
-      if (preset === "prevMonth") range = getPrevMonthRange();
-      if (preset === "last30") range = getLastDaysRange(30);
-      if (preset === "last90") range = getLastDaysRange(90);
-      if (preset === "custom") {
-        $("startDate").disabled = false;
-        $("endDate").disabled = false;
-        $("periodHelp").textContent = "任意指定は最大100日までです。長期間データは別途出力対応としてください。";
-        return;
-      }
-      $("startDate").value = range.start;
-      $("endDate").value = range.end;
-      $("startDate").disabled = true;
-      $("endDate").disabled = true;
-      $("periodHelp").textContent = `${range.start} ～ ${range.end} の範囲だけを Firestore から取得します。`;
-      setError("");
-    }
-
-    function validatePeriod() {
-      const start = $("startDate").value;
-      const end = $("endDate").value;
-      if (!start || !end) return "開始日と終了日を指定してください。";
-      if (start > end) return "開始日は終了日以前の日付にしてください。";
-      const days = daysDiffInclusive(start, end);
-      if (days > MAX_CUSTOM_DAYS) return `取得期間は最大${MAX_CUSTOM_DAYS}日までです。`;
-      return "";
-    }
-
-    async function loadCurrentUserData(user) {
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (!snap.exists()) throw new Error("users/{uid} が見つかりません。先にユーザー登録を確認してください。");
-      return snap.data();
-    }
-
-    function getVisibleRows(rows) {
-      return rows.sort((a, b) => String(b.dateKey || "").localeCompare(String(a.dateKey || "")));
-    }
-
-    function renderStats(rows) {
-      const total = rows.length;
-      const correct = rows.filter(r => r.isCorrect === true || r.correct === true).length;
-      const incorrect = total - correct;
-      const rate = total ? Math.round((correct / total) * 1000) / 10 : 0;
-      $("totalCount").textContent = total;
-      $("correctCount").textContent = correct;
-      $("incorrectCount").textContent = incorrect;
-      $("correctRate").textContent = total ? `${rate}%` : "-";
-    }
-
-    function renderTable(rows) {
-      const body = $("resultBody");
-      body.innerHTML = "";
-      if (!rows.length) {
-        body.innerHTML = `<tr><td colspan="7" class="muted">指定期間の回答データはありません。</td></tr>`;
-        return;
-      }
-      for (const r of getVisibleRows(rows)) {
-        const ok = r.isCorrect === true || r.correct === true;
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${escapeHtml(r.dateKey || formatAnsweredAt(r.answeredAt) || "")}</td>
-          <td>${escapeHtml(r.displayName || r.name || r.userName || "")}</td>
-          <td>${escapeHtml(r.employeeCode || "")}</td>
-          <td>${escapeHtml(r.email || "")}</td>
-          <td>${escapeHtml([r.category1, r.category2].filter(Boolean).join(" / "))}</td>
-          <td>${escapeHtml(r.questionId || "")}</td>
-          <td><span class="pill ${ok ? "pill-ok" : "pill-ng"}">${ok ? "○ 正解" : "× 不正解"}</span></td>
-        `;
-        body.appendChild(tr);
-      }
-    }
-
-    function formatAnsweredAt(v) {
-      try {
-        if (v && typeof v.toDate === "function") return toDateKey(v.toDate());
-      } catch (_) {}
-      return "";
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    async function loadReport() {
-      setError("");
-      const err = validatePeriod();
-      if (err) { setError(err); return; }
-      if (!currentCompanyId) { setError("companyId が取得できません。users/{uid}.companyId を確認してください。"); return; }
-
-      const start = $("startDate").value;
-      const end = $("endDate").value;
-      $("loadBtn").disabled = true;
-      $("loadBtn").textContent = "取得中...";
-      $("csvBtn").disabled = true;
-      $("resultInfo").textContent = `${start} ～ ${end} を取得中...`;
-
-      try {
-        const q = query(
-          collection(db, "quizResults"),
-          where("companyId", "==", currentCompanyId),
-          where("dateKey", ">=", start),
-          where("dateKey", "<=", end)
-        );
-        const snap = await getDocs(q);
-        loadedRows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderStats(loadedRows);
-        renderTable(loadedRows);
-        $("resultInfo").textContent = `${loadedRows.length}件取得しました（${start} ～ ${end}）。`;
-        $("csvBtn").disabled = loadedRows.length === 0;
-      } catch (e) {
-        console.error(e);
-        setError(`取得に失敗しました：${e.code || e.message || e}`);
-        $("resultInfo").textContent = "取得に失敗しました。";
-      } finally {
-        $("loadBtn").disabled = false;
-        $("loadBtn").textContent = "検索";
-      }
-    }
-
-    function downloadCsv() {
-      if (!loadedRows.length) return;
-      const headers = ["dateKey", "displayName", "employeeCode", "email", "category1", "category2", "questionId", "isCorrect"];
-      const lines = [headers.join(",")];
-      for (const r of loadedRows) {
-        lines.push(headers.map(h => csvCell(r[h])).join(","));
-      }
-      const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `bizmon_report_${currentCompanyId}_${$("startDate").value}_${$("endDate").value}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function csvCell(v) {
-      const s = String(v ?? "").replaceAll('"', '""');
-      return `"${s}"`;
-    }
-
-    function copyPastDataRequest() {
-      const text = `過去データ出力を依頼します。\n\n会社ID：${currentCompanyId || ""}\n対象期間：____年__月__日 ～ ____年__月__日\n出力形式：CSV\n用途：\n備考：`;
-      navigator.clipboard.writeText(text).then(() => {
-        $("copyMsg").classList.remove("hidden");
-        setTimeout(() => $("copyMsg").classList.add("hidden"), 2500);
-      });
-    }
-
-    $("periodPreset").addEventListener("change", applyPreset);
-    $("loadBtn").addEventListener("click", loadReport);
-    $("csvBtn").addEventListener("click", downloadCsv);
-    $("copyRequestBtn").addEventListener("click", copyPastDataRequest);
-
-    applyPreset();
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        location.href = "login.html";
-        return;
-      }
-      currentUser = user;
-      try {
-        currentUserData = await loadCurrentUserData(user);
-        currentCompanyId = currentUserData.companyId;
-        $("loginInfo").textContent = `${currentUserData.displayName || currentUserData.name || user.email}｜${currentCompanyId || "companyId未設定"}`;
-        await loadReport();
-      } catch (e) {
-        console.error(e);
-        $("loginInfo").textContent = user.email;
-        setError(e.message || String(e));
-      }
-    });
-  </script>
+  </section>
+  <section class="stats"><div class="stat"><div class="label">回答数</div><div class="value" id="totalCount">-</div></div><div class="stat"><div class="label">正解数</div><div class="value" id="correctCount">-</div></div><div class="stat"><div class="label">不正解数</div><div class="value" id="incorrectCount">-</div></div><div class="stat"><div class="label">正答率</div><div class="value" id="correctRate">-</div></div></section>
+  <section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px"><h2 style="font-size:18px;margin:0">回答明細</h2><div class="muted" id="resultInfo">検索すると表示されます</div></div><div class="table-wrap"><table><thead><tr><th>日付</th><th>氏名</th><th>社員番号</th><th>メール</th><th>カテゴリ</th><th>問題ID</th><th>正誤</th></tr></thead><tbody id="resultBody"><tr><td colspan="7" class="muted">まだデータを取得していません。</td></tr></tbody></table></div></section>
+  <section class="card"><h2 style="font-size:18px;margin-top:0">過去データ出力について</h2><p class="muted" style="line-height:1.8">2か月以前の詳細データや長期間CSV出力が必要な場合は、運営側で別途出力して提供する運用を想定しています。</p><button class="ghost" id="copyRequestBtn">過去データ出力依頼文をコピー</button><div class="success hidden" id="copyMsg" style="margin-top:8px">コピーしました。</div></section>
+</main>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,query,where,getDocs,doc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);setPersistence(auth,browserLocalPersistence).catch(console.warn);
+const MAX_CUSTOM_DAYS=100;let currentUser=null,currentUserData=null,currentCompanyId=null,loadedRows=[];const $=id=>document.getElementById(id);const pad2=n=>String(n).padStart(2,"0");const toDateKey=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;const parseDateKey=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};const addDays=(d,days)=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+days);return x};const daysDiffInclusive=(s,e)=>Math.floor((parseDateKey(e)-parseDateKey(s))/86400000)+1;
+function ranges(){const now=new Date();return{thisMonth:{start:toDateKey(new Date(now.getFullYear(),now.getMonth(),1)),end:toDateKey(now)},prevMonth:{start:toDateKey(new Date(now.getFullYear(),now.getMonth()-1,1)),end:toDateKey(new Date(now.getFullYear(),now.getMonth(),0))},last30:{start:toDateKey(addDays(now,-29)),end:toDateKey(now)},last90:{start:toDateKey(addDays(now,-89)),end:toDateKey(now)}}}
+function setError(m){if(!m){$("errorBox").classList.add("hidden");$("errorBox").textContent="";return}$("errorBox").textContent=m;$("errorBox").classList.remove("hidden")}
+function applyPreset(){const preset=$("periodPreset").value,rs=ranges();if(preset==="custom"){$("startDate").disabled=false;$("endDate").disabled=false;$("periodHelp").textContent="任意指定は最大100日までです。";return}const r=rs[preset];$("startDate").value=r.start;$("endDate").value=r.end;$("startDate").disabled=true;$("endDate").disabled=true;$("periodHelp").textContent=`${r.start} ～ ${r.end} の範囲だけをFirestoreから取得します。`;setError("")}
+function validatePeriod(){const s=$("startDate").value,e=$("endDate").value;if(!s||!e)return"開始日と終了日を指定してください。";if(s>e)return"開始日は終了日以前の日付にしてください。";if(daysDiffInclusive(s,e)>MAX_CUSTOM_DAYS)return`取得期間は最大${MAX_CUSTOM_DAYS}日までです。`;return""}
+async function loadCurrentUserData(user){const snap=await getDoc(doc(db,"users",user.uid));if(!snap.exists())throw new Error("users/{uid} が見つかりません。");const data=snap.data()||{};if(data.role!=="admin")throw new Error("レポートは管理者のみ利用できます。現在のrole："+(data.role||"未設定"));return data}
+function escapeHtml(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function renderStats(rows){const total=rows.length,correct=rows.filter(r=>r.isCorrect===true||r.correct===true).length,incorrect=total-correct,rate=total?Math.round(correct/total*1000)/10:0;$("totalCount").textContent=total;$("correctCount").textContent=correct;$("incorrectCount").textContent=incorrect;$("correctRate").textContent=total?`${rate}%`:"-"}
+function renderTable(rows){const body=$("resultBody");body.innerHTML="";if(!rows.length){body.innerHTML='<tr><td colspan="7" class="muted">指定期間の回答データはありません。</td></tr>';return}rows.sort((a,b)=>String(b.dateKey||"").localeCompare(String(a.dateKey||""))).forEach(r=>{const ok=r.isCorrect===true||r.correct===true,tr=document.createElement("tr");tr.innerHTML=`<td>${escapeHtml(r.dateKey||r.date||"")}</td><td>${escapeHtml(r.displayName||r.name||r.userName||"")}</td><td>${escapeHtml(r.employeeCode||"")}</td><td>${escapeHtml(r.email||"")}</td><td>${escapeHtml([r.category1,r.category2].filter(Boolean).join(" / "))}</td><td>${escapeHtml(r.questionId||"")}</td><td><span class="pill ${ok?"pill-ok":"pill-ng"}">${ok?"○ 正解":"× 不正解"}</span></td>`;body.appendChild(tr)})}
+async function loadReport(){setError("");const err=validatePeriod();if(err){setError(err);return}if(!currentCompanyId){setError("companyId が取得できません。users/{uid}.companyId を確認してください。");return}const start=$("startDate").value,end=$("endDate").value;$("loadBtn").disabled=true;$("loadBtn").textContent="取得中...";$("csvBtn").disabled=true;$("resultInfo").textContent=`${start} ～ ${end} を取得中...`;try{const q=query(collection(db,"quizResults"),where("companyId","==",currentCompanyId),where("dateKey",">=",start),where("dateKey","<=",end));const snap=await getDocs(q);loadedRows=snap.docs.map(d=>({id:d.id,...d.data()}));renderStats(loadedRows);renderTable(loadedRows);$("resultInfo").textContent=`${loadedRows.length}件取得しました（${start} ～ ${end}）。`;$("csvBtn").disabled=loadedRows.length===0}catch(e){console.error(e);setError(`取得に失敗しました：${e.code||e.message||e}`);$("resultInfo").textContent="取得に失敗しました。"}finally{$("loadBtn").disabled=false;$("loadBtn").textContent="検索"}}
+function csvCell(v){return `"${String(v??"").replaceAll('"','""')}"`}function downloadCsv(){if(!loadedRows.length)return;const headers=["dateKey","name","employeeCode","email","category1","category2","questionId","isCorrect"];const lines=[headers.join(",")];loadedRows.forEach(r=>lines.push(headers.map(h=>csvCell(r[h])).join(",")));const blob=new Blob(["\uFEFF"+lines.join("\n")],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`bizmon_report_${currentCompanyId}_${$("startDate").value}_${$("endDate").value}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+function copyPastDataRequest(){const text=`過去データ出力を依頼します。\n\n会社ID：${currentCompanyId||""}\n対象期間：____年__月__日 ～ ____年__月__日\n出力形式：CSV\n用途：\n備考：`;navigator.clipboard.writeText(text).then(()=>{$("copyMsg").classList.remove("hidden");setTimeout(()=>$("copyMsg").classList.add("hidden"),2500)})}
+$("periodPreset").addEventListener("change",applyPreset);$("loadBtn").addEventListener("click",loadReport);$("csvBtn").addEventListener("click",downloadCsv);$("copyRequestBtn").addEventListener("click",copyPastDataRequest);applyPreset();
+onAuthStateChanged(auth,async user=>{if(!user){$("loginInfo").textContent="未ログイン";location.href="login.html";return}currentUser=user;try{currentUserData=await loadCurrentUserData(user);currentCompanyId=currentUserData.companyId;$("loginInfo").textContent=`${currentUserData.name||currentUserData.displayName||user.email}｜${currentCompanyId||"companyId未設定"}`;await loadReport()}catch(e){console.error(e);$("loginInfo").textContent=user.email;setError(e.message||String(e))}});
+</script>
 </body>
 </html>
