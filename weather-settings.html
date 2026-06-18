@@ -253,7 +253,6 @@
       const setting = getSelectedWeatherSetting();
       try {
         localStorage.setItem("bizmonWeatherSettings_" + currentUser.uid, JSON.stringify(setting));
-        // 共有キーはアカウント混在の原因になるため使いません。
         localStorage.removeItem("bizmonWeatherSettings");
         localStorage.setItem("bizmonCurrentWeatherUserUid", currentUser.uid);
         setStatus("天気予報の表示地域をこのアカウント専用で保存しました。", "ok");
