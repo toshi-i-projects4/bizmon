@@ -95,6 +95,7 @@ import { getFirestore, collection, getDocs, getDoc, doc, setDoc, serverTimestamp
     function getDefaultPrefectureName(){return DEFAULT_WEATHER_OFFICE_NAME || "東京都";}
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
     let currentUser = null;
     let jmaAreaData = null;
     let loading = false;
@@ -110,10 +111,29 @@ import { getFirestore, collection, getDocs, getDoc, doc, setDoc, serverTimestamp
       weatherStatusEl.textContent = message;
       weatherStatusEl.className = "status " + (type || "note");
     }
-    function getWeatherStorageKey() {
-      if (!currentUser || !currentUser.uid) return "";
-      return "bizmonWeatherSettings_" + currentUser.uid;
+
+function showWeatherSaveDebug(message,type){
+  try{
+    const base=document.getElementById("currentSetting")||document.querySelector(".card")||document.querySelector("main")||document.body;
+    let el=document.getElementById("weatherSaveDebugV28");
+    if(!el){
+      el=document.createElement("div");
+      el.id="weatherSaveDebugV28";
+      el.style.marginTop="12px";
+      el.style.padding="10px 12px";
+      el.style.borderRadius="10px";
+      el.style.fontSize="13px";
+      el.style.lineHeight="1.6";
+      el.style.whiteSpace="pre-wrap";
+      if(base.parentNode){base.parentNode.insertBefore(el,base.nextSibling);}else{document.body.appendChild(el);}
     }
+    el.style.background=type==="ok"?"#ecfdf5":"#fef2f2";
+    el.style.border=type==="ok"?"1px solid #bbf7d0":"1px solid #fecaca";
+    el.style.color=type==="ok"?"#166534":"#dc2626";
+    el.textContent=message;
+  }catch(e){console.warn(e);}
+}
+
 async function syncWeatherSettingFromUsers(){
   try{
     if(!currentUser||!currentUser.uid||typeof db==="undefined"||typeof getDoc==="undefined"||typeof doc==="undefined")return null;
@@ -131,12 +151,16 @@ async function syncWeatherSettingFromUsers(){
   }catch(e){console.warn("users.weatherSettings read failed",e);}
   return null;
 }
+
+    function getWeatherStorageKey() {
+      if (!currentUser || !currentUser.uid) return "";
+      return "bizmonWeatherSettings_" + currentUser.uid;
+    }
+
     function getSavedWeatherSetting() {
       try {
-        if (currentUser && currentUser.uid) {
-          return JSON.parse(localStorage.getItem("bizmonWeatherSettings_" + currentUser.uid) || "null");
-        }
-        return null;
+        if (currentUser && currentUser.uid) return JSON.parse(localStorage.getItem("bizmonWeatherSettings_" + currentUser.uid) || "null");
+        return JSON.parse(localStorage.getItem("bizmonWeatherSettings") || "null");
       } catch (error) {
         return null;
       }
@@ -148,12 +172,10 @@ async function syncWeatherSettingFromUsers(){
         const areaName = saved && saved.weatherAreaName ? saved.weatherAreaName : DEFAULT_WEATHER_AREA_NAME;
         const officeCode = saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : DEFAULT_WEATHER_OFFICE_CODE;
         const areaCode = saved && saved.weatherAreaCode ? saved.weatherAreaCode : DEFAULT_WEATHER_AREA_CODE;
-        if (currentSettingText) {
-          currentSettingText.textContent = officeName + " " + areaName + "（" + officeCode + " / " + areaCode + "）";
-        }
+        if (currentSettingEl) currentSettingEl.textContent = officeName + " " + areaName + "（" + officeCode + " / " + areaCode + "）";
       } catch (error) {
         console.warn(error);
-        if (currentSettingText) currentSettingText.textContent = DEFAULT_WEATHER_OFFICE_NAME + " " + DEFAULT_WEATHER_AREA_NAME;
+        if (currentSettingEl) currentSettingEl.textContent = DEFAULT_WEATHER_OFFICE_NAME + " " + DEFAULT_WEATHER_AREA_NAME;
       }
     }
 
@@ -175,16 +197,9 @@ async function syncWeatherSettingFromUsers(){
           "130000": { name: "東京都", children: ["130010", "130020", "130030", "130040"] }
         },
         class10s: {
-          "016010": { name: "石狩地方" },
-          "016020": { name: "空知地方" },
-          "016030": { name: "後志地方" },
-          "120010": { name: "北西部" },
-          "120020": { name: "北東部" },
-          "120030": { name: "南部" },
-          "130010": { name: "東京地方" },
-          "130020": { name: "伊豆諸島北部" },
-          "130030": { name: "伊豆諸島南部" },
-          "130040": { name: "小笠原諸島" }
+          "016010": { name: "石狩地方" }, "016020": { name: "空知地方" }, "016030": { name: "後志地方" },
+          "120010": { name: "北西部" }, "120020": { name: "北東部" }, "120030": { name: "南部" },
+          "130010": { name: "東京地方" }, "130020": { name: "伊豆諸島北部" }, "130030": { name: "伊豆諸島南部" }, "130040": { name: "小笠原諸島" }
         }
       };
       const saved = getSavedWeatherSetting();
@@ -251,7 +266,6 @@ async function syncWeatherSettingFromUsers(){
       try {
         renderCurrentSetting();
         let saved = getSavedWeatherSetting();
-
         try {
           if (typeof syncWeatherSettingFromUsers === "function") {
             const cloudSetting = await Promise.race([
@@ -263,17 +277,13 @@ async function syncWeatherSettingFromUsers(){
               renderCurrentSetting();
             }
           }
-        } catch (cloudError) {
-          console.warn("cloud weather setting load skipped", cloudError);
-        }
-
+        } catch (cloudError) { console.warn("cloud weather setting load skipped", cloudError); }
         const controller = new AbortController();
         const timeoutId = setTimeout(function(){ controller.abort(); }, 8000);
         const response = await fetch(JMA_AREA_JSON_URL + "?t=" + Date.now(), { signal: controller.signal, cache: "no-store" });
         clearTimeout(timeoutId);
         if (!response.ok) throw new Error("地域データの取得に失敗しました。HTTP " + response.status);
         jmaAreaData = await response.json();
-
         const savedOfficeCode = saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : DEFAULT_WEATHER_OFFICE_CODE;
         const savedAreaCode = saved && saved.weatherAreaCode ? saved.weatherAreaCode : null;
         populateWeatherOffices(savedOfficeCode);
@@ -282,10 +292,8 @@ async function syncWeatherSettingFromUsers(){
         setStatus("地域データを読み込みました。都道府県と地域を選択して保存してください。", "ok");
       } catch (error) {
         console.error(error);
-        try { applyFallbackAreaData(); } catch (fallbackError) { console.error(fallbackError); setStatus("地域データの読み込みに失敗しました。時間をおいて再度お試しください。", "err"); }
-      } finally {
-        loading = false;
-      }
+        try { applyFallbackAreaData(); } catch (fallbackError) { console.error(fallbackError); setStatus("地域データの読み込みに失敗しました。時間をおいて再度お試しください。", "error"); }
+      } finally { loading = false; }
     }
     function getSelectedWeatherSetting() {
       const selectedAreaOption = weatherAreaSelect.options[weatherAreaSelect.selectedIndex];
@@ -297,29 +305,10 @@ async function syncWeatherSettingFromUsers(){
       return { weatherOfficeCode: officeCode, weatherOfficeName: prefectureName, weatherPrefectureName: prefectureName, weatherAreaCode: areaCode, weatherAreaName: areaInfo && areaInfo.name ? areaInfo.name : DEFAULT_WEATHER_AREA_NAME };
     }
 
-async function syncWeatherSettingFromCloud(){
-  try{
-    if(!currentUser||!currentUser.uid||typeof db==="undefined"||typeof getDoc==="undefined"||typeof doc==="undefined")return null;
-    const snap=await getDoc(doc(db,"users",currentUser.uid));
-    if(snap.exists()){
-      const data=snap.data()||{};
-      const setting=data.weatherSettings||null;
-      if(setting&&setting.weatherOfficeCode&&setting.weatherAreaCode){
-        localStorage.setItem("bizmonWeatherSettings_"+currentUser.uid,JSON.stringify(setting));
-        localStorage.setItem("bizmonCurrentWeatherUserUid",currentUser.uid);
-        localStorage.removeItem("bizmonWeatherSettings");
-        return setting;
-      }
-    }
-  }catch(e){console.warn("weather cloud sync failed",e);}
-  return null;
-}
     async function saveWeatherSetting() {
       if (!currentUser || !currentUser.uid) {
         const msg = "ログイン情報を確認できないため保存できません。再ログインしてください。 currentUser/uid がありません。";
-        setStatus(msg, "err");
-        showWeatherSaveDebug(msg, "error");
-        return;
+        setStatus(msg, "error"); showWeatherSaveDebug(msg, "error"); return;
       }
       const uid = currentUser.uid;
       const setting = getSelectedWeatherSetting();
@@ -327,33 +316,21 @@ async function syncWeatherSettingFromCloud(){
         localStorage.setItem("bizmonWeatherSettings_" + uid, JSON.stringify(setting));
         localStorage.removeItem("bizmonWeatherSettings");
         localStorage.setItem("bizmonCurrentWeatherUserUid", uid);
-
-        if (typeof db === "undefined") throw new Error("db が未定義です。getFirestore(app) が実行されているか確認してください。");
+        if (typeof db === "undefined") throw new Error("db が未定義です。const db = getFirestore(app); が必要です。");
         if (typeof doc === "undefined") throw new Error("doc が未定義です。firebase-firestore.js から doc をimportしてください。");
         if (typeof setDoc === "undefined") throw new Error("setDoc が未定義です。firebase-firestore.js から setDoc をimportしてください。");
-
-        const cloudSetting = Object.assign({}, setting, {
-          updatedAt: (typeof serverTimestamp !== "undefined" ? serverTimestamp() : new Date().toISOString())
-        });
-
+        const cloudSetting = Object.assign({}, setting, { updatedAt: (typeof serverTimestamp !== "undefined" ? serverTimestamp() : new Date().toISOString()) });
         await setDoc(doc(db, "users", uid), { weatherSettings: cloudSetting }, { merge: true });
-
-        const okMsg = "クラウド保存成功：users/" + uid + ".weatherSettings
-" + JSON.stringify(setting, null, 2);
+        const okMsg = "クラウド保存成功：users/" + uid + ".weatherSettings\n" + JSON.stringify(setting, null, 2);
         setStatus("天気予報の表示地域をクラウド保存しました。", "ok");
         showWeatherSaveDebug(okMsg, "ok");
-        if (typeof renderCurrentSetting === "function") renderCurrentSetting();
+        renderCurrentSetting();
       } catch (error) {
         console.error("weatherSettings cloud save failed", error);
-        const detail = "クラウド保存失敗
-保存先：users/" + uid + ".weatherSettings
-エラーコード：" + (error && error.code ? error.code : "なし") + "
-エラーメッセージ：" + (error && error.message ? error.message : String(error)) + "
-
-端末内には保存済みです。";
-        setStatus("端末内には保存しましたが、クラウド保存に失敗しました。詳細を確認してください。", "err");
+        const detail = "クラウド保存失敗\n保存先：users/" + uid + ".weatherSettings\nエラーコード：" + (error && error.code ? error.code : "なし") + "\nエラーメッセージ：" + (error && error.message ? error.message : String(error)) + "\n\n端末内には保存済みです。";
+        setStatus("端末内には保存しましたが、クラウド保存に失敗しました。詳細を確認してください。", "error");
         showWeatherSaveDebug(detail, "error");
-        if (typeof renderCurrentSetting === "function") renderCurrentSetting();
+        renderCurrentSetting();
       }
     }
 
@@ -376,6 +353,9 @@ setTimeout(function(){try{if(typeof loading!=="undefined"&&loading){loading=fals
 
 // BIZMON_WEATHER_SETTINGS_CURRENT_RESTORE_V27
 setTimeout(function(){try{if(typeof renderCurrentSetting==="function")renderCurrentSetting();if(typeof loading!=="undefined"&&loading){loading=false;}if(typeof loadWeatherAreaMaster==="function"&&weatherOfficeSelect&&weatherOfficeSelect.options.length===0){loadWeatherAreaMaster();}}catch(e){console.warn(e);}},2500);
+
+// BIZMON_WEATHER_SETTINGS_FIX_V28
+setTimeout(function(){try{renderCurrentSetting();if(typeof loading!=="undefined"&&loading){loading=false;}if(weatherOfficeSelect&&weatherOfficeSelect.options.length===0){loadWeatherAreaMaster();}}catch(e){console.warn(e);}},2500);
 </script>
 </body>
 </html>
