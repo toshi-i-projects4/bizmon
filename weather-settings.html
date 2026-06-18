@@ -58,6 +58,8 @@
   </div>
 
   <script type="module">
+import { getFirestore, collection, getDocs, getDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -130,12 +132,15 @@ async function syncWeatherSettingFromUsers(){
   }catch(e){console.warn("users.weatherSettings read failed",e);}
   return null;
 }
-
     function getSavedWeatherSetting() {
       try {
-        if (currentUser && currentUser.uid) return JSON.parse(localStorage.getItem("bizmonWeatherSettings_" + currentUser.uid) || "null");
+        if (currentUser && currentUser.uid) {
+          return JSON.parse(localStorage.getItem("bizmonWeatherSettings_" + currentUser.uid) || "null");
+        }
         return null;
-      } catch (error) { return null; }
+      } catch (error) {
+        return null;
+      }
     }
 
     function renderCurrentSetting() {
@@ -280,26 +285,44 @@ async function syncWeatherSettingFromCloud(){
 }
     async function saveWeatherSetting() {
       if (!currentUser || !currentUser.uid) {
-        setStatus("ログイン情報を確認できないため保存できません。再ログインしてください。", "error");
+        const msg = "ログイン情報を確認できないため保存できません。再ログインしてください。 currentUser/uid がありません。";
+        setStatus(msg, "err");
+        showWeatherSaveDebug(msg, "error");
         return;
       }
-      const setting = getSelectedWeatherSetting();
       const uid = currentUser.uid;
+      const setting = getSelectedWeatherSetting();
       try {
         localStorage.setItem("bizmonWeatherSettings_" + uid, JSON.stringify(setting));
         localStorage.removeItem("bizmonWeatherSettings");
         localStorage.setItem("bizmonCurrentWeatherUserUid", uid);
-        const cloudSetting = Object.assign({}, setting, { updatedAt: (typeof serverTimestamp !== "undefined" ? serverTimestamp() : new Date().toISOString()) });
-        if (typeof db === "undefined" || typeof doc === "undefined" || typeof setDoc === "undefined") throw new Error("Firestore保存関数を利用できません。setDoc/doc のimportを確認してください。");
+
+        if (typeof db === "undefined") throw new Error("db が未定義です。getFirestore(app) が実行されているか確認してください。");
+        if (typeof doc === "undefined") throw new Error("doc が未定義です。firebase-firestore.js から doc をimportしてください。");
+        if (typeof setDoc === "undefined") throw new Error("setDoc が未定義です。firebase-firestore.js から setDoc をimportしてください。");
+
+        const cloudSetting = Object.assign({}, setting, {
+          updatedAt: (typeof serverTimestamp !== "undefined" ? serverTimestamp() : new Date().toISOString())
+        });
+
         await setDoc(doc(db, "users", uid), { weatherSettings: cloudSetting }, { merge: true });
-        setStatus("天気予報の表示地域を users/" + uid + ".weatherSettings に保存しました。", "ok");
-        appendWeatherSyncMessage("クラウド保存成功：users/" + uid + ".weatherSettings", "ok");
-        renderCurrentSetting();
+
+        const okMsg = "クラウド保存成功：users/" + uid + ".weatherSettings
+" + JSON.stringify(setting, null, 2);
+        setStatus("天気予報の表示地域をクラウド保存しました。", "ok");
+        showWeatherSaveDebug(okMsg, "ok");
+        if (typeof renderCurrentSetting === "function") renderCurrentSetting();
       } catch (error) {
-        console.error(error);
-        setStatus("端末内には保存しましたが、クラウド保存に失敗しました。Firestoreルールを確認してください。", "error");
-        appendWeatherSyncMessage("クラウド保存失敗：" + (error.code || error.message || error), "error");
-        renderCurrentSetting();
+        console.error("weatherSettings cloud save failed", error);
+        const detail = "クラウド保存失敗
+保存先：users/" + uid + ".weatherSettings
+エラーコード：" + (error && error.code ? error.code : "なし") + "
+エラーメッセージ：" + (error && error.message ? error.message : String(error)) + "
+
+端末内には保存済みです。";
+        setStatus("端末内には保存しましたが、クラウド保存に失敗しました。詳細を確認してください。", "err");
+        showWeatherSaveDebug(detail, "error");
+        if (typeof renderCurrentSetting === "function") renderCurrentSetting();
       }
     }
 
