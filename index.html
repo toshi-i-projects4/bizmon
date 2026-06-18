@@ -159,7 +159,26 @@ async function syncWeatherSettingFromCloudForIndex(user){
   return null;
 }
 
-onAuthStateChanged(auth,async function(user){if(!user){location.href="login.html";return}currentUser=user;try{window.bizmonCurrentWeatherUserUid=user.uid;localStorage.setItem("bizmonCurrentWeatherUserUid",user.uid);}catch(e){}await syncWeatherSettingFromCloudForIndex(user);await loadUserRole(user);loadCalendarResults();setTimeout(function(){try{if(window.bizmonStandaloneWeatherLoad)window.bizmonStandaloneWeatherLoad();}catch(e){console.warn(e);}},100);});
+
+async function syncWeatherSettingFromUsersForIndex(user){
+  try{
+    if(!user||!user.uid||typeof db==="undefined"||typeof getDoc==="undefined"||typeof doc==="undefined")return null;
+    const snap=await getDoc(doc(db,"users",user.uid));
+    if(snap.exists()){
+      const data=snap.data()||{};
+      const setting=data.weatherSettings||null;
+      if(setting&&setting.weatherOfficeCode&&setting.weatherAreaCode){
+        localStorage.setItem("bizmonWeatherSettings_"+user.uid,JSON.stringify(setting));
+        localStorage.setItem("bizmonCurrentWeatherUserUid",user.uid);
+        localStorage.removeItem("bizmonWeatherSettings");
+        return setting;
+      }
+    }
+  }catch(e){console.warn("users.weatherSettings read failed",e);}
+  return null;
+}
+
+onAuthStateChanged(auth,async function(user){if(!user){location.href="login.html";return}currentUser=user;try{window.bizmonCurrentWeatherUserUid=user.uid;localStorage.setItem("bizmonCurrentWeatherUserUid",user.uid);}catch(e){}await syncWeatherSettingFromUsersForIndex(user);await loadUserRole(user);loadCalendarResults();setTimeout(function(){try{if(window.bizmonStandaloneWeatherLoad)window.bizmonStandaloneWeatherLoad();}catch(e){console.warn(e);}},100);});
 document.getElementById("logoutBtn").addEventListener("click",async function(){try{try{localStorage.removeItem("bizmonCurrentWeatherUserUid");window.bizmonCurrentWeatherUserUid="";}catch(e){}// BIZMON_WEATHER_ACCOUNT_LOGOUT_CLEAR_V18
 try{localStorage.removeItem("bizmonCurrentWeatherUserUid");window.bizmonCurrentWeatherUserUid="";}catch(e){}// BIZMON_WEATHER_ACCOUNT_LOGOUT_CLEAR_V19
 try{localStorage.removeItem("bizmonCurrentWeatherUserUid");window.bizmonCurrentWeatherUserUid="";}catch(e){}// BIZMON_WEATHER_CLOUD_LOGOUT_CLEAR_V21

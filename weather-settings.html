@@ -112,6 +112,25 @@
       if (!currentUser || !currentUser.uid) return "";
       return "bizmonWeatherSettings_" + currentUser.uid;
     }
+
+async function syncWeatherSettingFromUsers(){
+  try{
+    if(!currentUser||!currentUser.uid||typeof db==="undefined"||typeof getDoc==="undefined"||typeof doc==="undefined")return null;
+    const snap=await getDoc(doc(db,"users",currentUser.uid));
+    if(snap.exists()){
+      const data=snap.data()||{};
+      const setting=data.weatherSettings||null;
+      if(setting&&setting.weatherOfficeCode&&setting.weatherAreaCode){
+        localStorage.setItem("bizmonWeatherSettings_"+currentUser.uid,JSON.stringify(setting));
+        localStorage.setItem("bizmonCurrentWeatherUserUid",currentUser.uid);
+        localStorage.removeItem("bizmonWeatherSettings");
+        return setting;
+      }
+    }
+  }catch(e){console.warn("users.weatherSettings read failed",e);}
+  return null;
+}
+
     function getSavedWeatherSetting() {
       try {
         if (currentUser && currentUser.uid) return JSON.parse(localStorage.getItem("bizmonWeatherSettings_" + currentUser.uid) || "null");
@@ -270,22 +289,17 @@ async function syncWeatherSettingFromCloud(){
         localStorage.setItem("bizmonWeatherSettings_" + uid, JSON.stringify(setting));
         localStorage.removeItem("bizmonWeatherSettings");
         localStorage.setItem("bizmonCurrentWeatherUserUid", uid);
-        let cloudSaved = false;
-        let cloudErrors = [];
-        if (typeof db !== "undefined" && typeof doc !== "undefined" && typeof setDoc !== "undefined") {
-          const cloudSetting = Object.assign({}, setting, { uid: uid, updatedAt: (typeof serverTimestamp !== "undefined" ? serverTimestamp() : new Date().toISOString()) });
-          try { await setDoc(doc(db, "users", uid), { weatherSettings: cloudSetting }, { merge: true }); cloudSaved = true; } catch(e) { console.warn(e); cloudErrors.push("users/" + uid); }
-          try { await setDoc(doc(db, "weatherSettings", uid), cloudSetting, { merge: true }); cloudSaved = true; } catch(e) { console.warn(e); cloudErrors.push("weatherSettings/" + uid); }
-        }
-        if (cloudSaved) {
-          setStatus("天気予報の表示地域をクラウド保存しました。PC・スマホでも同じアカウントなら同期されます。", "ok");
-        } else {
-          setStatus("端末内には保存しましたが、クラウド保存に失敗しました。Firestoreルールを確認してください。失敗先：" + cloudErrors.join(" / "), "error");
-        }
+        const cloudSetting = Object.assign({}, setting, { updatedAt: (typeof serverTimestamp !== "undefined" ? serverTimestamp() : new Date().toISOString()) });
+        if (typeof db === "undefined" || typeof doc === "undefined" || typeof setDoc === "undefined") throw new Error("Firestore保存関数を利用できません。setDoc/doc のimportを確認してください。");
+        await setDoc(doc(db, "users", uid), { weatherSettings: cloudSetting }, { merge: true });
+        setStatus("天気予報の表示地域を users/" + uid + ".weatherSettings に保存しました。", "ok");
+        appendWeatherSyncMessage("クラウド保存成功：users/" + uid + ".weatherSettings", "ok");
         renderCurrentSetting();
       } catch (error) {
         console.error(error);
-        setStatus("保存に失敗しました。通信状態またはFirestoreルールを確認してください。", "error");
+        setStatus("端末内には保存しましたが、クラウド保存に失敗しました。Firestoreルールを確認してください。", "error");
+        appendWeatherSyncMessage("クラウド保存失敗：" + (error.code || error.message || error), "error");
+        renderCurrentSetting();
       }
     }
 
