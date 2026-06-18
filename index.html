@@ -114,7 +114,7 @@ function getWeatherTargetInfo(){
     displayDate: (targetDate.getMonth()+1)+"月"+targetDate.getDate()+"日"
   };
 }
-async async function loadWeatherForIndex(){
+async function loadWeatherForIndex(){
   const box=document.getElementById("weatherMini");
   if(!box)return;
   const setting=getIndexWeatherSetting();
