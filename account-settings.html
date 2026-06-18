@@ -27,6 +27,8 @@
     .label { font-size: 14px; font-weight: bold; color: #374151; }
     input { width: 100%; border: 1px solid #d1d5db; border-radius: 10px; padding: 11px 12px; font-size: 15px; box-sizing: border-box; background: #ffffff; color: #111827; }
     input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    select { width: 100%; border: 1px solid #d1d5db; border-radius: 10px; padding: 11px 12px; font-size: 15px; box-sizing: border-box; background: #ffffff; color: #111827; }
+    select:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
     input[readonly] { background: #f9fafb; color: #6b7280; }
     .password-wrap { position: relative; }
     .password-wrap input { padding-right: 48px; }
@@ -137,6 +139,32 @@
       </div>
     </div>
 
+
+
+    <div class="card">
+      <p class="section-title">天気予報の地域設定</p>
+      <p class="description">マイページに表示する天気予報の地域を設定します。まずは千葉県内の地域に対応しています。</p>
+      <div class="info-box">
+        選択した地域はこの端末のブラウザに保存されます。マイページの天気表示で使用します。<br>
+        ※別の端末やブラウザでは、再度設定が必要になる場合があります。
+      </div>
+      <div class="form-grid">
+        <div class="label">天気予報の地域</div>
+        <div>
+          <select id="weatherAreaSelect">
+            <option value="120010" data-office-code="120000" data-office-name="千葉県" data-area-name="北西部">千葉県 北西部</option>
+            <option value="120020" data-office-code="120000" data-office-name="千葉県" data-area-name="北東部">千葉県 北東部</option>
+            <option value="120030" data-office-code="120000" data-office-name="千葉県" data-area-name="南部">千葉県 南部</option>
+          </select>
+          <div class="small-note">気象庁の天気予報データを利用するための地域設定です。</div>
+        </div>
+      </div>
+      <div class="button-row">
+        <button type="button" class="primary-btn" id="saveWeatherAreaBtn">天気予報の地域を保存</button>
+      </div>
+      <div id="weatherStatus" class="status"></div>
+    </div>
+
     <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
   </div>
 
@@ -174,6 +202,9 @@
     const passwordStatusEl = document.getElementById("passwordStatus");
     const updateEmailBtn = document.getElementById("updateEmailBtn");
     const updatePasswordBtn = document.getElementById("updatePasswordBtn");
+    const weatherAreaSelect = document.getElementById("weatherAreaSelect");
+    const saveWeatherAreaBtn = document.getElementById("saveWeatherAreaBtn");
+    const weatherStatusEl = document.getElementById("weatherStatus");
 
     function setStatus(el, message, type) {
       el.textContent = message;
@@ -206,7 +237,54 @@
       else passwordCountEl.style.color = "#166534";
     }
 
+
+
+    function getWeatherStorageKey() {
+      return currentUser && currentUser.uid ? "bizmonWeatherSettings_" + currentUser.uid : "bizmonWeatherSettings";
+    }
+
+    function getSelectedWeatherSetting() {
+      if (!weatherAreaSelect) return null;
+      const selectedOption = weatherAreaSelect.options[weatherAreaSelect.selectedIndex];
+      return {
+        weatherOfficeCode: selectedOption.getAttribute("data-office-code") || "120000",
+        weatherOfficeName: selectedOption.getAttribute("data-office-name") || "千葉県",
+        weatherAreaCode: weatherAreaSelect.value || "120010",
+        weatherAreaName: selectedOption.getAttribute("data-area-name") || "北西部"
+      };
+    }
+
+    function loadWeatherSetting() {
+      if (!weatherAreaSelect) return;
+      let saved = null;
+      try {
+        saved = JSON.parse(localStorage.getItem(getWeatherStorageKey()) || localStorage.getItem("bizmonWeatherSettings") || "null");
+      } catch (error) {
+        saved = null;
+      }
+      const savedAreaCode = saved && saved.weatherAreaCode ? saved.weatherAreaCode : "120010";
+      weatherAreaSelect.value = savedAreaCode;
+      if (!weatherAreaSelect.value) weatherAreaSelect.value = "120010";
+    }
+
+    function saveWeatherSetting() {
+      const setting = getSelectedWeatherSetting();
+      if (!setting) return;
+      try {
+        localStorage.setItem(getWeatherStorageKey(), JSON.stringify(setting));
+        localStorage.setItem("bizmonWeatherSettings", JSON.stringify(setting));
+        setStatus(weatherStatusEl, "天気予報の地域を保存しました。マイページの天気表示に反映されます。", "ok");
+      } catch (error) {
+        console.error(error);
+        setStatus(weatherStatusEl, "天気予報の地域設定の保存に失敗しました。ブラウザの保存設定を確認してください。", "error");
+      }
+    }
+
     newPasswordEl.addEventListener("input", updatePasswordCount);
+
+    if (saveWeatherAreaBtn) {
+      saveWeatherAreaBtn.addEventListener("click", saveWeatherSetting);
+    }
 
     updateEmailBtn.addEventListener("click", async function () {
       const newEmail = newEmailEl.value.trim();
@@ -303,6 +381,7 @@
       }
       currentUser = user;
       refreshUserInfo(user);
+      loadWeatherSetting();
     });
   </script>
 </body>
