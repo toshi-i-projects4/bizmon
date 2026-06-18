@@ -51,7 +51,7 @@
     <div class="card">
       <p class="section-title">現在保存されている設定</p>
       <div id="currentSetting" class="current-setting">保存済みの設定を確認中です。</div>
-      <div class="source-note">※気象庁のデータを利用しています。気象庁の地域データを取得できない場合は、暫定的に千葉県の候補を表示します。</div>
+      <div class="source-note">※気象庁のデータを利用しています。気象庁の地域データを取得できない場合は、暫定的に東京都の候補を表示します。</div>
     </div>
 
     <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
@@ -106,7 +106,7 @@
     function renderCurrentSetting() {
       const saved = getSavedWeatherSetting();
       if (!saved) {
-        currentSettingEl.textContent = "まだ保存されていません。初期値として『千葉県 北西部』を使用します。";
+        currentSettingEl.textContent = "まだ保存されていません。初期値として『東京都 東京地方』を使用します。";
         return;
       }
       currentSettingEl.textContent = "都道府県：" + (saved.weatherOfficeName || "未設定") + "\n地域：" + (saved.weatherAreaName || "未設定") + "\n保存コード：" + (saved.weatherOfficeCode || "") + " / " + (saved.weatherAreaCode || "");
@@ -125,15 +125,22 @@
 
     function applyFallbackAreaData() {
       jmaAreaData = {
-        offices: { "120000": { name: "千葉県", children: ["120010", "120020", "120030"] } },
+        offices: {
+          "130000": { name: "東京都", children: ["130010", "130020", "130030", "130040"] },
+          "120000": { name: "千葉県", children: ["120010", "120020", "120030"] }
+        },
         class10s: {
+          "130010": { name: "東京地方" },
+          "130020": { name: "伊豆諸島北部" },
+          "130030": { name: "伊豆諸島南部" },
+          "130040": { name: "小笠原諸島" },
           "120010": { name: "北西部" },
           "120020": { name: "北東部" },
           "120030": { name: "南部" }
         }
       };
-      populateWeatherOffices("120000");
-      setStatus("地域データを取得できなかったため、暫定的に千葉県の地域候補を表示しています。", "error");
+      populateWeatherOffices("130000");
+      setStatus("地域データを取得できなかったため、暫定的に東京都の地域候補を表示しています。", "error");
     }
 
     function getOfficeCodes() {
@@ -151,7 +158,7 @@
         const office = jmaAreaData.offices[code];
         weatherOfficeSelect.appendChild(makeOption(code, office.name));
       });
-      weatherOfficeSelect.value = savedOfficeCode || "120000";
+      weatherOfficeSelect.value = savedOfficeCode || "130000";
       if (!weatherOfficeSelect.value && weatherOfficeSelect.options.length > 0) weatherOfficeSelect.selectedIndex = 0;
       populateWeatherAreas();
     }
@@ -166,7 +173,7 @@
         const name = areaInfo && areaInfo.name ? areaInfo.name : areaCode;
         weatherAreaSelect.appendChild(makeOption(areaCode, name));
       });
-      weatherAreaSelect.value = savedAreaCode || (weatherAreaSelect.options[0] ? weatherAreaSelect.options[0].value : "120010");
+      weatherAreaSelect.value = savedAreaCode || (weatherAreaSelect.options[0] ? weatherAreaSelect.options[0].value : "130010");
       if (!weatherAreaSelect.value && weatherAreaSelect.options.length > 0) weatherAreaSelect.selectedIndex = 0;
     }
 
@@ -182,7 +189,7 @@
         clearTimeout(timeoutId);
         if (!response.ok) throw new Error("地域データの取得に失敗しました。");
         jmaAreaData = await response.json();
-        populateWeatherOffices(saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : "120000");
+        populateWeatherOffices(saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : "130000");
         populateWeatherAreas(saved && saved.weatherAreaCode ? saved.weatherAreaCode : null);
         setStatus("地域データを読み込みました。地域を選択して保存してください。", "ok");
       } catch (error) {
@@ -200,9 +207,9 @@
       const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
       return {
         weatherOfficeCode: officeCode,
-        weatherOfficeName: officeInfo && officeInfo.name ? officeInfo.name : "千葉県",
+        weatherOfficeName: officeInfo && officeInfo.name ? officeInfo.name : "東京都",
         weatherAreaCode: areaCode,
-        weatherAreaName: areaInfo && areaInfo.name ? areaInfo.name : "北西部"
+        weatherAreaName: areaInfo && areaInfo.name ? areaInfo.name : "東京地方"
       };
     }
 
