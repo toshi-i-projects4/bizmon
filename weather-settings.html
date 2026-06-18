@@ -77,56 +77,20 @@
     const DEFAULT_WEATHER_OFFICE_NAME = "東京都";
     const DEFAULT_WEATHER_AREA_CODE = "130010";
     const DEFAULT_WEATHER_AREA_NAME = "東京地方";
-    // BIZMON_WEATHER_PREFECTURE_ONLY_V15
-    const PREFECTURE_OFFICE_ORDER = [
-      { code: "016000", name: "北海道" },
-      { code: "020000", name: "青森県" },
-      { code: "030000", name: "岩手県" },
-      { code: "040000", name: "宮城県" },
-      { code: "050000", name: "秋田県" },
-      { code: "060000", name: "山形県" },
-      { code: "070000", name: "福島県" },
-      { code: "080000", name: "茨城県" },
-      { code: "090000", name: "栃木県" },
-      { code: "100000", name: "群馬県" },
-      { code: "110000", name: "埼玉県" },
-      { code: "120000", name: "千葉県" },
-      { code: "130000", name: "東京都" },
-      { code: "140000", name: "神奈川県" },
-      { code: "150000", name: "新潟県" },
-      { code: "160000", name: "富山県" },
-      { code: "170000", name: "石川県" },
-      { code: "180000", name: "福井県" },
-      { code: "190000", name: "山梨県" },
-      { code: "200000", name: "長野県" },
-      { code: "210000", name: "岐阜県" },
-      { code: "220000", name: "静岡県" },
-      { code: "230000", name: "愛知県" },
-      { code: "240000", name: "三重県" },
-      { code: "250000", name: "滋賀県" },
-      { code: "260000", name: "京都府" },
-      { code: "270000", name: "大阪府" },
-      { code: "280000", name: "兵庫県" },
-      { code: "290000", name: "奈良県" },
-      { code: "300000", name: "和歌山県" },
-      { code: "310000", name: "鳥取県" },
-      { code: "320000", name: "島根県" },
-      { code: "330000", name: "岡山県" },
-      { code: "340000", name: "広島県" },
-      { code: "350000", name: "山口県" },
-      { code: "360000", name: "徳島県" },
-      { code: "370000", name: "香川県" },
-      { code: "380000", name: "愛媛県" },
-      { code: "390000", name: "高知県" },
-      { code: "400000", name: "福岡県" },
-      { code: "410000", name: "佐賀県" },
-      { code: "420000", name: "長崎県" },
-      { code: "430000", name: "熊本県" },
-      { code: "440000", name: "大分県" },
-      { code: "450000", name: "宮崎県" },
-      { code: "460100", name: "鹿児島県" },
-      { code: "471000", name: "沖縄県" }
+    // BIZMON_WEATHER_JMA_AREA_MATCH_V17
+    const PREFECTURE_OFFICE_GROUPS = [
+      { name: "北海道", officeCodes: ["011000", "012000", "013000", "014030", "014100", "015000", "016000", "017000"] },
+      { name: "青森県", officeCodes: ["020000"] }, { name: "岩手県", officeCodes: ["030000"] }, { name: "宮城県", officeCodes: ["040000"] }, { name: "秋田県", officeCodes: ["050000"] }, { name: "山形県", officeCodes: ["060000"] }, { name: "福島県", officeCodes: ["070000"] },
+      { name: "茨城県", officeCodes: ["080000"] }, { name: "栃木県", officeCodes: ["090000"] }, { name: "群馬県", officeCodes: ["100000"] }, { name: "埼玉県", officeCodes: ["110000"] }, { name: "千葉県", officeCodes: ["120000"] }, { name: "東京都", officeCodes: ["130000"] }, { name: "神奈川県", officeCodes: ["140000"] },
+      { name: "新潟県", officeCodes: ["150000"] }, { name: "富山県", officeCodes: ["160000"] }, { name: "石川県", officeCodes: ["170000"] }, { name: "福井県", officeCodes: ["180000"] }, { name: "山梨県", officeCodes: ["190000"] }, { name: "長野県", officeCodes: ["200000"] }, { name: "岐阜県", officeCodes: ["210000"] }, { name: "静岡県", officeCodes: ["220000"] }, { name: "愛知県", officeCodes: ["230000"] },
+      { name: "三重県", officeCodes: ["240000"] }, { name: "滋賀県", officeCodes: ["250000"] }, { name: "京都府", officeCodes: ["260000"] }, { name: "大阪府", officeCodes: ["270000"] }, { name: "兵庫県", officeCodes: ["280000"] }, { name: "奈良県", officeCodes: ["290000"] }, { name: "和歌山県", officeCodes: ["300000"] },
+      { name: "鳥取県", officeCodes: ["310000"] }, { name: "島根県", officeCodes: ["320000"] }, { name: "岡山県", officeCodes: ["330000"] }, { name: "広島県", officeCodes: ["340000"] }, { name: "山口県", officeCodes: ["350000"] },
+      { name: "徳島県", officeCodes: ["360000"] }, { name: "香川県", officeCodes: ["370000"] }, { name: "愛媛県", officeCodes: ["380000"] }, { name: "高知県", officeCodes: ["390000"] },
+      { name: "福岡県", officeCodes: ["400000"] }, { name: "佐賀県", officeCodes: ["410000"] }, { name: "長崎県", officeCodes: ["420000"] }, { name: "熊本県", officeCodes: ["430000"] }, { name: "大分県", officeCodes: ["440000"] }, { name: "宮崎県", officeCodes: ["450000"] }, { name: "鹿児島県", officeCodes: ["460100", "460040"] }, { name: "沖縄県", officeCodes: ["471000", "472000", "473000", "474000"] }
     ];
+    function getPrefectureGroupByName(name){return PREFECTURE_OFFICE_GROUPS.find(function(g){return g.name===name;})||null;}
+    function getPrefectureGroupByOfficeCode(code){return PREFECTURE_OFFICE_GROUPS.find(function(g){return g.officeCodes.indexOf(String(code||""))>=0;})||null;}
+    function getDefaultPrefectureName(){return DEFAULT_WEATHER_OFFICE_NAME || "東京都";}
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     let currentUser = null;
@@ -211,36 +175,46 @@
         return pref.code;
       });
     }
-
     function populateWeatherOffices(savedOfficeCode) {
       clearSelect(weatherOfficeSelect);
-      const officeCodes = getOfficeCodes();
-      officeCodes.forEach(function(code) {
-        const pref = PREFECTURE_OFFICE_ORDER.find(function(item) { return item.code === code; });
-        const option = makeOption(code, pref ? pref.name : code);
-        option.setAttribute("data-prefecture-name", pref ? pref.name : code);
-        const office = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[code] : null;
-        if (office && office.name) option.setAttribute("data-jma-office-name", office.name);
+      PREFECTURE_OFFICE_GROUPS.forEach(function(group){
+        const hasAnyOffice = group.officeCodes.some(function(code){
+          const office = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[code] : null;
+          return office && Array.isArray(office.children) && office.children.length > 0;
+        });
+        if(!hasAnyOffice) return;
+        const option = makeOption(group.name, group.name);
+        option.setAttribute("data-prefecture-name", group.name);
+        option.setAttribute("data-default-office-code", group.officeCodes[0]);
         weatherOfficeSelect.appendChild(option);
       });
-      weatherOfficeSelect.value = savedOfficeCode || DEFAULT_WEATHER_OFFICE_CODE;
-      if (!weatherOfficeSelect.value) weatherOfficeSelect.value = DEFAULT_WEATHER_OFFICE_CODE;
-      if (!weatherOfficeSelect.value && weatherOfficeSelect.options.length > 0) weatherOfficeSelect.selectedIndex = 0;
+      const savedGroup = getPrefectureGroupByOfficeCode(savedOfficeCode);
+      weatherOfficeSelect.value = savedGroup ? savedGroup.name : getDefaultPrefectureName();
+      if(!weatherOfficeSelect.value && weatherOfficeSelect.options.length > 0) weatherOfficeSelect.selectedIndex = 0;
       populateWeatherAreas();
     }
-
     function populateWeatherAreas(savedAreaCode) {
       clearSelect(weatherAreaSelect);
-      const officeCode = weatherOfficeSelect.value || DEFAULT_WEATHER_OFFICE_CODE;
-      const office = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[officeCode] : null;
-      const areaCodes = office && Array.isArray(office.children) ? office.children : [DEFAULT_WEATHER_AREA_CODE];
-      areaCodes.forEach(function(areaCode) {
-        const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
-        const name = areaInfo && areaInfo.name ? areaInfo.name : areaCode;
-        weatherAreaSelect.appendChild(makeOption(areaCode, name));
+      const prefName = weatherOfficeSelect.value || getDefaultPrefectureName();
+      const group = getPrefectureGroupByName(prefName) || getPrefectureGroupByName(getDefaultPrefectureName()) || PREFECTURE_OFFICE_GROUPS[0];
+      const usedAreaCodes = {};
+      group.officeCodes.forEach(function(officeCode){
+        const office = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[officeCode] : null;
+        const areaCodes = office && Array.isArray(office.children) ? office.children : [];
+        areaCodes.forEach(function(areaCode){
+          if(usedAreaCodes[areaCode]) return;
+          usedAreaCodes[areaCode] = true;
+          const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
+          const areaName = areaInfo && areaInfo.name ? areaInfo.name : areaCode;
+          const option = makeOption(areaCode, areaName);
+          option.setAttribute("data-office-code", officeCode);
+          option.setAttribute("data-prefecture-name", group.name);
+          if(office && office.name) option.setAttribute("data-jma-office-name", office.name);
+          weatherAreaSelect.appendChild(option);
+        });
       });
-      weatherAreaSelect.value = savedAreaCode || (weatherAreaSelect.options[0] ? weatherAreaSelect.options[0].value : DEFAULT_WEATHER_AREA_CODE);
-      if (!weatherAreaSelect.value && weatherAreaSelect.options.length > 0) weatherAreaSelect.selectedIndex = 0;
+      weatherAreaSelect.value = savedAreaCode || DEFAULT_WEATHER_AREA_CODE;
+      if(!weatherAreaSelect.value && weatherAreaSelect.options.length > 0) weatherAreaSelect.selectedIndex = 0;
     }
 
     async function loadWeatherAreaMaster() {
@@ -265,19 +239,14 @@
         loading = false;
       }
     }
-
     function getSelectedWeatherSetting() {
-      const officeCode = weatherOfficeSelect.value || DEFAULT_WEATHER_OFFICE_CODE;
-      const areaCode = weatherAreaSelect.value || DEFAULT_WEATHER_AREA_CODE;
+      const selectedAreaOption = weatherAreaSelect.options[weatherAreaSelect.selectedIndex];
       const selectedOfficeOption = weatherOfficeSelect.options[weatherOfficeSelect.selectedIndex];
-      const officeName = selectedOfficeOption ? (selectedOfficeOption.getAttribute("data-prefecture-name") || selectedOfficeOption.textContent || DEFAULT_WEATHER_OFFICE_NAME) : DEFAULT_WEATHER_OFFICE_NAME;
+      const officeCode = selectedAreaOption ? (selectedAreaOption.getAttribute("data-office-code") || DEFAULT_WEATHER_OFFICE_CODE) : DEFAULT_WEATHER_OFFICE_CODE;
+      const areaCode = weatherAreaSelect.value || DEFAULT_WEATHER_AREA_CODE;
+      const prefectureName = selectedAreaOption ? (selectedAreaOption.getAttribute("data-prefecture-name") || weatherOfficeSelect.value || DEFAULT_WEATHER_OFFICE_NAME) : (selectedOfficeOption ? selectedOfficeOption.textContent : DEFAULT_WEATHER_OFFICE_NAME);
       const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
-      return {
-        weatherOfficeCode: officeCode,
-        weatherOfficeName: officeName,
-        weatherAreaCode: areaCode,
-        weatherAreaName: areaInfo && areaInfo.name ? areaInfo.name : DEFAULT_WEATHER_AREA_NAME
-      };
+      return { weatherOfficeCode: officeCode, weatherOfficeName: prefectureName, weatherPrefectureName: prefectureName, weatherAreaCode: areaCode, weatherAreaName: areaInfo && areaInfo.name ? areaInfo.name : DEFAULT_WEATHER_AREA_NAME };
     }
 
     function saveWeatherSetting() {
@@ -293,7 +262,7 @@
       }
     }
 
-    weatherOfficeSelect.addEventListener("change", function () { populateWeatherAreas(); });
+    weatherOfficeSelect.addEventListener("change", function () { populateWeatherAreas(null); });
     saveWeatherAreaBtn.addEventListener("click", saveWeatherSetting);
     reloadAreaBtn.addEventListener("click", loadWeatherAreaMaster);
 
