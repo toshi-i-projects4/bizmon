@@ -68,6 +68,11 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 .today-date{text-align:center !important;}
 .today-date .date-top{font-size:13px !important;text-align:center !important;margin-bottom:5px !important;}
 .today-date .date-bottom{font-size:20px !important;text-align:center !important;}
+
+/* BIZMON_ALMANAC_DESCRIPTION_AFTER_EXAMPLE_V13 */
+.almanac-list .almanac-description{margin-top:0;margin-bottom:4px;background:#ffffff;border:1px solid #dbeafe;border-left:5px solid #2563eb;border-radius:12px;box-shadow:0 2px 8px rgba(37,99,235,.08);}
+.almanac-list .almanac-description-title{display:flex;align-items:center;gap:6px;}
+.almanac-list .almanac-description-title:before{content:"📘";}
 </style>
 </head>
 <body>
@@ -151,6 +156,42 @@ document.getElementById("logoutBtn").addEventListener("click",async function(){t
   window.bizmonStandaloneWeatherLoad=load;
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",load);else load();
   setTimeout(function(){var box=document.getElementById("weatherMini");if(box&&box.textContent.indexOf("読み込み中")>=0)load();},2000);
+})();
+</script>
+
+
+<script>
+(function(){
+  if(window.BIZMON_ALMANAC_DESCRIPTION_AFTER_EXAMPLE_V13)return;
+  window.BIZMON_ALMANAC_DESCRIPTION_AFTER_EXAMPLE_V13=true;
+  function placeDescriptionAfterExample(){
+    var list=document.getElementById("almanacList");
+    var desc=document.getElementById("almanacDescription");
+    if(!list||!desc)return;
+    var items=list.querySelectorAll(".almanac-item");
+    if(!items.length)return;
+    var exampleItem=null;
+    for(var i=0;i<items.length;i++){
+      var title=items[i].querySelector(".almanac-item-title");
+      if(title&&String(title.textContent||"").trim()==="たとえば"){exampleItem=items[i];break;}
+    }
+    if(exampleItem){
+      if(exampleItem.nextElementSibling!==desc){exampleItem.insertAdjacentElement("afterend",desc);}
+    }else{
+      if(desc.parentElement!==list){list.appendChild(desc);}
+    }
+  }
+  function start(){
+    placeDescriptionAfterExample();
+    var list=document.getElementById("almanacList");
+    if(list&&window.MutationObserver){
+      var observer=new MutationObserver(function(){placeDescriptionAfterExample();});
+      observer.observe(list,{childList:true,subtree:false});
+    }
+    var count=0;
+    var timer=setInterval(function(){placeDescriptionAfterExample();count++;if(count>=10)clearInterval(timer);},500);
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();
 })();
 </script>
 
