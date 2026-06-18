@@ -114,7 +114,6 @@ import { getFirestore, collection, getDocs, getDoc, doc, setDoc, serverTimestamp
       if (!currentUser || !currentUser.uid) return "";
       return "bizmonWeatherSettings_" + currentUser.uid;
     }
-
 async function syncWeatherSettingFromUsers(){
   try{
     if(!currentUser||!currentUser.uid||typeof db==="undefined"||typeof getDoc==="undefined"||typeof doc==="undefined")return null;
@@ -233,25 +232,52 @@ async function syncWeatherSettingFromUsers(){
       weatherAreaSelect.value = savedAreaCode || DEFAULT_WEATHER_AREA_CODE;
       if(!weatherAreaSelect.value && weatherAreaSelect.options.length > 0) weatherAreaSelect.selectedIndex = 0;
     }
-
     async function loadWeatherAreaMaster() {
       if (loading) return;
       loading = true;
       setStatus("地域データを読み込み中です。", "note");
       try {
-        const saved = getSavedWeatherSetting();
+        let saved = getSavedWeatherSetting();
+
+        // クラウド同期は最大1.5秒だけ待ちます。失敗しても地域データ読み込みは止めません。
+        try {
+          if (typeof syncWeatherSettingFromUsers === "function") {
+            const cloudSetting = await Promise.race([
+              syncWeatherSettingFromUsers(),
+              new Promise(function(resolve){ setTimeout(function(){ resolve(null); }, 1500); })
+            ]);
+            if (cloudSetting && cloudSetting.weatherOfficeCode && cloudSetting.weatherAreaCode) {
+              saved = cloudSetting;
+            }
+          }
+        } catch (cloudError) {
+          console.warn("cloud weather setting load skipped", cloudError);
+        }
+
         const controller = new AbortController();
-        const timeoutId = setTimeout(function () { controller.abort(); }, 8000);
-        const response = await fetch(JMA_AREA_JSON_URL + "?t=" + Date.now(), { signal: controller.signal, cache: "no-store" });
+        const timeoutId = setTimeout(function(){ controller.abort(); }, 8000);
+        const response = await fetch(JMA_AREA_JSON_URL + "?t=" + Date.now(), {
+          signal: controller.signal,
+          cache: "no-store"
+        });
         clearTimeout(timeoutId);
-        if (!response.ok) throw new Error("地域データの取得に失敗しました。");
+        if (!response.ok) throw new Error("地域データの取得に失敗しました。HTTP " + response.status);
         jmaAreaData = await response.json();
-        populateWeatherOffices(saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : DEFAULT_WEATHER_OFFICE_CODE);
-        populateWeatherAreas(saved && saved.weatherAreaCode ? saved.weatherAreaCode : null);
-        setStatus("地域データを読み込みました。地域を選択して保存してください。", "ok");
+
+        const savedOfficeCode = saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : DEFAULT_WEATHER_OFFICE_CODE;
+        const savedAreaCode = saved && saved.weatherAreaCode ? saved.weatherAreaCode : null;
+
+        populateWeatherOffices(savedOfficeCode);
+        populateWeatherAreas(savedAreaCode);
+        setStatus("地域データを読み込みました。都道府県と地域を選択して保存してください。", "ok");
       } catch (error) {
         console.error(error);
-        applyFallbackAreaData();
+        try {
+          applyFallbackAreaData();
+        } catch (fallbackError) {
+          console.error(fallbackError);
+          setStatus("地域データの読み込みに失敗しました。時間をおいて再度お試しください。", "err");
+        }
       } finally {
         loading = false;
       }
@@ -339,6 +365,9 @@ async function syncWeatherSettingFromCloud(){
       renderCurrentSetting();
       loadWeatherAreaMaster();
     });
-  </script>
+  
+// BIZMON_WEATHER_SETTINGS_LOAD_RETRY_V26
+setTimeout(function(){try{if(typeof loading!=="undefined"&&loading){loading=false;} if(typeof loadWeatherAreaMaster==="function" && weatherOfficeSelect && weatherOfficeSelect.options.length===0){loadWeatherAreaMaster();}}catch(e){console.warn(e);}},3000);
+</script>
 </body>
 </html>
