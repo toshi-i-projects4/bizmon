@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天気予報表示地域設定</title>
+  <style>
+    body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#ffffff;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:920px;margin:0 auto}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}h1{margin:0;font-size:28px;color:#111827}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:20px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}.section-title{font-size:18px;font-weight:bold;margin:0 0 14px;color:#111827}.description{font-size:14px;line-height:1.7;color:#6b7280;margin:0 0 18px}.info-box{background:#eff6ff;border-left:4px solid #2563eb;border-radius:10px;padding:14px 16px;color:#1e3a8a;font-size:14px;line-height:1.7;margin-bottom:18px}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;color:#92400e;font-size:14px;line-height:1.7;margin-top:16px}.form-grid{display:grid;grid-template-columns:220px 1fr;gap:16px 18px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}select{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;font-size:15px;box-sizing:border-box;background:#fff;color:#111827}select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}.button-row{display:flex;justify-content:flex-end;gap:12px;margin-top:22px}.primary-btn,.secondary-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.primary-btn:hover{background:#1d4ed8}.secondary-btn{background:#f3f4f6;color:#111827}.status{min-height:24px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap}.status.ok{color:#166534}.status.error{color:#dc2626}.status.note{color:#374151}.small-note{font-size:13px;color:#6b7280;line-height:1.6;margin-top:6px}.current-setting{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.7;color:#374151}.source-note{font-size:12px;color:#6b7280;line-height:1.6;margin-top:12px}@media(max-width:720px){body{padding:18px}.header{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr;gap:8px 0}.button-row{flex-direction:column}.primary-btn,.secondary-btn{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>天気予報表示地域設定</h1>
+      <a class="back-link" href="index.html">← マイページへ戻る</a>
+    </div>
+
+    <div class="card">
+      <p class="section-title">天気予報の表示地域</p>
+      <p class="description">マイページ等に表示する天気予報の地域を設定します。全国の都道府県・地域から選択できます。</p>
+      <div class="info-box">
+        気象庁の地域データを読み込み、都道府県と地域を選択できるようにしています。<br>
+        選択した地域は、この端末のブラウザに保存されます。
+      </div>
+
+      <div class="form-grid">
+        <div class="label">都道府県</div>
+        <div>
+          <select id="weatherOfficeSelect">
+            <option value="">地域データを読み込み中...</option>
+          </select>
+          <div class="small-note">天気予報を取得する都道府県を選択してください。</div>
+        </div>
+
+        <div class="label">地域</div>
+        <div>
+          <select id="weatherAreaSelect">
+            <option value="">先に都道府県を選択してください</option>
+          </select>
+          <div class="small-note">北西部・南部など、気象庁の予報地域を選択してください。</div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button type="button" class="secondary-btn" id="reloadAreaBtn">地域データを再読み込み</button>
+        <button type="button" class="primary-btn" id="saveWeatherAreaBtn">設定を保存</button>
+      </div>
+      <div id="weatherStatus" class="status note">地域データを読み込み中です。</div>
+    </div>
+
+    <div class="card">
+      <p class="section-title">現在保存されている設定</p>
+      <div id="currentSetting" class="current-setting">保存済みの設定を確認中です。</div>
+      <div class="source-note">※気象庁のデータを利用しています。気象庁の地域データを取得できない場合は、暫定的に千葉県の候補を表示します。</div>
+    </div>
+
+    <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
+      authDomain: "bizmon-31ffc.firebaseapp.com",
+      databaseURL: "https://bizmon-31ffc-default-rtdb.firebaseio.com",
+      projectId: "bizmon-31ffc",
+      storageBucket: "bizmon-31ffc.firebasestorage.app",
+      messagingSenderId: "535364592474",
+      appId: "1:535364592474:web:1f60b1eb2ad804b1a28963",
+      measurementId: "G-CE1ZDBSVM6"
+    };
+
+    const JMA_AREA_JSON_URL = "https://www.jma.go.jp/bosai/common/const/area.json";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    let currentUser = null;
+    let jmaAreaData = null;
+    let loading = false;
+
+    const weatherOfficeSelect = document.getElementById("weatherOfficeSelect");
+    const weatherAreaSelect = document.getElementById("weatherAreaSelect");
+    const saveWeatherAreaBtn = document.getElementById("saveWeatherAreaBtn");
+    const reloadAreaBtn = document.getElementById("reloadAreaBtn");
+    const weatherStatusEl = document.getElementById("weatherStatus");
+    const currentSettingEl = document.getElementById("currentSetting");
+
+    function setStatus(message, type) {
+      weatherStatusEl.textContent = message;
+      weatherStatusEl.className = "status " + (type || "note");
+    }
+
+    function getWeatherStorageKey() {
+      return currentUser && currentUser.uid ? "bizmonWeatherSettings_" + currentUser.uid : "bizmonWeatherSettings";
+    }
+
+    function getSavedWeatherSetting() {
+      try {
+        return JSON.parse(localStorage.getItem(getWeatherStorageKey()) || localStorage.getItem("bizmonWeatherSettings") || "null");
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function renderCurrentSetting() {
+      const saved = getSavedWeatherSetting();
+      if (!saved) {
+        currentSettingEl.textContent = "まだ保存されていません。初期値として『千葉県 北西部』を使用します。";
+        return;
+      }
+      currentSettingEl.textContent = "都道府県：" + (saved.weatherOfficeName || "未設定") + "\n地域：" + (saved.weatherAreaName || "未設定") + "\n保存コード：" + (saved.weatherOfficeCode || "") + " / " + (saved.weatherAreaCode || "");
+    }
+
+    function makeOption(value, text) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = text;
+      return option;
+    }
+
+    function clearSelect(selectEl) {
+      while (selectEl.firstChild) selectEl.removeChild(selectEl.firstChild);
+    }
+
+    function applyFallbackAreaData() {
+      jmaAreaData = {
+        offices: { "120000": { name: "千葉県", children: ["120010", "120020", "120030"] } },
+        class10s: {
+          "120010": { name: "北西部" },
+          "120020": { name: "北東部" },
+          "120030": { name: "南部" }
+        }
+      };
+      populateWeatherOffices("120000");
+      setStatus("地域データを取得できなかったため、暫定的に千葉県の地域候補を表示しています。", "error");
+    }
+
+    function getOfficeCodes() {
+      if (!jmaAreaData || !jmaAreaData.offices) return [];
+      return Object.keys(jmaAreaData.offices).filter(function(code) {
+        const office = jmaAreaData.offices[code];
+        return office && office.name && Array.isArray(office.children) && office.children.length > 0;
+      });
+    }
+
+    function populateWeatherOffices(savedOfficeCode) {
+      clearSelect(weatherOfficeSelect);
+      const officeCodes = getOfficeCodes();
+      officeCodes.forEach(function(code) {
+        const office = jmaAreaData.offices[code];
+        weatherOfficeSelect.appendChild(makeOption(code, office.name));
+      });
+      weatherOfficeSelect.value = savedOfficeCode || "120000";
+      if (!weatherOfficeSelect.value && weatherOfficeSelect.options.length > 0) weatherOfficeSelect.selectedIndex = 0;
+      populateWeatherAreas();
+    }
+
+    function populateWeatherAreas(savedAreaCode) {
+      clearSelect(weatherAreaSelect);
+      const officeCode = weatherOfficeSelect.value || "120000";
+      const office = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[officeCode] : null;
+      const areaCodes = office && Array.isArray(office.children) ? office.children : ["120010", "120020", "120030"];
+      areaCodes.forEach(function(areaCode) {
+        const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
+        const name = areaInfo && areaInfo.name ? areaInfo.name : areaCode;
+        weatherAreaSelect.appendChild(makeOption(areaCode, name));
+      });
+      weatherAreaSelect.value = savedAreaCode || (weatherAreaSelect.options[0] ? weatherAreaSelect.options[0].value : "120010");
+      if (!weatherAreaSelect.value && weatherAreaSelect.options.length > 0) weatherAreaSelect.selectedIndex = 0;
+    }
+
+    async function loadWeatherAreaMaster() {
+      if (loading) return;
+      loading = true;
+      setStatus("地域データを読み込み中です。", "note");
+      try {
+        const saved = getSavedWeatherSetting();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(function () { controller.abort(); }, 8000);
+        const response = await fetch(JMA_AREA_JSON_URL + "?t=" + Date.now(), { signal: controller.signal, cache: "no-store" });
+        clearTimeout(timeoutId);
+        if (!response.ok) throw new Error("地域データの取得に失敗しました。");
+        jmaAreaData = await response.json();
+        populateWeatherOffices(saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : "120000");
+        populateWeatherAreas(saved && saved.weatherAreaCode ? saved.weatherAreaCode : null);
+        setStatus("地域データを読み込みました。地域を選択して保存してください。", "ok");
+      } catch (error) {
+        console.error(error);
+        applyFallbackAreaData();
+      } finally {
+        loading = false;
+      }
+    }
+
+    function getSelectedWeatherSetting() {
+      const officeCode = weatherOfficeSelect.value || "120000";
+      const areaCode = weatherAreaSelect.value || "120010";
+      const officeInfo = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[officeCode] : null;
+      const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
+      return {
+        weatherOfficeCode: officeCode,
+        weatherOfficeName: officeInfo && officeInfo.name ? officeInfo.name : "千葉県",
+        weatherAreaCode: areaCode,
+        weatherAreaName: areaInfo && areaInfo.name ? areaInfo.name : "北西部"
+      };
+    }
+
+    function saveWeatherSetting() {
+      const setting = getSelectedWeatherSetting();
+      try {
+        localStorage.setItem(getWeatherStorageKey(), JSON.stringify(setting));
+        localStorage.setItem("bizmonWeatherSettings", JSON.stringify(setting));
+        setStatus("天気予報の表示地域を保存しました。", "ok");
+        renderCurrentSetting();
+      } catch (error) {
+        console.error(error);
+        setStatus("保存に失敗しました。ブラウザの保存設定を確認してください。", "error");
+      }
+    }
+
+    weatherOfficeSelect.addEventListener("change", function () { populateWeatherAreas(); });
+    saveWeatherAreaBtn.addEventListener("click", saveWeatherSetting);
+    reloadAreaBtn.addEventListener("click", loadWeatherAreaMaster);
+
+    onAuthStateChanged(auth, function (user) {
+      if (!user) {
+        location.href = "login.html";
+        return;
+      }
+      currentUser = user;
+      renderCurrentSetting();
+      loadWeatherAreaMaster();
+    });
+  </script>
+</body>
+</html>

@@ -27,8 +27,6 @@
     .label { font-size: 14px; font-weight: bold; color: #374151; }
     input { width: 100%; border: 1px solid #d1d5db; border-radius: 10px; padding: 11px 12px; font-size: 15px; box-sizing: border-box; background: #ffffff; color: #111827; }
     input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
-    select { width: 100%; border: 1px solid #d1d5db; border-radius: 10px; padding: 11px 12px; font-size: 15px; box-sizing: border-box; background: #ffffff; color: #111827; }
-    select:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
     input[readonly] { background: #f9fafb; color: #6b7280; }
     .password-wrap { position: relative; }
     .password-wrap input { padding-right: 48px; }
@@ -139,37 +137,6 @@
       </div>
     </div>
 
-
-
-    <div class="card">
-      <p class="section-title">天気予報の地域設定</p>
-      <p class="description">マイページに表示する天気予報の地域を設定します。全国の都道府県・地域から選択できます。</p>
-      <div class="info-box">
-        気象庁の地域データを読み込み、都道府県と地域を選択できるようにしています。<br>
-        選択した地域はこの端末のブラウザに保存され、マイページの天気表示で使用します。
-      </div>
-      <div class="form-grid">
-        <div class="label">都道府県</div>
-        <div>
-          <select id="weatherOfficeSelect">
-            <option value="">地域データを読み込み中...</option>
-          </select>
-          <div class="small-note">天気予報を取得する都道府県を選択してください。</div>
-        </div>
-        <div class="label">地域</div>
-        <div>
-          <select id="weatherAreaSelect">
-            <option value="">先に都道府県を選択してください</option>
-          </select>
-          <div class="small-note">北西部・南部など、気象庁の予報地域を選択してください。</div>
-        </div>
-      </div>
-      <div class="button-row">
-        <button type="button" class="primary-btn" id="saveWeatherAreaBtn">天気予報の地域を保存</button>
-      </div>
-      <div id="weatherStatus" class="status"></div>
-    </div>
-
     <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
   </div>
 
@@ -207,13 +174,6 @@
     const passwordStatusEl = document.getElementById("passwordStatus");
     const updateEmailBtn = document.getElementById("updateEmailBtn");
     const updatePasswordBtn = document.getElementById("updatePasswordBtn");
-    const weatherOfficeSelect = document.getElementById("weatherOfficeSelect");
-    const weatherAreaSelect = document.getElementById("weatherAreaSelect");
-    const saveWeatherAreaBtn = document.getElementById("saveWeatherAreaBtn");
-    const weatherStatusEl = document.getElementById("weatherStatus");
-    let jmaAreaData = null;
-    let weatherAreaMasterLoading = false;
-    let weatherAreaMasterLoaded = false;
 
     function setStatus(el, message, type) {
       el.textContent = message;
@@ -244,152 +204,9 @@
       if (length === 0) passwordCountEl.style.color = "#6b7280";
       else if (length < PASSWORD_MIN_LENGTH) passwordCountEl.style.color = "#dc2626";
       else passwordCountEl.style.color = "#166534";
-    } catch (error) {
-        console.error(error);
-        setStatus(weatherStatusEl, "天気予報の地域設定の保存に失敗しました。ブラウザの保存設定を確認してください。", "error");
-      }
-    }
-
-
-
-    const JMA_AREA_JSON_URL = "https://www.jma.go.jp/bosai/common/const/area.json";
-
-    function getWeatherStorageKey() {
-      return currentUser && currentUser.uid ? "bizmonWeatherSettings_" + currentUser.uid : "bizmonWeatherSettings";
-    }
-
-    function getSavedWeatherSetting() {
-      try {
-        return JSON.parse(localStorage.getItem(getWeatherStorageKey()) || localStorage.getItem("bizmonWeatherSettings") || "null");
-      } catch (error) {
-        return null;
-      }
-    }
-
-    function makeOption(value, text) {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = text;
-      return option;
-    }
-
-    function clearSelect(selectEl) {
-      if (!selectEl) return;
-      while (selectEl.firstChild) selectEl.removeChild(selectEl.firstChild);
-    }
-
-    function getOfficeCodesFromAreaData(areaData) {
-      if (!areaData || !areaData.offices) return [];
-      return Object.keys(areaData.offices).filter(function(code) {
-        const office = areaData.offices[code];
-        return office && office.name && Array.isArray(office.children) && office.children.length > 0;
-      });
-    }
-
-    function populateWeatherOffices(savedOfficeCode) {
-      if (!weatherOfficeSelect || !jmaAreaData || !jmaAreaData.offices) return;
-      clearSelect(weatherOfficeSelect);
-      const officeCodes = getOfficeCodesFromAreaData(jmaAreaData);
-      officeCodes.forEach(function(code) {
-        const office = jmaAreaData.offices[code];
-        const option = makeOption(code, office.name);
-        weatherOfficeSelect.appendChild(option);
-      });
-      weatherOfficeSelect.value = savedOfficeCode || "120000";
-      if (!weatherOfficeSelect.value && weatherOfficeSelect.options.length > 0) weatherOfficeSelect.selectedIndex = 0;
-      populateWeatherAreas();
-    }
-
-    function populateWeatherAreas(savedAreaCode) {
-      if (!weatherAreaSelect || !weatherOfficeSelect) return;
-      clearSelect(weatherAreaSelect);
-      const officeCode = weatherOfficeSelect.value || "120000";
-      const office = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[officeCode] : null;
-      const areaCodes = office && Array.isArray(office.children) ? office.children : ["120010", "120020", "120030"];
-      areaCodes.forEach(function(areaCode) {
-        const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
-        const name = areaInfo && areaInfo.name ? areaInfo.name : (areaCode === "120010" ? "北西部" : areaCode === "120020" ? "北東部" : "南部");
-        weatherAreaSelect.appendChild(makeOption(areaCode, name));
-      });
-      weatherAreaSelect.value = savedAreaCode || (weatherAreaSelect.options[0] ? weatherAreaSelect.options[0].value : "120010");
-      if (!weatherAreaSelect.value && weatherAreaSelect.options.length > 0) weatherAreaSelect.selectedIndex = 0;
-    }
-
-    function applyFallbackWeatherAreas() {
-      jmaAreaData = {
-        offices: { "120000": { name: "千葉県", children: ["120010", "120020", "120030"] } },
-        class10s: {
-          "120010": { name: "北西部" },
-          "120020": { name: "北東部" },
-          "120030": { name: "南部" }
-        }
-      };
-      populateWeatherOffices("120000");
-      setStatus(weatherStatusEl, "地域データを取得できなかったため、暫定的に千葉県の地域候補を表示しています。通信環境を確認して再読み込みしてください。", "error");
-    }
-
-    async function loadWeatherAreaMaster() {
-      if (!weatherOfficeSelect || !weatherAreaSelect) return;
-      if (weatherAreaMasterLoaded || weatherAreaMasterLoading) return;
-      weatherAreaMasterLoading = true;
-      const saved = getSavedWeatherSetting();
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(function () { controller.abort(); }, 8000);
-        const response = await fetch(JMA_AREA_JSON_URL + "?t=" + Date.now(), { signal: controller.signal, cache: "no-store" });
-        clearTimeout(timeoutId);
-        if (!response.ok) throw new Error("地域データの取得に失敗しました。");
-        jmaAreaData = await response.json();
-        populateWeatherOffices(saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : "120000");
-        populateWeatherAreas(saved && saved.weatherAreaCode ? saved.weatherAreaCode : null);
-        weatherAreaMasterLoaded = true;
-      } catch (error) {
-        console.error(error);
-        applyFallbackWeatherAreas();
-        weatherAreaMasterLoaded = true;
-      }
-    }
-
-    function getSelectedWeatherSetting() {
-      if (!weatherOfficeSelect || !weatherAreaSelect) return null;
-      const officeCode = weatherOfficeSelect.value || "120000";
-      const areaCode = weatherAreaSelect.value || "120010";
-      const officeInfo = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[officeCode] : null;
-      const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
-      return {
-        weatherOfficeCode: officeCode,
-        weatherOfficeName: officeInfo && officeInfo.name ? officeInfo.name : "千葉県",
-        weatherAreaCode: areaCode,
-        weatherAreaName: areaInfo && areaInfo.name ? areaInfo.name : "北西部"
-      };
-    }
-
-    function saveWeatherSetting() {
-      const setting = getSelectedWeatherSetting();
-      if (!setting) return;
-      try {
-        localStorage.setItem(getWeatherStorageKey(), JSON.stringify(setting));
-        localStorage.setItem("bizmonWeatherSettings", JSON.stringify(setting));
-        setStatus(weatherStatusEl, "天気予報の地域を保存しました。マイページの天気表示に反映されます。", "ok");
-      } catch (error) {
-        console.error(error);
-        setStatus(weatherStatusEl, "天気予報の地域設定の保存に失敗しました。ブラウザの保存設定を確認してください。", "error");
-      }
     }
 
     newPasswordEl.addEventListener("input", updatePasswordCount);
-
-    if (weatherOfficeSelect) {
-      weatherOfficeSelect.addEventListener("change", function () {
-        populateWeatherAreas();
-      });
-    }
-
-    if (saveWeatherAreaBtn) {
-      saveWeatherAreaBtn.addEventListener("click", saveWeatherSetting);
-    }
-
-    document.addEventListener("DOMContentLoaded", function () { loadWeatherAreaMaster(); });
 
     updateEmailBtn.addEventListener("click", async function () {
       const newEmail = newEmailEl.value.trim();
@@ -486,7 +303,6 @@
       }
       currentUser = user;
       refreshUserInfo(user);
-      loadWeatherAreaMaster();
     });
   </script>
 </body>
