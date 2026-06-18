@@ -108,17 +108,14 @@
       weatherStatusEl.textContent = message;
       weatherStatusEl.className = "status " + (type || "note");
     }
-
     function getWeatherStorageKey() {
-      return currentUser && currentUser.uid ? "bizmonWeatherSettings_" + currentUser.uid : "bizmonWeatherSettings";
+      if (!currentUser || !currentUser.uid) return "";
+      return "bizmonWeatherSettings_" + currentUser.uid;
     }
-
     function getSavedWeatherSetting() {
       try {
-        // ログイン後はユーザー別キーのみを参照します。
-        // 共通キー bizmonWeatherSettings に別アカウントの千葉県設定が残っていても、未設定ユーザーには引き継ぎません。
         if (currentUser && currentUser.uid) {
-          return JSON.parse(localStorage.getItem(getWeatherStorageKey()) || "null");
+          return JSON.parse(localStorage.getItem("bizmonWeatherSettings_" + currentUser.uid) || "null");
         }
         return null;
       } catch (error) {
@@ -248,13 +245,18 @@
       const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
       return { weatherOfficeCode: officeCode, weatherOfficeName: prefectureName, weatherPrefectureName: prefectureName, weatherAreaCode: areaCode, weatherAreaName: areaInfo && areaInfo.name ? areaInfo.name : DEFAULT_WEATHER_AREA_NAME };
     }
-
     function saveWeatherSetting() {
+      if (!currentUser || !currentUser.uid) {
+        setStatus("ログイン情報を確認できないため保存できません。再ログインしてください。", "error");
+        return;
+      }
       const setting = getSelectedWeatherSetting();
       try {
-        localStorage.setItem(getWeatherStorageKey(), JSON.stringify(setting));
-        localStorage.setItem("bizmonWeatherSettings", JSON.stringify(setting));
-        setStatus("天気予報の表示地域を保存しました。", "ok");
+        localStorage.setItem("bizmonWeatherSettings_" + currentUser.uid, JSON.stringify(setting));
+        // 共有キーはアカウント混在の原因になるため使いません。
+        localStorage.removeItem("bizmonWeatherSettings");
+        localStorage.setItem("bizmonCurrentWeatherUserUid", currentUser.uid);
+        setStatus("天気予報の表示地域をこのアカウント専用で保存しました。", "ok");
         renderCurrentSetting();
       } catch (error) {
         console.error(error);
