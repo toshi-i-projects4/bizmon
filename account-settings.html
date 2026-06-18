@@ -212,6 +212,8 @@
     const saveWeatherAreaBtn = document.getElementById("saveWeatherAreaBtn");
     const weatherStatusEl = document.getElementById("weatherStatus");
     let jmaAreaData = null;
+    let weatherAreaMasterLoading = false;
+    let weatherAreaMasterLoaded = false;
 
     function setStatus(el, message, type) {
       el.textContent = message;
@@ -323,21 +325,28 @@
         }
       };
       populateWeatherOffices("120000");
-      setStatus(weatherStatusEl, "地域データを取得できなかったため、千葉県の地域候補を表示しています。", "error");
+      setStatus(weatherStatusEl, "地域データを取得できなかったため、暫定的に千葉県の地域候補を表示しています。通信環境を確認して再読み込みしてください。", "error");
     }
 
     async function loadWeatherAreaMaster() {
       if (!weatherOfficeSelect || !weatherAreaSelect) return;
+      if (weatherAreaMasterLoaded || weatherAreaMasterLoading) return;
+      weatherAreaMasterLoading = true;
       const saved = getSavedWeatherSetting();
       try {
-        const response = await fetch(JMA_AREA_JSON_URL);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(function () { controller.abort(); }, 8000);
+        const response = await fetch(JMA_AREA_JSON_URL + "?t=" + Date.now(), { signal: controller.signal, cache: "no-store" });
+        clearTimeout(timeoutId);
         if (!response.ok) throw new Error("地域データの取得に失敗しました。");
         jmaAreaData = await response.json();
         populateWeatherOffices(saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : "120000");
         populateWeatherAreas(saved && saved.weatherAreaCode ? saved.weatherAreaCode : null);
+        weatherAreaMasterLoaded = true;
       } catch (error) {
         console.error(error);
         applyFallbackWeatherAreas();
+        weatherAreaMasterLoaded = true;
       }
     }
 
@@ -379,6 +388,8 @@
     if (saveWeatherAreaBtn) {
       saveWeatherAreaBtn.addEventListener("click", saveWeatherSetting);
     }
+
+    document.addEventListener("DOMContentLoaded", function () { loadWeatherAreaMaster(); });
 
     updateEmailBtn.addEventListener("click", async function () {
       const newEmail = newEmailEl.value.trim();
