@@ -245,7 +245,26 @@
       const areaInfo = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null;
       return { weatherOfficeCode: officeCode, weatherOfficeName: prefectureName, weatherPrefectureName: prefectureName, weatherAreaCode: areaCode, weatherAreaName: areaInfo && areaInfo.name ? areaInfo.name : DEFAULT_WEATHER_AREA_NAME };
     }
-    function saveWeatherSetting() {
+
+async function syncWeatherSettingFromCloud(){
+  try{
+    if(!currentUser||!currentUser.uid||typeof db==="undefined"||typeof getDoc==="undefined"||typeof doc==="undefined")return null;
+    const snap=await getDoc(doc(db,"users",currentUser.uid));
+    if(snap.exists()){
+      const data=snap.data()||{};
+      const setting=data.weatherSettings||null;
+      if(setting&&setting.weatherOfficeCode&&setting.weatherAreaCode){
+        localStorage.setItem("bizmonWeatherSettings_"+currentUser.uid,JSON.stringify(setting));
+        localStorage.setItem("bizmonCurrentWeatherUserUid",currentUser.uid);
+        localStorage.removeItem("bizmonWeatherSettings");
+        return setting;
+      }
+    }
+  }catch(e){console.warn("weather cloud sync failed",e);}
+  return null;
+}
+
+    async function saveWeatherSetting() {
       if (!currentUser || !currentUser.uid) {
         setStatus("ログイン情報を確認できないため保存できません。再ログインしてください。", "error");
         return;
@@ -255,11 +274,15 @@
         localStorage.setItem("bizmonWeatherSettings_" + currentUser.uid, JSON.stringify(setting));
         localStorage.removeItem("bizmonWeatherSettings");
         localStorage.setItem("bizmonCurrentWeatherUserUid", currentUser.uid);
-        setStatus("天気予報の表示地域をこのアカウント専用で保存しました。", "ok");
+        if (typeof db !== "undefined" && typeof doc !== "undefined" && typeof setDoc !== "undefined") {
+          const cloudSetting = Object.assign({}, setting, { updatedAt: (typeof serverTimestamp !== "undefined" ? serverTimestamp() : new Date().toISOString()) });
+          await setDoc(doc(db, "users", currentUser.uid), { weatherSettings: cloudSetting }, { merge: true });
+        }
+        setStatus("天気予報の表示地域をこのアカウントに保存しました。PC・スマホでも同じアカウントなら同期されます。", "ok");
         renderCurrentSetting();
       } catch (error) {
         console.error(error);
-        setStatus("保存に失敗しました。ブラウザの保存設定を確認してください。", "error");
+        setStatus("保存に失敗しました。通信状態またはFirestoreルールを確認してください。", "error");
       }
     }
 
