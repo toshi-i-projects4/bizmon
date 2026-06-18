@@ -55,97 +55,6 @@ let currentUser=null,currentRole="user",currentUserData=null,currentCompanyData=
 function pad2(num){return String(num).padStart(2,"0")}function toDateKey(year,monthIndex,day){return year+"-"+pad2(monthIndex+1)+"-"+pad2(day)}function todayDateKey(){const d=new Date();return toDateKey(d.getFullYear(),d.getMonth(),d.getDate())}function detailAllowedStartKey(){const d=new Date();return toDateKey(d.getFullYear(),d.getMonth()-1,1)}function canOpenDetail(dateKey){return String(dateKey||"")>=detailAllowedStartKey()&&String(dateKey||"")<=todayDateKey()}function detailBlockedMessage(){return "この日の問題・解説の詳細表示期間は終了しています。詳細表示できるのは「前月1日以降」のデータです。過去データが必要な場合は管理者へお問い合わせください。"}
 function escapeHtml(value){return String(value==null?"":value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
 
-const DEFAULT_WEATHER_SETTING={weatherOfficeCode:"130000",weatherOfficeName:"東京都",weatherAreaCode:"130010",weatherAreaName:"東京地方"};
-function getIndexWeatherSetting(){try{if(currentUser&&currentUser.uid){const saved=JSON.parse(localStorage.getItem("bizmonWeatherSettings_"+currentUser.uid)||"null");if(saved&&saved.weatherOfficeCode&&saved.weatherAreaCode)return saved;}return DEFAULT_WEATHER_SETTING}catch(e){return DEFAULT_WEATHER_SETTING}}
-function formatWeatherHour(date){return String(date.getHours()).padStart(2,"0")}
-function formatWeatherTemp(v){return v===undefined||v===null||String(v).trim()===""?"--":String(v).trim()}
-function findWeatherArea(areas,areaCode){if(!Array.isArray(areas)||!areas.length)return null;return areas.find(function(a){return a&&a.area&&String(a.area.code)===String(areaCode)})||areas[0]}
-function getWeatherTimesForTargetDate(timeDefines,pops,targetInfo){
-  const arr=[];
-  (timeDefines||[]).forEach(function(t,i){
-    const d=new Date(t); if(isNaN(d.getTime()))return;
-    const key=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
-    if(key!==targetInfo.dateKey)return;
-    const next=timeDefines[i+1]?new Date(timeDefines[i+1]):new Date(d.getTime()+6*60*60*1000);
-    const label=formatWeatherHour(d)+"-"+formatWeatherHour(next)+"時";
-    const pop=pops&&pops[i]!==undefined&&String(pops[i]).trim()!==""?String(pops[i]).trim()+"%":"--%";
-    arr.push(label+" "+pop);
-  });
-  return arr;
-}
-function extractWeatherTemps(forecastData,targetInfo){
-  try{
-    const first=forecastData&&forecastData[0];
-    const ts=first&&first.timeSeries?first.timeSeries[2]:null;
-    const area=ts&&ts.areas&&ts.areas[0]?ts.areas[0]:null;
-    const timeDefines=ts&&Array.isArray(ts.timeDefines)?ts.timeDefines:[];
-    const temps=area&&Array.isArray(area.temps)?area.temps:[];
-    const nums=[];
-    temps.forEach(function(v,i){
-      if(String(v).trim()==="")return;
-      const d=timeDefines[i]?new Date(timeDefines[i]):null;
-      if(d&&!isNaN(d.getTime())){
-        const key=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
-        if(key!==targetInfo.dateKey)return;
-      }
-      const n=Number(v); if(!isNaN(n))nums.push(n);
-    });
-    if(!nums.length){
-      temps.forEach(function(v){const n=Number(v); if(String(v).trim()!==""&&!isNaN(n))nums.push(n);});
-    }
-    if(!nums.length)return{min:"--",max:"--"};
-    return{min:String(Math.min.apply(null,nums)),max:String(Math.max.apply(null,nums))};
-  }catch(e){return{min:"--",max:"--"};}
-}
-
-function weatherIconFallback(code){
-  code=String(code||"");
-  if(code.charAt(0)==="1")return "☀️";
-  if(code.charAt(0)==="2")return "☁️";
-  if(code.charAt(0)==="3")return "☔";
-  if(code.charAt(0)==="4")return "❄️";
-  return "🌤️";
-}
-function getWeatherTargetInfo(){
-  const now=new Date();
-  const targetDate=new Date(now.getFullYear(),now.getMonth(),now.getDate()+(now.getHours()>=18?1:0));
-  return {
-    index: now.getHours()>=18?1:0,
-    label: now.getHours()>=18?"明日の天気":"今日の天気",
-    date: targetDate,
-    dateKey: targetDate.getFullYear()+"-"+pad2(targetDate.getMonth()+1)+"-"+pad2(targetDate.getDate()),
-    displayDate: (targetDate.getMonth()+1)+"月"+targetDate.getDate()+"日"
-  };
-}
-async function loadWeatherForIndex(){
-  const box=document.getElementById("weatherMini");
-  if(!box)return;
-  const setting=getIndexWeatherSetting();
-  const targetInfo=getWeatherTargetInfo();
-  box.innerHTML='<div class="weather-mini-loading">天気予報を読み込み中...</div>';
-  try{
-    const controller=new AbortController();
-    const timeoutId=setTimeout(function(){controller.abort();},8000);
-    const res=await fetch("https://www.jma.go.jp/bosai/forecast/data/forecast/"+encodeURIComponent(setting.weatherOfficeCode)+".json?t="+Date.now(),{signal:controller.signal,cache:"no-store"});
-    clearTimeout(timeoutId);
-    if(!res.ok)throw new Error("weather fetch failed");
-    const data=await res.json();
-    const first=data&&data[0];
-    const ts0=first&&first.timeSeries?first.timeSeries[0]:null;
-    const ts1=first&&first.timeSeries?first.timeSeries[1]:null;
-    const weatherArea=findWeatherArea(ts0&&ts0.areas,setting.weatherAreaCode);
-    const popArea=findWeatherArea(ts1&&ts1.areas,setting.weatherAreaCode);
-    const code=weatherArea&&weatherArea.weatherCodes&&weatherArea.weatherCodes[targetInfo.index]?weatherArea.weatherCodes[targetInfo.index]:(weatherArea&&weatherArea.weatherCodes&&weatherArea.weatherCodes[0]?weatherArea.weatherCodes[0]:"100");
-    const weatherText=weatherArea&&weatherArea.weathers&&weatherArea.weathers[targetInfo.index]?weatherArea.weathers[targetInfo.index]:(weatherArea&&weatherArea.weathers&&weatherArea.weathers[0]?weatherArea.weathers[0]:"天気情報");
-    const pops=getWeatherTimesForTargetDate(ts1&&ts1.timeDefines,popArea&&popArea.pops,targetInfo);
-    const temps=extractWeatherTemps(data,targetInfo);
-    box.innerHTML='<div class="weather-period">'+escapeHtml(targetInfo.label+'（'+targetInfo.displayDate+'）')+'</div><div class="weather-main"><span class="weather-icon-fallback">'+escapeHtml(weatherIconFallback(code))+'</span><img class="weather-icon" src="https://www.jma.go.jp/bosai/forecast/img/'+escapeHtml(code)+'.svg" alt="'+escapeHtml(weatherText)+'" onerror="this.style.display=&#39;none&#39;;this.previousElementSibling.style.display=&#39;flex&#39;;"><div><div class="weather-place">'+escapeHtml(setting.weatherOfficeName||"")+" "+escapeHtml(setting.weatherAreaName||"")+'</div><div class="weather-text">'+escapeHtml(weatherText)+'</div></div></div><div class="weather-temp">最高 <strong>'+escapeHtml(formatWeatherTemp(temps.max))+'℃</strong> / 最低 <strong>'+escapeHtml(formatWeatherTemp(temps.min))+'℃</strong></div><div class="weather-pops">降水確率：'+escapeHtml(pops.length?pops.join(" / "):"--")+'</div><div class="weather-source">提供：気象庁</div>';
-  }catch(error){
-    console.warn(error);
-    box.innerHTML='<div class="weather-mini-error">天気予報を取得できませんでした。<br>提供：気象庁</div>';
-  }
-}
-
 function setAdminMenuVisible(role){const adminMenu=document.getElementById("adminMenu");if(!adminMenu)return;role==="admin"?adminMenu.classList.add("admin-visible"):adminMenu.classList.remove("admin-visible")}function setApplicantMenuVisible(isVisible){const link=document.getElementById("termsMenuLink");if(!link)return;isVisible?link.classList.add("applicant-visible"):link.classList.remove("applicant-visible")}function setServiceWarning(message){const el=document.getElementById("serviceWarning");if(!el)return;if(message){el.style.display="block";el.innerHTML=message}else{el.style.display="none";el.innerHTML=""}}
 function setMainAvailable(available,message,showTermsLink){serviceAvailable=available;const normal=document.getElementById("mainAvailableArea"),blocked=document.getElementById("mainBlockedArea"),quiz=document.getElementById("quizLink");if(normal)normal.style.display=available?"block":"none";if(quiz){if(available){quiz.classList.remove("disabled-link");quiz.href="question.html"}else{quiz.classList.add("disabled-link");quiz.removeAttribute("href")}}if(blocked){if(available)blocked.innerHTML="";else blocked.innerHTML='<div class="blocked-panel"><div class="blocked-panel-title">利用を開始できません</div><div>'+escapeHtml(message||"現在このサービスは利用できません。")+'</div><div class="blocked-actions">'+(showTermsLink?'<a href="terms-agreement.html">利用規約同意へ進む</a>':'')+'<a href="login.html">ログイン画面へ戻る</a></div></div>'}}
 function firstNonEmpty(){for(let i=0;i<arguments.length;i++){const v=arguments[i];if(v!==undefined&&v!==null&&String(v).trim()!=="")return String(v).trim()}return ""}function normalizeChoice(v){return firstNonEmpty(v).toUpperCase()}function judgeCalendarResult(data){data=data||{};if(data.isCorrect===true)return "correct";if(data.isCorrect===false)return "incorrect";const result=String(firstNonEmpty(data.result,data.resultText,data.judgement,data.judge)).toLowerCase();if(result.includes("incorrect")||result.includes("wrong")||result.includes("不正解")||result.includes("×"))return "incorrect";if(result.includes("correct")||result.includes("正解")||result.includes("○"))return "correct";const selected=normalizeChoice(data.selectedChoice||data.selectedAnswer||data.userAnswer||data.selected||data.answerText||data.userAnswerText||data.yourAnswer),correct=normalizeChoice(data.correctChoice||data.correctAnswer||data.correct||data.rightAnswer);return selected&&correct&&selected===correct?"correct":""}
@@ -167,10 +76,8 @@ function getWeatherTimesForTargetDate(timeDefines,pops,targetInfo){const arr=[];
 function extractWeatherTemps(forecastData,targetInfo){try{const first=forecastData&&forecastData[0];const ts=first&&first.timeSeries?first.timeSeries[2]:null;const area=ts&&ts.areas&&ts.areas[0]?ts.areas[0]:null;const timeDefines=ts&&Array.isArray(ts.timeDefines)?ts.timeDefines:[];const temps=area&&Array.isArray(area.temps)?area.temps:[];const nums=[];temps.forEach(function(v,i){if(String(v).trim()==="")return;const d=timeDefines[i]?new Date(timeDefines[i]):null;if(d&&!isNaN(d.getTime())){const key=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());if(key!==targetInfo.dateKey)return;}const n=Number(v);if(!isNaN(n))nums.push(n);});if(!nums.length)temps.forEach(function(v){const n=Number(v);if(String(v).trim()!==""&&!isNaN(n))nums.push(n);});if(!nums.length)return{min:"--",max:"--"};return{min:String(Math.min.apply(null,nums)),max:String(Math.max.apply(null,nums))};}catch(e){return{min:"--",max:"--"};}}
 async function loadWeatherForIndex(){const box=document.getElementById("weatherMini");if(!box)return;const setting=getIndexWeatherSetting();const targetInfo=getWeatherTargetInfo();box.innerHTML='<div class="weather-mini-loading">天気予報を読み込み中...</div>';try{const controller=new AbortController();const timeoutId=setTimeout(function(){controller.abort();},8000);const res=await fetch("https://www.jma.go.jp/bosai/forecast/data/forecast/"+encodeURIComponent(setting.weatherOfficeCode)+".json?t="+Date.now(),{signal:controller.signal,cache:"no-store"});clearTimeout(timeoutId);if(!res.ok)throw new Error("weather fetch failed: "+res.status);const data=await res.json();const first=data&&data[0];const ts0=first&&first.timeSeries?first.timeSeries[0]:null;const ts1=first&&first.timeSeries?first.timeSeries[1]:null;const weatherArea=findWeatherArea(ts0&&ts0.areas,setting.weatherAreaCode);const popArea=findWeatherArea(ts1&&ts1.areas,setting.weatherAreaCode);const code=weatherArea&&weatherArea.weatherCodes&&weatherArea.weatherCodes[targetInfo.index]?weatherArea.weatherCodes[targetInfo.index]:(weatherArea&&weatherArea.weatherCodes&&weatherArea.weatherCodes[0]?weatherArea.weatherCodes[0]:"100");const weatherText=weatherArea&&weatherArea.weathers&&weatherArea.weathers[targetInfo.index]?weatherArea.weathers[targetInfo.index]:(weatherArea&&weatherArea.weathers&&weatherArea.weathers[0]?weatherArea.weathers[0]:"天気情報");const pops=getWeatherTimesForTargetDate(ts1&&ts1.timeDefines,popArea&&popArea.pops,targetInfo);const temps=extractWeatherTemps(data,targetInfo);box.innerHTML='<div class="weather-period">'+escapeHtml(targetInfo.label+'（'+targetInfo.displayDate+'）')+'</div><div class="weather-main"><span class="weather-icon-fallback">'+escapeHtml(weatherIconFallback(code))+'</span><img class="weather-icon" src="https://www.jma.go.jp/bosai/forecast/img/'+escapeHtml(code)+'.svg" alt="'+escapeHtml(weatherText)+'" onerror="this.style.display=&#39;none&#39;;this.previousElementSibling.style.display=&#39;flex&#39;;"><div><div class="weather-place">'+escapeHtml(setting.weatherOfficeName||"")+" "+escapeHtml(setting.weatherAreaName||"")+'</div><div class="weather-text">'+escapeHtml(weatherText)+'</div></div></div><div class="weather-temp">最高 <strong>'+escapeHtml(formatWeatherTemp(temps.max))+'℃</strong> / 最低 <strong>'+escapeHtml(formatWeatherTemp(temps.min))+'℃</strong></div><div class="weather-pops">降水確率：'+escapeHtml(pops.length?pops.join(" / "):"--")+'</div><div class="weather-source">提供：気象庁</div>';}catch(error){console.warn(error);box.innerHTML='<div class="weather-mini-error">天気予報を取得できませんでした。<br>時間をおいて再度お試しください。<br>提供：気象庁</div>';}}
 
-onAuthStateChanged(auth,async function(user){if(!user){location.href="login.html";return}currentUser=user;await loadUserRole(user);loadWeatherForIndex();loadCalendarResults()});
+onAuthStateChanged(auth,async function(user){if(!user){location.href="login.html";return}currentUser=user;await loadUserRole(user);loadCalendarResults()});
 document.getElementById("logoutBtn").addEventListener("click",async function(){try{await signOut(auth);location.href="login.html"}catch(error){console.error(error);alert("ログアウトに失敗しました。")}});setAdminMenuVisible("user");setApplicantMenuVisible(false);setMainAvailable(false,"ログイン情報を確認しています。",false);renderCalendarSkeleton({});
-// BIZMON_WEATHER_FALLBACK_TIMER_V5
-setTimeout(function(){try{var box=document.getElementById("weatherMini");if(box&&box.textContent.indexOf("読み込み中")>=0){loadWeatherForIndex();}}catch(e){console.warn(e);}},1800);
 </script>
 
 <script>
