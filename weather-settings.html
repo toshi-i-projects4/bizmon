@@ -141,14 +141,20 @@ async function syncWeatherSettingFromUsers(){
         return null;
       }
     }
-
     function renderCurrentSetting() {
-      const saved = getSavedWeatherSetting();
-      if (!saved) {
-        currentSettingEl.textContent = "まだ保存されていません。初期値として『" + DEFAULT_WEATHER_OFFICE_NAME + " " + DEFAULT_WEATHER_AREA_NAME + "』を使用します。";
-        return;
+      try {
+        const saved = getSavedWeatherSetting();
+        const officeName = saved && saved.weatherOfficeName ? saved.weatherOfficeName : DEFAULT_WEATHER_OFFICE_NAME;
+        const areaName = saved && saved.weatherAreaName ? saved.weatherAreaName : DEFAULT_WEATHER_AREA_NAME;
+        const officeCode = saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : DEFAULT_WEATHER_OFFICE_CODE;
+        const areaCode = saved && saved.weatherAreaCode ? saved.weatherAreaCode : DEFAULT_WEATHER_AREA_CODE;
+        if (currentSettingText) {
+          currentSettingText.textContent = officeName + " " + areaName + "（" + officeCode + " / " + areaCode + "）";
+        }
+      } catch (error) {
+        console.warn(error);
+        if (currentSettingText) currentSettingText.textContent = DEFAULT_WEATHER_OFFICE_NAME + " " + DEFAULT_WEATHER_AREA_NAME;
       }
-      currentSettingEl.textContent = "都道府県：" + (saved.weatherOfficeName || "未設定") + "\n地域：" + (saved.weatherAreaName || "未設定") + "\n保存コード：" + (saved.weatherOfficeCode || "") + " / " + (saved.weatherAreaCode || "");
     }
 
     function makeOption(value, text) {
@@ -161,25 +167,31 @@ async function syncWeatherSettingFromUsers(){
     function clearSelect(selectEl) {
       while (selectEl.firstChild) selectEl.removeChild(selectEl.firstChild);
     }
-
     function applyFallbackAreaData() {
       jmaAreaData = {
         offices: {
-          "130000": { name: "東京都", children: ["130010", "130020", "130030", "130040"] },
-          "120000": { name: "千葉県", children: ["120010", "120020", "120030"] }
+          "016000": { name: "北海道", children: ["016010", "016020", "016030"] },
+          "120000": { name: "千葉県", children: ["120010", "120020", "120030"] },
+          "130000": { name: "東京都", children: ["130010", "130020", "130030", "130040"] }
         },
         class10s: {
+          "016010": { name: "石狩地方" },
+          "016020": { name: "空知地方" },
+          "016030": { name: "後志地方" },
+          "120010": { name: "北西部" },
+          "120020": { name: "北東部" },
+          "120030": { name: "南部" },
           "130010": { name: "東京地方" },
           "130020": { name: "伊豆諸島北部" },
           "130030": { name: "伊豆諸島南部" },
-          "130040": { name: "小笠原諸島" },
-          "120010": { name: "北西部" },
-          "120020": { name: "北東部" },
-          "120030": { name: "南部" }
+          "130040": { name: "小笠原諸島" }
         }
       };
-      populateWeatherOffices(DEFAULT_WEATHER_OFFICE_CODE);
-      setStatus("地域データを取得できなかったため、暫定的に東京都の地域候補を表示しています。", "error");
+      const saved = getSavedWeatherSetting();
+      populateWeatherOffices(saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : DEFAULT_WEATHER_OFFICE_CODE);
+      populateWeatherAreas(saved && saved.weatherAreaCode ? saved.weatherAreaCode : null);
+      renderCurrentSetting();
+      setStatus("地域データの取得に失敗したため、最低限の地域データで表示しています。", "note");
     }
 
     function getOfficeCodes() {
@@ -237,17 +249,18 @@ async function syncWeatherSettingFromUsers(){
       loading = true;
       setStatus("地域データを読み込み中です。", "note");
       try {
+        renderCurrentSetting();
         let saved = getSavedWeatherSetting();
 
-        // クラウド同期は最大1.5秒だけ待ちます。失敗しても地域データ読み込みは止めません。
         try {
           if (typeof syncWeatherSettingFromUsers === "function") {
             const cloudSetting = await Promise.race([
               syncWeatherSettingFromUsers(),
-              new Promise(function(resolve){ setTimeout(function(){ resolve(null); }, 1500); })
+              new Promise(function(resolve){ setTimeout(function(){ resolve(null); }, 1200); })
             ]);
             if (cloudSetting && cloudSetting.weatherOfficeCode && cloudSetting.weatherAreaCode) {
               saved = cloudSetting;
+              renderCurrentSetting();
             }
           }
         } catch (cloudError) {
@@ -256,28 +269,20 @@ async function syncWeatherSettingFromUsers(){
 
         const controller = new AbortController();
         const timeoutId = setTimeout(function(){ controller.abort(); }, 8000);
-        const response = await fetch(JMA_AREA_JSON_URL + "?t=" + Date.now(), {
-          signal: controller.signal,
-          cache: "no-store"
-        });
+        const response = await fetch(JMA_AREA_JSON_URL + "?t=" + Date.now(), { signal: controller.signal, cache: "no-store" });
         clearTimeout(timeoutId);
         if (!response.ok) throw new Error("地域データの取得に失敗しました。HTTP " + response.status);
         jmaAreaData = await response.json();
 
         const savedOfficeCode = saved && saved.weatherOfficeCode ? saved.weatherOfficeCode : DEFAULT_WEATHER_OFFICE_CODE;
         const savedAreaCode = saved && saved.weatherAreaCode ? saved.weatherAreaCode : null;
-
         populateWeatherOffices(savedOfficeCode);
         populateWeatherAreas(savedAreaCode);
+        renderCurrentSetting();
         setStatus("地域データを読み込みました。都道府県と地域を選択して保存してください。", "ok");
       } catch (error) {
         console.error(error);
-        try {
-          applyFallbackAreaData();
-        } catch (fallbackError) {
-          console.error(fallbackError);
-          setStatus("地域データの読み込みに失敗しました。時間をおいて再度お試しください。", "err");
-        }
+        try { applyFallbackAreaData(); } catch (fallbackError) { console.error(fallbackError); setStatus("地域データの読み込みに失敗しました。時間をおいて再度お試しください。", "err"); }
       } finally {
         loading = false;
       }
@@ -368,6 +373,9 @@ async function syncWeatherSettingFromCloud(){
   
 // BIZMON_WEATHER_SETTINGS_LOAD_RETRY_V26
 setTimeout(function(){try{if(typeof loading!=="undefined"&&loading){loading=false;} if(typeof loadWeatherAreaMaster==="function" && weatherOfficeSelect && weatherOfficeSelect.options.length===0){loadWeatherAreaMaster();}}catch(e){console.warn(e);}},3000);
+
+// BIZMON_WEATHER_SETTINGS_CURRENT_RESTORE_V27
+setTimeout(function(){try{if(typeof renderCurrentSetting==="function")renderCurrentSetting();if(typeof loading!=="undefined"&&loading){loading=false;}if(typeof loadWeatherAreaMaster==="function"&&weatherOfficeSelect&&weatherOfficeSelect.options.length===0){loadWeatherAreaMaster();}}catch(e){console.warn(e);}},2500);
 </script>
 </body>
 </html>
