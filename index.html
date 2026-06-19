@@ -3,407 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>マイページ</title>
-<link rel="prefetch" href="input-history.html">
-<link rel="prefetch" href="weather-settings.html">
+<title>index.html 自動適用パッチャー v31</title>
 <style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff;color:#333}.top-bar{max-width:1400px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:240px 1fr 280px;align-items:center;gap:24px;min-height:46px;box-sizing:border-box}.page-logo{width:150px;justify-self:center}.greeting-message{text-align:center;font-size:34px;font-weight:bold;color:#f59e0b}.today-date{background:#fff;padding:10px 16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);text-align:right;justify-self:center;transform:translateY(-6px)}.date-top{font-size:15px;color:#4b5563;font-weight:bold;margin-bottom:7px}.date-bottom{font-size:23px;color:#111827;font-weight:bold}.business-message-wrap{max-width:1400px;margin:2px auto 6px;padding:0 20px;box-sizing:border-box;display:grid;grid-template-columns:240px 1fr 280px;gap:24px;transform:translateY(-36px);position:relative;z-index:2}.business-message-area{grid-column:2;background:#eff6ff;border:1px solid #bfdbfe;border-left:5px solid #2563eb;border-radius:14px;padding:10px 16px;box-shadow:0 2px 8px rgba(37,99,235,.08);text-align:center}.business-message-line{font-size:15px;line-height:1.65;color:#1f2937}.business-message-label{font-weight:bold;color:#1d4ed8}.layout{max-width:1400px;margin:0 auto 40px;display:flex;gap:24px;align-items:flex-start;padding:0 20px;box-sizing:border-box}.left-sidebar{width:240px;background:#2563eb;padding:24px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.10);box-sizing:border-box;color:white;margin-top:-76px}.main-content{flex:1;background:#fff;padding:16px 32px 28px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);box-sizing:border-box;text-align:center;min-height:360px;margin-top:-30px}.right-column{width:280px;margin-top:-108px}.right-sidebar{width:100%;background:#f3f4f6;padding:24px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);box-sizing:border-box;color:#374151}.side-menu{display:grid;gap:10px;margin-bottom:18px}.side-menu-link,.side-menu-summary{display:block;text-decoration:none;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:10px;padding:12px 14px;font-size:14px;font-weight:bold;cursor:pointer;list-style:none}.submenu{display:grid;gap:8px;margin:8px 0 2px 12px}.submenu-link{display:block;text-decoration:none;color:#eaf2ff;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);border-radius:9px;padding:9px 12px;font-size:13px}.submenu-link.input-history-ready{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);color:#eaf2ff}.user-info{margin-top:18px;font-size:13px;color:#eaf2ff;line-height:1.6;word-break:break-all;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:10px;padding:12px 14px}.logout-btn{width:100%;margin-top:12px;padding:12px 24px;border:none;border-radius:10px;background:#111827;color:#fff;cursor:pointer;font-size:14px}.guide-message{font-size:22px;font-weight:bold;color:#1e3a8a;margin:0 0 8px}.quiz-button-image{width:140px;max-width:100%;height:auto;cursor:pointer;margin-bottom:16px}.service-warning{display:none;margin:0 auto 16px;max-width:720px;background:#fff7ed;border:1px solid #fed7aa;border-left:5px solid #f97316;border-radius:12px;padding:12px 14px;color:#7c2d12;text-align:left;font-size:14px;line-height:1.7}.service-warning a{color:#1d4ed8;font-weight:bold}.blocked-panel{margin:18px auto;max-width:760px;background:#fffbeb;border:1px solid #fde68a;border-left:5px solid #f59e0b;border-radius:14px;padding:18px 20px;color:#92400e;text-align:left;font-size:15px;line-height:1.8}.blocked-panel-title{font-weight:bold;font-size:18px;margin-bottom:8px;color:#78350f}.blocked-actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}.blocked-actions a{display:inline-block;text-decoration:none;background:#2563eb;color:#fff;border-radius:10px;padding:10px 14px;font-weight:bold;font-size:14px}.speech-title-wrap{text-align:center;margin-bottom:12px}.speech-title{position:relative;display:inline-block;background:#6b7280;color:#fff;padding:10px 14px;border-radius:14px;font-size:20px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,.10)}.speech-title:after{content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:-10px;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #6b7280}.almanac-status{font-size:13px;color:#6b7280;margin:0 0 10px;white-space:pre-wrap}.almanac-list{display:grid;gap:8px}.almanac-item{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.7}.almanac-line{display:flex;gap:4px;align-items:flex-start;flex-wrap:wrap}.almanac-item-title{font-weight:bold;color:#111827}.almanac-colon{color:#6b7280;font-weight:bold}.almanac-item-text{color:#6b7280}.almanac-help-target{cursor:pointer;color:#1d4ed8;border-radius:5px;padding:0 2px}.almanac-help-target:hover,.almanac-help-target:focus{background:#eff6ff;outline:none}.almanac-value-chip{display:inline-block;margin:0 2px;padding:0 2px;border-radius:5px}.almanac-description{margin-top:14px;min-height:122px;background:#fff;border:1px solid #dbeafe;border-left:4px solid #2563eb;border-radius:10px;padding:12px 14px;color:#1e3a8a;font-size:13px;line-height:1.7;white-space:pre-wrap}.almanac-description-title{font-weight:bold;color:#1e40af;margin-bottom:4px}.calendar-card{margin-top:8px;border:1px solid #e5e7eb;border-radius:14px;padding:12px;background:#f9fafb;text-align:left}.calendar-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.calendar-title{font-size:18px;font-weight:bold;color:#111827;text-align:center;flex:1}.calendar-nav-btn{border:none;border-radius:9px;background:#2563eb;color:white;padding:7px 10px;cursor:pointer;font-size:12px}.calendar-status{font-size:12px;color:#6b7280;margin-bottom:6px;white-space:pre-wrap}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.calendar-weekday{text-align:center;font-size:12px;font-weight:bold;color:#4b5563;padding:3px 0}.calendar-day{min-height:46px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:4px;box-sizing:border-box;position:relative}.calendar-day.empty{background:transparent;border:none}.calendar-day.today{border:2px solid #2563eb}.day-number{font-size:12px;color:#374151;font-weight:bold}.day-mark{position:absolute;right:6px;bottom:4px;font-size:20px;font-weight:bold;line-height:1;text-decoration:none;cursor:pointer}.day-mark.correct{color:#16a34a}.day-mark.incorrect{color:#dc2626}.calendar-legend{display:flex;gap:12px;font-size:12px;color:#4b5563;margin-top:6px}.legend-correct{color:#16a34a;font-weight:bold}.legend-incorrect{color:#dc2626;font-weight:bold}.admin-only{display:none}.admin-only.admin-visible{display:grid;gap:10px}.applicant-only{display:none!important}.applicant-only.applicant-visible{display:block!important}.disabled-link{opacity:.45;pointer-events:none;filter:grayscale(1)}.weather-mini{margin-top:10px;border-top:1px solid #e5e7eb;padding-top:9px;text-align:left}.weather-mini-loading,.weather-mini-error{font-size:12px;color:#6b7280;line-height:1.5;text-align:center}.weather-mini-error{color:#dc2626}.weather-main{display:flex;align-items:center;gap:8px;margin-bottom:4px}.weather-icon{width:34px;height:34px;flex:0 0 auto}.weather-place{font-size:13px;font-weight:bold;color:#111827;line-height:1.35}.weather-text{font-size:12px;color:#4b5563;line-height:1.35;margin-top:1px}.weather-temp{font-size:12px;color:#111827;line-height:1.5}.weather-temp strong{color:#1d4ed8}.weather-pops{font-size:11px;color:#374151;line-height:1.45;margin-top:3px}.weather-source{font-size:10px;color:#6b7280;line-height:1.4;margin-top:4px;text-align:right}@media(max-width:1000px){.top-bar{grid-template-columns:1fr;row-gap:10px;justify-items:center}.business-message-wrap{grid-template-columns:1fr;transform:none}.business-message-area{grid-column:1}.layout{flex-direction:column}.left-sidebar,.main-content,.right-column,.right-sidebar{width:100%;margin-top:0}.greeting-message{font-size:28px}.today-date{transform:none}}
-.right-sidebar .speech-title-wrap{margin:0 0 14px;text-align:center}.right-sidebar .speech-title{font-size:18px}.right-sidebar .speech-title:after{bottom:-9px}.weather-main{min-width:0}.weather-icon{width:42px!important;height:42px!important;min-width:42px;max-width:42px;display:block;object-fit:contain;flex:0 0 42px}.weather-icon-fallback{width:42px;height:42px;min-width:42px;max-width:42px;display:none;align-items:center;justify-content:center;font-size:30px;line-height:1;flex:0 0 42px}@media(max-width:1000px){.weather-main{align-items:center;gap:8px}.weather-icon,.weather-icon-fallback{width:40px!important;height:40px!important;min-width:40px;max-width:40px;flex-basis:40px}.weather-place{font-size:13px}.weather-text{font-size:12px}.weather-pops{font-size:11px;word-break:break-word}}.weather-period{font-size:12px;font-weight:bold;color:#1d4ed8;line-height:1.4;margin-bottom:5px}.weather-icon{width:42px!important;height:42px!important;min-width:42px;max-width:42px;display:block;object-fit:contain;flex:0 0 42px}.weather-icon-fallback{width:42px;height:42px;min-width:42px;max-width:42px;display:none;align-items:center;justify-content:center;font-size:30px;line-height:1;flex:0 0 42px}@media(max-width:1000px){.weather-icon,.weather-icon-fallback{width:40px!important;height:40px!important;min-width:40px;max-width:40px;flex-basis:40px}.weather-period{font-size:12px}}
-/* BIZMON_WEATHER_STABLE_STYLE_V5 */
-.weather-mini{margin-top:10px;border-top:1px solid #e5e7eb;padding-top:9px;text-align:left}.weather-mini-loading,.weather-mini-error{font-size:12px;color:#6b7280;line-height:1.5;text-align:center}.weather-mini-error{color:#dc2626}.weather-period{font-size:12px;font-weight:bold;color:#1d4ed8;line-height:1.4;margin-bottom:5px}.weather-main{display:flex;align-items:center;gap:8px;margin-bottom:4px;min-width:0}.weather-icon{width:42px!important;height:42px!important;min-width:42px;max-width:42px;display:block;object-fit:contain;flex:0 0 42px}.weather-icon-fallback{width:42px;height:42px;min-width:42px;max-width:42px;display:none;align-items:center;justify-content:center;font-size:30px;line-height:1;flex:0 0 42px}.weather-place{font-size:13px;font-weight:bold;color:#111827;line-height:1.35}.weather-text{font-size:12px;color:#4b5563;line-height:1.35;margin-top:1px}.weather-temp{font-size:12px;color:#111827;line-height:1.5}.weather-temp strong{color:#1d4ed8}.weather-pops{font-size:11px;color:#374151;line-height:1.45;margin-top:3px}.weather-source{font-size:10px;color:#6b7280;line-height:1.4;margin-top:4px;text-align:right}@media(max-width:1000px){.weather-mini{width:100%;box-sizing:border-box}.weather-main{align-items:center;gap:8px}.weather-icon,.weather-icon-fallback{width:40px!important;height:40px!important;min-width:40px;max-width:40px;flex-basis:40px}.weather-pops{word-break:break-word}}
-
-/* BIZMON_WEATHER_STANDALONE_STYLE_V7 */
-.weather-mini{margin-top:10px;border-top:1px solid #e5e7eb;padding-top:9px;text-align:left}.weather-mini-loading,.weather-mini-error{font-size:12px;color:#6b7280;line-height:1.5;text-align:center}.weather-mini-error{color:#dc2626}.weather-period{font-size:12px;font-weight:bold;color:#1d4ed8;line-height:1.4;margin-bottom:5px}.weather-main{display:flex;align-items:center;gap:8px;margin-bottom:4px;min-width:0}.weather-icon{width:42px!important;height:42px!important;min-width:42px;max-width:42px;display:block;object-fit:contain;flex:0 0 42px}.weather-icon-fallback{width:42px;height:42px;min-width:42px;max-width:42px;display:none;align-items:center;justify-content:center;font-size:30px;line-height:1;flex:0 0 42px}.weather-place{font-size:13px;font-weight:bold;color:#111827;line-height:1.35}.weather-text{font-size:12px;color:#4b5563;line-height:1.35;margin-top:1px}.weather-temp{font-size:12px;color:#111827;line-height:1.5}.weather-temp strong{color:#1d4ed8}.weather-pops{font-size:11px;color:#374151;line-height:1.45;margin-top:3px}.weather-source{font-size:10px;color:#6b7280;line-height:1.4;margin-top:4px;text-align:right}@media(max-width:1000px){.weather-mini{width:100%;box-sizing:border-box}.weather-main{align-items:center;gap:8px}.weather-icon,.weather-icon-fallback{width:40px!important;height:40px!important;min-width:40px;max-width:40px;flex-basis:40px}.weather-pops{word-break:break-word}}
-
-/* BIZMON_LEFT_CENTER_UP_V3: left and center maximum safe up only */
-@media (min-width:1001px){
-  .page-logo{transform:translateY(-52px);}
-  .left-sidebar{margin-top:-160px;}
-  .greeting-message{transform:translateY(-52px);}
-  .business-message-wrap{transform:translateY(-96px);}
-  .main-content{margin-top:-105px;}
-}
-
-/* BIZMON_CENTER_CONTENT_UP_V4: business message and main content only */
-@media (min-width:1001px){
-  .business-message-wrap{transform:translateY(-116px);}
-  .main-content{margin-top:-130px;}
-}
-
-/* BIZMON_LEFT_LOGO_SMALL_SIDEBAR_UP_V5 */
-@media (min-width:1001px){
-  .page-logo{width:75px;max-width:75px;}
-  .left-sidebar{margin-top:-190px;}
-}
-
-/* BIZMON_LEFT_LOGO_NORMAL_SIDEBAR_CLOSE_UP_V6 */
-@media (min-width:1001px){
-  .page-logo{width:150px !important;max-width:150px !important;transform:translateY(-70px) !important;}
-  .left-sidebar{margin-top:-220px !important;}
-}
-
-/* BIZMON_LEFT_LOGO_50_PERCENT_V7 */
-@media (min-width:1001px){
-  .page-logo{width:75px !important;max-width:75px !important;}
-}
-
-/* BIZMON_LEFT_SIDEBAR_DOWN_CENTER_TEXT_UP_V10 */
-@media (min-width:1001px){
-  .left-sidebar{margin-top:-205px !important;}
-  .greeting-message{transform:translateY(-72px) !important;}
-  .business-message-wrap{transform:translateY(-138px) !important;margin-top:0;margin-bottom:0;}
-  .business-message-area{padding:8px 15px;}
-  .business-message-line{line-height:1.48;}
-}
-
-/* BIZMON_MOBILE_LEFT_SIDEBAR_BOTTOM_V11 */
-@media (max-width:1000px){
-  .layout{display:flex;flex-direction:column;}
-  .main-content{order:1;}
-  .right-column{order:2;}
-  .left-sidebar{order:3;}
-}
-
-/* BIZMON_DATE_CENTER_SMALL_V12 */
-.today-date{text-align:center !important;}
-.today-date .date-top{font-size:13px !important;text-align:center !important;margin-bottom:5px !important;}
-.today-date .date-bottom{font-size:20px !important;text-align:center !important;}
-
-/* BIZMON_ALMANAC_DESCRIPTION_BOTTOM_V14 */
-.right-sidebar > .almanac-description{margin-top:14px;margin-bottom:0;background:#ffffff;border:1px solid #dbeafe;border-left:4px solid #2563eb;border-radius:10px;box-shadow:none;}
-.right-sidebar > .almanac-description .almanac-description-title:before{content:"";}
-
-
-/* BIZMON_LOGO_3X_PATCH_V1: left top logo about 3x */
-@media (min-width:1001px){
-  .page-logo{
-    width:200px !important;
-    max-width:200px !important;
-  }
-}
+body{font-family:"Yu Gothic","Meiryo",sans-serif;background:#f3f4f6;color:#111827;margin:0;padding:24px}
+.wrap{max-width:920px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.10);padding:24px}
+.title{font-size:24px;font-weight:bold;margin-bottom:8px}
+.desc{line-height:1.8;color:#374151}
+.box{border:2px dashed #93c5fd;border-radius:14px;padding:20px;margin-top:16px;background:#eff6ff}
+.log{white-space:pre-wrap;background:#111827;color:#e5e7eb;border-radius:12px;padding:14px;margin-top:16px;min-height:180px;font-size:13px;line-height:1.6}
+.note{background:#fff7ed;border:1px solid #fed7aa;border-left:5px solid #f97316;border-radius:12px;padding:12px 14px;margin-top:16px;line-height:1.7;color:#7c2d12}
+input[type=file]{font-size:16px;padding:10px;background:#fff;border-radius:10px;border:1px solid #bfdbfe;width:100%;box-sizing:border-box}
+code{background:#eef2ff;padding:2px 6px;border-radius:6px}
 </style>
 </head>
 <body>
-<div class="top-bar"><img src="logo.png" alt="ロゴ" class="page-logo"><div id="greetingMessage" class="greeting-message">表示準備中</div><div id="todayDate" class="today-date"><div class="date-top">日付準備中</div><div class="date-bottom"></div><div id="weatherMini" class="weather-mini"><div class="weather-mini-loading">天気予報を読み込み中...</div></div></div></div>
-<div class="business-message-wrap"><div class="business-message-area"><div class="business-message-line"><span class="business-message-label">ビジネス豆知識：</span><span>毎日の学び</span></div><div class="business-message-line"><span class="business-message-label">今日の注意：</span><span>実務上の注意喚起</span></div></div></div>
-<div class="layout"><div class="left-sidebar"><nav class="side-menu"><a class="side-menu-link" href="news.html">お知らせ</a><details id="myPageDetails" class="side-menu-details"><summary class="side-menu-summary">マイページ</summary><div class="submenu"><a id="inputHistoryLink" class="submenu-link" href="input-history.html">学習履歴・傾向分析</a><a class="submenu-link" href="account-settings.html">アカウント設定</a><a class="submenu-link" href="remind-settings.html">リマインド設定</a><a class="submenu-link" href="weather-settings.html">天気予報表示地域設定</a></div></details><a class="side-menu-link" href="privacy.html">プライバシーポリシー</a><a class="side-menu-link" href="manual.html">マニュアル</a><div id="adminMenu" class="admin-only"><a class="side-menu-link" href="dashboard.html">ダッシュボード</a><a class="side-menu-link" href="reports.html">レポート</a><details class="side-menu-details"><summary class="side-menu-summary">企業設定</summary><div class="submenu"><a class="submenu-link" href="category-settings.html">出題カテゴリー設定</a><a class="submenu-link" href="user-register.html">ユーザー新規登録</a><a class="submenu-link" href="user-edit-single.html">ユーザー管理（個別）</a><a class="submenu-link" href="user-edit-bulk.html">ユーザー管理（一括）</a><a id="termsMenuLink" class="submenu-link applicant-only" href="terms-agreement.html">利用規約</a></div></details></div></nav><div id="userInfo" class="user-info"></div><button class="logout-btn" id="logoutBtn">ログアウト</button></div><div class="main-content"><div id="serviceWarning" class="service-warning"></div><div id="mainAvailableArea"><p class="guide-message">本日のクイズへ</p><a id="quizLink" href="question.html"><img src="button_本日のクイズへ.png" alt="本日のクイズへ" class="quiz-button-image"></a><div class="calendar-card"><div class="calendar-header"><button type="button" id="prevMonthBtn" class="calendar-nav-btn">前月</button><div id="calendarTitle" class="calendar-title">カレンダー</div><button type="button" id="nextMonthBtn" class="calendar-nav-btn">次月</button></div><div id="calendarStatus" class="calendar-status">ログイン確認後に記録を読み込みます。</div><div class="calendar-grid" id="calendarGrid"></div><div class="calendar-legend"><span><span class="legend-correct">○</span> 正解</span><span><span class="legend-incorrect">×</span> 不正解</span></div></div></div><div id="mainBlockedArea"></div></div><div class="right-column"><div class="right-sidebar"><div class="speech-title-wrap"><div id="almanacTitle" class="speech-title">今日はこんな日</div></div><div id="almanacStatus" class="almanac-status">暦情報を読み込み中...</div><div id="almanacList" class="almanac-list"></div><div id="almanacDescription" class="almanac-description"><div class="almanac-description-title">説明</div><div id="almanacDescriptionText">暦情報の項目名や内容にカーソルを合わせると、読み仮名と意味が表示されます。</div></div></div></div></div>
-<script>
-(function(){try{var now=new Date(),year=now.getFullYear(),month=now.getMonth()+1,day=now.getDate(),weekday=["日","月","火","水","木","金","土"][now.getDay()],hour=now.getHours(),reiwaYear=year-2018,reiwaText=reiwaYear===1?"令和元年":"令和"+reiwaYear+"年",message="";if(hour>=5&&hour<=10)message="おはようございます";else if(hour>=11&&hour<=15)message="こんにちは";else if(hour>=16&&hour<=17)message="おつかれさまです";else if(hour>=18&&hour<=21)message="こんばんは";else message="おつかれさまです";document.querySelector("#todayDate .date-top").textContent=year+"年（"+reiwaText+"）";document.querySelector("#todayDate .date-bottom").textContent=month+"月"+day+"日（"+weekday+"）";document.getElementById("greetingMessage").textContent=message}catch(e){console.error(e)}})();
-(function(){var link=document.getElementById('inputHistoryLink');if(!link)return;link.setAttribute('href','input-history.html');link.classList.add('input-history-ready');try{fetch('input-history.html',{method:'GET',cache:'no-store'}).then(function(res){if(!res.ok){link.title='input-history.html が見つかりません。ファイルを同じ階層にアップロードしてください。';link.classList.remove('input-history-ready');}}).catch(function(){link.title='input-history.html の事前確認に失敗しました。同じ階層にアップロードされているか確認してください。';});}catch(e){console.warn(e)}})();
-</script>
-<script src="business-messages.js"></script>
+<div class="wrap">
+  <div class="title">index.html 自動適用パッチャー v31</div>
+  <div class="desc">
+    ボタンが押せない問題を避けるため、<strong>ボタンを廃止</strong>しました。<br>
+    下のファイル選択で <code>index.html</code> を選ぶだけで、自動的にパッチを適用して保存します。
+  </div>
+  <div class="note">
+    実施内容：壊れている V22〜V30 付近の天気修正末尾ブロックを整理し、V31の単独補正ブロックを追加します。<br>
+    補正ルール：<strong>最高 29℃ / 最低 29℃</strong> のような同一値だけ、<strong>最高 -℃ / 最低 29℃</strong> に補正します。
+  </div>
+  <div class="box">
+    <div><strong>ここで index.html を選択してください。選択後、自動で保存されます。</strong></div><br>
+    <input type="file" id="fileInput" accept=".html,text/html">
+  </div>
+  <div id="log" class="log">index.html を選択してください。ボタン操作は不要です。</div>
+</div>
 <script>
 (function(){
-  var statusEl=document.getElementById('almanacStatus'),listEl=document.getElementById('almanacList'),descText=document.getElementById('almanacDescriptionText');
-  var defaultDescription='暦情報の項目名や内容にカーソルを合わせると、読み仮名と意味が表示されます。';
-  var descMaster={},labelMap={other:'たとえば',holiday:'祝日',rokuyo:'六曜',gosekku:'五節句',senjitsu:'選日',nijushisekki:'二十四節気',shichijunikou:'七十二候',nikkanshi:'日干支',tsukikanshi:'月干支',nenkanshi:'年干支'};
-  if(!statusEl||!listEl)return;
-  function parseCsv(text){var rows=[],row=[],cur='',q=false;for(var i=0;i<text.length;i++){var ch=text.charAt(i),nx=text.charAt(i+1);if(ch==='"'){if(q&&nx==='"'){cur+='"';i++;}else q=!q;}else if(ch===','&&!q){row.push(cur);cur='';}else if((ch==='\n'||ch==='\r')&&!q){if(ch==='\r'&&nx==='\n')i++;row.push(cur);if(row.some(function(v){return String(v).trim()!=='';}))rows.push(row);row=[];cur='';}else cur+=ch;}row.push(cur);if(row.some(function(v){return String(v).trim()!=='';}))rows.push(row);return rows;}
-  function normalizeDateKey(value){var s=String(value||'').trim().replace(/^\uFEFF/,'');var m=s.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);return m?m[1]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0'):s;}
-  function normalizeDisplayValue(v){return String(v||'').trim().replace(/[（(][^）)]*[）)]/g,'').trim();}
-  function splitAlmanacValues(value){var s=String(value||'').trim();if(!s)return[];var arr=[],cur='',depth=0;for(var i=0;i<s.length;i++){var ch=s.charAt(i);if(ch==='（'||ch==='('){depth++;cur+=ch;continue;}if(ch==='）'||ch===')'){depth=Math.max(0,depth-1);cur+=ch;continue;}if(depth===0&&(ch==='・'||ch==='、'||ch===','||ch==='／'||ch==='/')){if(cur.trim())arr.push(cur.trim());cur='';}else cur+=ch;}if(cur.trim())arr.push(cur.trim());return arr;}
-  function key(type,name){return String(type||'')+'|'+String(name||'');}function getDesc(type,name){return descMaster[key(type,name)]||'';}function resetDescription(){if(descText)descText.textContent=defaultDescription;}function setDescription(title,text){if(descText)descText.textContent=String(text||title||'').trim();}
-  function addHelp(el,title,text){if(!el||!text)return;el.className=(el.className?el.className+' ':'')+'almanac-help-target';el.tabIndex=0;el.title=text;el.onmouseenter=function(){setDescription(title,text)};el.onmouseleave=resetDescription;el.onfocus=function(){setDescription(title,text)};el.onblur=resetDescription;el.onclick=function(){setDescription(title,text)};}
-  function fallbackToday(){listEl.innerHTML='';statusEl.textContent='本日の暦情報が見つかりません。almanac.csvの日付形式または本日分のデータを確認してください。';resetDescription();}
-  function renderItems(items){listEl.innerHTML='';if(!items.length){statusEl.textContent='本日の暦情報は空です。';return;}items.forEach(function(item){var box=document.createElement('div'),line=document.createElement('div'),title=document.createElement('span'),colon=document.createElement('span'),text=document.createElement('span');box.className='almanac-item';line.className='almanac-line';title.className='almanac-item-title';title.textContent=item.label;if(item.label!=='たとえば')addHelp(title,item.label,getDesc('項目',item.label)||'暦に関する情報です。');colon.className='almanac-colon';colon.textContent='：';text.className='almanac-item-text';if(item.label==='たとえば'){text.textContent=String(item.value||'').trim();}else{var vals=splitAlmanacValues(item.value);vals.forEach(function(raw,idx){var display=normalizeDisplayValue(raw)||raw,chip=document.createElement('span');chip.className='almanac-value-chip';chip.textContent=display;var desc=getDesc(item.label,display);if(desc)addHelp(chip,display,desc);text.appendChild(chip);if(idx<vals.length-1)text.appendChild(document.createTextNode('・'));});}line.appendChild(title);line.appendChild(colon);line.appendChild(text);box.appendChild(line);listEl.appendChild(box);});statusEl.textContent='';resetDescription();}
-  function loadText(file,success,fail){var xhr=new XMLHttpRequest();xhr.open('GET',file+'?v='+Date.now(),true);xhr.overrideMimeType('text/plain; charset=UTF-8');xhr.onreadystatechange=function(){if(xhr.readyState!==4)return;if(xhr.status===200||xhr.status===0)success(xhr.responseText||'');else if(fail)fail(new Error(file+' status '+xhr.status));};xhr.onerror=function(){if(fail)fail(new Error('network: '+file));};xhr.send();}
-  function loadDescriptions(next){loadText('almanac_descriptions.csv',function(t){try{if(t&&t.charCodeAt(0)===65279)t=t.substring(1);var rows=parseCsv(t);if(rows.length>1){var h=rows[0].map(function(v){return String(v||'').trim().toLowerCase();}),ti=h.indexOf('type'),ni=h.indexOf('name'),di=h.indexOf('description');if(ti>=0&&ni>=0&&di>=0){for(var i=1;i<rows.length;i++){var type=String(rows[i][ti]||'').trim(),name=String(rows[i][ni]||'').trim(),desc=String(rows[i][di]||'').trim();if(type&&name&&desc)descMaster[key(type,name)]=desc;}}}}catch(e){console.warn(e)}next();},function(){next();});}
-  function loadAlmanac(){var now=new Date(),todayKey=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');loadText('almanac.csv',function(t){try{if(t&&t.charCodeAt(0)===65279)t=t.substring(1);var rows=parseCsv(t);if(rows.length<2){fallbackToday();return;}var header=rows[0].map(function(v){return String(v||'').replace(/^\uFEFF/,'').trim().toLowerCase();}),dateIndex=header.indexOf('date');if(dateIndex<0){fallbackToday();return;}var row=null;for(var i=1;i<rows.length;i++){if(normalizeDateKey(rows[i][dateIndex])===todayKey){row=rows[i];break;}}if(!row){fallbackToday();return;}var items=[];Object.keys(labelMap).forEach(function(k){var idx=header.indexOf(k);if(idx>=0){var value=String(row[idx]||'').trim();if(value&&value.toLowerCase()!=='nan')items.push({label:labelMap[k],value:value});}});renderItems(items);}catch(e){console.error(e);fallbackToday();}},function(){fallbackToday();});}
-  loadDescriptions(loadAlmanac);
-})();
-</script>
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,collection,query,where,getDocs,doc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
-let currentUser=null,currentRole="user",currentUserData=null,currentCompanyData=null,serviceAvailable=false,calendarYear=new Date().getFullYear(),calendarMonth=new Date().getMonth();
-function pad2(num){return String(num).padStart(2,"0")}function toDateKey(year,monthIndex,day){return year+"-"+pad2(monthIndex+1)+"-"+pad2(day)}function todayDateKey(){const d=new Date();return toDateKey(d.getFullYear(),d.getMonth(),d.getDate())}function detailAllowedStartKey(){const d=new Date();return toDateKey(d.getFullYear(),d.getMonth()-1,1)}function canOpenDetail(dateKey){return String(dateKey||"")>=detailAllowedStartKey()&&String(dateKey||"")<=todayDateKey()}function detailBlockedMessage(){return "この日の問題・解説の詳細表示期間は終了しています。詳細表示できるのは「前月1日以降」のデータです。過去データが必要な場合は管理者へお問い合わせください。"}
-function escapeHtml(value){return String(value==null?"":value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  var PATCH_B64 = "PCEtLSBCSVpNT05fV0VBVEhFUl9TQU1FX1RFTVBfRE9NX0ZJWF9WMzFfU1RBUlQgLS0+CjxzY3JpcHQ+CihmdW5jdGlvbigpewogIGlmKHdpbmRvdy5CSVpNT05fV0VBVEhFUl9TQU1FX1RFTVBfRE9NX0ZJWF9WMzEpcmV0dXJuOwogIHdpbmRvdy5CSVpNT05fV0VBVEhFUl9TQU1FX1RFTVBfRE9NX0ZJWF9WMzE9dHJ1ZTsKCiAgZnVuY3Rpb24gZXNjYXBlSHRtbCh2YWx1ZSl7CiAgICByZXR1cm4gU3RyaW5nKHZhbHVlPT1udWxsPyIiOnZhbHVlKS5yZXBsYWNlKC9bJjw+IiddL2csZnVuY3Rpb24oYyl7CiAgICAgIHJldHVybiB7IiYiOiImYW1wOyIsIjwiOiImbHQ7IiwiPiI6IiZndDsiLCIiIjoiJnF1b3Q7IiwiJyI6IiYjMzk7In1bY107CiAgICB9KTsKICB9CgogIGZ1bmN0aW9uIGZpeFNhbWVXZWF0aGVyVGVtcCgpewogICAgdHJ5ewogICAgICB2YXIgZWw9ZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiI3dlYXRoZXJNaW5pIC53ZWF0aGVyLXRlbXAiKTsKICAgICAgaWYoIWVsKXJldHVybiBmYWxzZTsKICAgICAgdmFyIHRleHQ9KGVsLnRleHRDb250ZW50fHwiIikucmVwbGFjZSgvXHMrL2csIiAiKS50cmltKCk7CiAgICAgIHZhciBtPXRleHQubWF0Y2goL+acgOmrmFxzKihbKy1dP1xkKyg/OlwuXGQrKT8pXHMq4oSDXHMqXC9ccyrmnIDkvY5ccyoBXHMq4oSDLyk7CiAgICAgIGlmKCFtKXJldHVybiBmYWxzZTsKICAgICAgdmFyIHZhbHVlPW1bMV07CiAgICAgIGVsLmlubmVySFRNTD0n5pyA6auYIDxzdHJvbmc+LeKEgzwvc3Ryb25nPiAvIOacgOS9jiA8c3Ryb25nPicrZXNjYXBlSHRtbCh2YWx1ZSkrJ+KEgzwvc3Ryb25nPic7CiAgICAgIGVsLnNldEF0dHJpYnV0ZSgiZGF0YS1iaXptb24tc2FtZS10ZW1wLWZpeGVkIiwidjMxIik7CiAgICAgIHJldHVybiB0cnVlOwogICAgfWNhdGNoKGUpewogICAgICBjb25zb2xlLndhcm4oIkJJWk1PTl9XRUFUSEVSX1NBTUVfVEVNUF9ET01fRklYX1YzMSBmYWlsZWQiLGUpOwogICAgICByZXR1cm4gZmFsc2U7CiAgICB9CiAgfQoKICBmdW5jdGlvbiBzdGFydFNhbWVUZW1wRml4KCl7CiAgICBmaXhTYW1lV2VhdGhlclRlbXAoKTsKICAgIHZhciBjb3VudD0wOwogICAgdmFyIHRpbWVyPXNldEludGVydmFsKGZ1bmN0aW9uKCl7CiAgICAgIGZpeFNhbWVXZWF0aGVyVGVtcCgpOwogICAgICBjb3VudCsrOwogICAgICBpZihjb3VudD49MTIwKWNsZWFySW50ZXJ2YWwodGltZXIpOwogICAgfSw1MDApOwogICAgdmFyIGJveD1kb2N1bWVudC5nZXRFbGVtZW50QnlJZCgid2VhdGhlck1pbmkiKTsKICAgIGlmKGJveCYmd2luZG93Lk11dGF0aW9uT2JzZXJ2ZXIpewogICAgICB2YXIgb2JzZXJ2ZXI9bmV3IE11dGF0aW9uT2JzZXJ2ZXIoZnVuY3Rpb24oKXtmaXhTYW1lV2VhdGhlclRlbXAoKTt9KTsKICAgICAgb2JzZXJ2ZXIub2JzZXJ2ZShib3gse2NoaWxkTGlzdDp0cnVlLHN1YnRyZWU6dHJ1ZSxjaGFyYWN0ZXJEYXRhOnRydWV9KTsKICAgIH0KICB9CgogIGlmKGRvY3VtZW50LnJlYWR5U3RhdGU9PT0ibG9hZGluZyIpZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcigiRE9NQ29udGVudExvYWRlZCIsc3RhcnRTYW1lVGVtcEZpeCk7CiAgZWxzZSBzdGFydFNhbWVUZW1wRml4KCk7CiAgd2luZG93LmFkZEV2ZW50TGlzdGVuZXIoImxvYWQiLGZ1bmN0aW9uKCl7CiAgICBzZXRUaW1lb3V0KGZpeFNhbWVXZWF0aGVyVGVtcCwzMDApOwogICAgc2V0VGltZW91dChmaXhTYW1lV2VhdGhlclRlbXAsMTUwMCk7CiAgICBzZXRUaW1lb3V0KGZpeFNhbWVXZWF0aGVyVGVtcCwzMDAwKTsKICB9KTsKfSkoKTsKPC9zY3JpcHQ+CjwhLS0gQklaTU9OX1dFQVRIRVJfU0FNRV9URU1QX0RPTV9GSVhfVjMxX0VORCAtLT4KCjwvYm9keT4KPC9odG1sPgo=";
+  var input = document.getElementById('fileInput');
+  var log = document.getElementById('log');
+  function write(msg){log.textContent=msg;}
+  function decodeUtf8Base64(b64){
+    var bin=atob(b64), bytes=new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+  function download(filename,text){
+    var blob=new Blob([text],{type:'text/html;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url);},1000);
+  }
+  function earliestIndex(html, markers){
+    var pos=-1;
+    for(var i=0;i<markers.length;i++){
+      var p=html.indexOf(markers[i]);
+      if(p>=0&&(pos<0||p<pos))pos=p;
+    }
+    return pos;
+  }
+  function patchHtml(html){
+    if(!html||html.indexOf('<!DOCTYPE html')<0)throw new Error('HTMLファイルとして認識できません。index.htmlを選択してください。');
+    if(html.indexOf('weatherMini')<0)throw new Error('weatherMini が見つかりません。対象の index.html ではない可能性があります。');
+    var patch=decodeUtf8Base64(PATCH_B64);
+    var markers=[
+      '<!-- BIZMON_WEATHER_TEMP_FIX_V22:',
+      '<!-- BIZMON_WEATHER_TEMP_JMA_ORDER_FIX_V23:',
+      '<!-- BIZMON_WEATHER_JMA_HP_TEMP_OVERRIDE_V24_START -->',
+      '<!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V25_START -->',
+      '<!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V26_START -->',
+      '<!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V27_START -->',
+      '<!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V28_START -->',
+      '<!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29_START -->',
+      '<!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V30_START -->',
+      '<!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V31_START -->'
+    ];
+    var cut=earliestIndex(html,markers);
+    if(cut>=0)return html.slice(0,cut).replace(/\s*$/,'')+'
 
-function setAdminMenuVisible(role){const adminMenu=document.getElementById("adminMenu");if(!adminMenu)return;role==="admin"?adminMenu.classList.add("admin-visible"):adminMenu.classList.remove("admin-visible")}function setApplicantMenuVisible(isVisible){const link=document.getElementById("termsMenuLink");if(!link)return;isVisible?link.classList.add("applicant-visible"):link.classList.remove("applicant-visible")}function setServiceWarning(message){const el=document.getElementById("serviceWarning");if(!el)return;if(message){el.style.display="block";el.innerHTML=message}else{el.style.display="none";el.innerHTML=""}}
-function setMainAvailable(available,message,showTermsLink){serviceAvailable=available;const normal=document.getElementById("mainAvailableArea"),blocked=document.getElementById("mainBlockedArea"),quiz=document.getElementById("quizLink");if(normal)normal.style.display=available?"block":"none";if(quiz){if(available){quiz.classList.remove("disabled-link");quiz.href="question.html"}else{quiz.classList.add("disabled-link");quiz.removeAttribute("href")}}if(blocked){if(available)blocked.innerHTML="";else blocked.innerHTML='<div class="blocked-panel"><div class="blocked-panel-title">利用を開始できません</div><div>'+escapeHtml(message||"現在このサービスは利用できません。")+'</div><div class="blocked-actions">'+(showTermsLink?'<a href="terms-agreement.html">利用規約同意へ進む</a>':'')+'<a href="login.html">ログイン画面へ戻る</a></div></div>'}}
-function firstNonEmpty(){for(let i=0;i<arguments.length;i++){const v=arguments[i];if(v!==undefined&&v!==null&&String(v).trim()!=="")return String(v).trim()}return ""}function normalizeChoice(v){return firstNonEmpty(v).toUpperCase()}function judgeCalendarResult(data){data=data||{};if(data.isCorrect===true)return "correct";if(data.isCorrect===false)return "incorrect";const result=String(firstNonEmpty(data.result,data.resultText,data.judgement,data.judge)).toLowerCase();if(result.includes("incorrect")||result.includes("wrong")||result.includes("不正解")||result.includes("×"))return "incorrect";if(result.includes("correct")||result.includes("正解")||result.includes("○"))return "correct";const selected=normalizeChoice(data.selectedChoice||data.selectedAnswer||data.userAnswer||data.selected||data.answerText||data.userAnswerText||data.yourAnswer),correct=normalizeChoice(data.correctChoice||data.correctAnswer||data.correct||data.rightAnswer);return selected&&correct&&selected===correct?"correct":""}
-function getCompanyAvailability(userData,companyData){if(!userData||!userData.companyId)return{ok:false,reason:"no-company",message:"会社情報を確認できません。管理者にお問い合わせください。"};if(userData.status!=="active")return{ok:false,reason:"user-inactive",message:"このアカウントは現在利用できません。管理者にお問い合わせください。"};if(!companyData)return{ok:false,reason:"company-not-found",message:"会社情報が見つかりません。管理者にお問い合わせください。"};if(companyData.status!=="active")return{ok:false,reason:"company-inactive",message:"この企業の利用は現在停止されています。管理者にお問い合わせください。"};if(companyData.termsAccepted!==true){const isApplicantAdmin=userData.role==="admin"&&userData.isApplicant===true;return{ok:false,reason:"terms-not-accepted",redirectToTerms:isApplicantAdmin,showTermsLink:isApplicantAdmin,message:isApplicantAdmin?"利用開始には、企業の利用規約同意が必要です。利用規約同意画面へ移動します。":"会社の利用開始手続きが完了していません。管理者に確認してください。"}}if(companyData.serviceEnabled!==true)return{ok:false,reason:"service-disabled",message:"この企業のサービス利用は現在停止されています。管理者にお問い合わせください。"};return{ok:true,reason:"available",message:"利用可能です。"}}
-async function loadUserRole(user){try{const userDocSnap=await getDoc(doc(db,"users",user.uid));currentUserData=userDocSnap.exists()?userDocSnap.data():{};currentRole=currentUserData.role||"user";setAdminMenuVisible(currentRole);setApplicantMenuVisible(currentRole==="admin"&&currentUserData.isApplicant===true);let companyText="";currentCompanyData=null;if(currentUserData.companyId){try{const companySnap=await getDoc(doc(db,"companies",currentUserData.companyId));if(companySnap.exists()){currentCompanyData=companySnap.data();companyText="<br>企業："+(currentCompanyData.companyName||currentUserData.companyId)}else companyText="<br>企業：未登録"}catch(e){console.warn(e);companyText="<br>企業：確認失敗"}}document.getElementById("userInfo").innerHTML="ログイン中："+escapeHtml(user.email)+"<br>権限："+(currentRole==="admin"?"管理者":"一般ユーザー")+companyText;const availability=getCompanyAvailability(currentUserData,currentCompanyData);if(!availability.ok){if(availability.redirectToTerms){setServiceWarning('利用規約への同意が必要です。<br><a href="terms-agreement.html">利用規約ページへ進む</a>');setMainAvailable(false,availability.message,true);setTimeout(function(){location.href="terms-agreement.html"},900)}else{setServiceWarning(escapeHtml(availability.message));setMainAvailable(false,availability.message,false)}return false}setServiceWarning("");setMainAvailable(true,"",false);return true}catch(error){console.error(error);currentRole="user";setAdminMenuVisible("user");setApplicantMenuVisible(false);document.getElementById("userInfo").innerHTML="ログイン中："+escapeHtml(user.email)+"<br>権限：一般ユーザー<br>※権限確認に失敗しました。";setMainAvailable(false,"権限確認に失敗しました。もう一度ログインしてください。",false);return false}}
-function renderCalendarSkeleton(resultMap){const grid=document.getElementById("calendarGrid"),title=document.getElementById("calendarTitle");if(!grid||!title)return;grid.innerHTML="";title.textContent=calendarYear+"年"+(calendarMonth+1)+"月";["日","月","火","水","木","金","土"].forEach(function(w){const cell=document.createElement("div");cell.className="calendar-weekday";cell.textContent=w;grid.appendChild(cell)});const firstWeekday=new Date(calendarYear,calendarMonth,1).getDay(),lastDate=new Date(calendarYear,calendarMonth+1,0).getDate();for(let i=0;i<firstWeekday;i++){const empty=document.createElement("div");empty.className="calendar-day empty";grid.appendChild(empty)}const today=new Date(),todayKey=toDateKey(today.getFullYear(),today.getMonth(),today.getDate());for(let day=1;day<=lastDate;day++){const dateKey=toDateKey(calendarYear,calendarMonth,day),dayCell=document.createElement("div");dayCell.className="calendar-day";if(dateKey===todayKey)dayCell.className+=" today";const number=document.createElement("div");number.className="day-number";number.textContent=day;dayCell.appendChild(number);if(resultMap&&resultMap[dateKey]){const mark=document.createElement("a");mark.href=canOpenDetail(dateKey)?"calendar-result.html?date="+encodeURIComponent(dateKey):"#";mark.title=canOpenDetail(dateKey)?dateKey+" の回答結果を見る":"詳細表示期間外です";mark.addEventListener("click",function(ev){if(!canOpenDetail(dateKey)){ev.preventDefault();alert(detailBlockedMessage());}});mark.className="day-mark "+(resultMap[dateKey]==="correct"?"correct":"incorrect");mark.textContent=resultMap[dateKey]==="correct"?"○":"×";dayCell.appendChild(mark)}grid.appendChild(dayCell)}}
-async function loadCalendarResults(){const status=document.getElementById("calendarStatus");if(!serviceAvailable){if(status)status.textContent="会社の利用開始後に回答記録を表示します。";renderCalendarSkeleton({});return}if(!currentUser){if(status)status.textContent="ログイン確認後に記録を読み込みます。";renderCalendarSkeleton({});return}const startKey=toDateKey(calendarYear,calendarMonth,1),endKey=toDateKey(calendarYear,calendarMonth,new Date(calendarYear,calendarMonth+1,0).getDate());function collectFromSnapshot(snapshot){const resultMap={};snapshot.forEach(function(docSnap){const data=docSnap.data()||{},key=firstNonEmpty(data.dateKey,data.date);if(key>=startKey&&key<=endKey){const judged=judgeCalendarResult(data);if(judged)resultMap[key]=judged}});return resultMap}async function safeGet(label,q){try{if(status)status.textContent="表示月の回答記録を読み込み中...\n確認中："+label;const snapshot=await getDocs(q);return{label:label,map:collectFromSnapshot(snapshot),count:snapshot.size,error:null}}catch(e){console.warn("calendar query failed:",label,e);return{label:label,map:{},count:0,error:e}}}try{const results=[];if(currentUserData&&currentUserData.companyId){results.push(await safeGet("companyId + uid + dateKey範囲",query(collection(db,"quizResults"),where("companyId","==",currentUserData.companyId),where("uid","==",currentUser.uid),where("dateKey",">=",startKey),where("dateKey","<=",endKey))))}results.push(await safeGet("uid + dateKey範囲",query(collection(db,"quizResults"),where("uid","==",currentUser.uid),where("dateKey",">=",startKey),where("dateKey","<=",endKey))));results.push(await safeGet("uid + date範囲",query(collection(db,"quizResults"),where("uid","==",currentUser.uid),where("date",">=",startKey),where("date","<=",endKey))));if(results.every(function(r){return Object.keys(r.map).length===0;})){results.push(await safeGet("uid全件走査（既存データ救済）",query(collection(db,"quizResults"),where("uid","==",currentUser.uid))))}const merged={};results.forEach(function(r){Object.keys(r.map).forEach(function(k){merged[k]=r.map[k]})});renderCalendarSkeleton(merged);const markCount=Object.keys(merged).length,used=results.filter(function(r){return Object.keys(r.map).length>0}).map(function(r){return r.label+"："+Object.keys(r.map).length+"件"});if(status){status.textContent=markCount?"回答記録を表示しています。○×は履歴として表示し、詳細表示は前月1日以降に制限しています。\n取得範囲："+startKey+" ～ "+endKey+"\n"+used.join(" / "):"表示月の回答記録はありません。\n取得範囲："+startKey+" ～ "+endKey+"\n既存データに dateKey / date / companyId が入っているか確認してください。"}}catch(error){console.error(error);renderCalendarSkeleton({});if(status)status.textContent="回答記録の読み込みに失敗しました。Firestoreのルールまたは複合インデックスを確認してください。"}}
-document.getElementById("prevMonthBtn").addEventListener("click",function(){calendarMonth--;if(calendarMonth<0){calendarMonth=11;calendarYear--}loadCalendarResults()});document.getElementById("nextMonthBtn").addEventListener("click",function(){calendarMonth++;if(calendarMonth>11){calendarMonth=0;calendarYear++}loadCalendarResults()});
+'+patch;
+    var bodyPos=html.lastIndexOf('</body>');
+    if(bodyPos<0)throw new Error('</body> が見つかりません。HTML末尾を確認してください。');
+    return html.slice(0,bodyPos).replace(/\s*$/,'')+'
 
-/* BIZMON_WEATHER_STABLE_CODE_V5 */
-const DEFAULT_WEATHER_SETTING_FIXED={weatherOfficeCode:"130000",weatherOfficeName:"東京都",weatherAreaCode:"130010",weatherAreaName:"東京地方"};
-function getIndexWeatherSetting(){try{if(typeof currentUser!=="undefined"&&currentUser&&currentUser.uid){const saved=JSON.parse(localStorage.getItem("bizmonWeatherSettings_"+currentUser.uid)||"null");if(saved&&saved.weatherOfficeCode&&saved.weatherAreaCode)return saved;}return DEFAULT_WEATHER_SETTING_FIXED;}catch(e){return DEFAULT_WEATHER_SETTING_FIXED;}}
-function formatWeatherHour(date){return String(date.getHours()).padStart(2,"0");}
-function formatWeatherTemp(v){const s=String(v==null?"":v).trim();if(s===""||s==="-"||s==="--")return "-";return s;}
-function findWeatherArea(areas,areaCode){if(!Array.isArray(areas)||!areas.length)return null;return areas.find(function(a){return a&&a.area&&String(a.area.code)===String(areaCode);})||areas[0];}
-function weatherIconFallback(code){code=String(code||"");if(code.charAt(0)==="1")return "☀️";if(code.charAt(0)==="2")return "☁️";if(code.charAt(0)==="3")return "☔";if(code.charAt(0)==="4")return "❄️";return "🌤️";}
-function getWeatherTargetInfo(){const now=new Date();const isTomorrow=now.getHours()>=18;const targetDate=new Date(now.getFullYear(),now.getMonth(),now.getDate()+(isTomorrow?1:0));return{index:isTomorrow?1:0,label:isTomorrow?"明日の天気":"今日の天気",date:targetDate,dateKey:targetDate.getFullYear()+"-"+pad2(targetDate.getMonth()+1)+"-"+pad2(targetDate.getDate()),displayDate:(targetDate.getMonth()+1)+"月"+targetDate.getDate()+"日"};}
-function getWeatherTimesForTargetDate(timeDefines,pops,targetInfo){const arr=[];(timeDefines||[]).forEach(function(t,i){const d=new Date(t);if(isNaN(d.getTime()))return;const key=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());if(key!==targetInfo.dateKey)return;const next=timeDefines[i+1]?new Date(timeDefines[i+1]):new Date(d.getTime()+6*60*60*1000);const label=formatWeatherHour(d)+"-"+formatWeatherHour(next)+"時";const pop=pops&&pops[i]!==undefined&&String(pops[i]).trim()!==""?String(pops[i]).trim()+"%":"--%";arr.push(label+" "+pop);});return arr;}
-function extractWeatherTemps(forecastData,targetInfo){try{const first=forecastData&&forecastData[0];const ts=first&&first.timeSeries?first.timeSeries[2]:null;const area=ts&&ts.areas&&ts.areas[0]?ts.areas[0]:null;const timeDefines=ts&&Array.isArray(ts.timeDefines)?ts.timeDefines:[];const temps=area&&Array.isArray(area.temps)?area.temps:[];const values=[];function clean(v){const s=String(v==null?"":v).trim();return s===""||s==="-"||s==="--"?"--":s;}for(let i=0;i<temps.length;i++){const d=timeDefines[i]?new Date(timeDefines[i]):null;if(!d||isNaN(d.getTime()))continue;const key=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());if(key!==targetInfo.dateKey)continue;values.push(clean(temps[i]));}if(!values.length)return{min:"--",max:"--"};return{min:values[0]||"--",max:values.length>=2?(values[1]||"--"):"--"};}catch(e){return{min:"--",max:"--"};}}
-async function loadWeatherForIndex(){const box=document.getElementById("weatherMini");if(!box)return;const setting=getIndexWeatherSetting();const targetInfo=getWeatherTargetInfo();box.innerHTML='<div class="weather-mini-loading">天気予報を読み込み中...</div>';try{const controller=new AbortController();const timeoutId=setTimeout(function(){controller.abort();},8000);const res=await fetch("https://www.jma.go.jp/bosai/forecast/data/forecast/"+encodeURIComponent(setting.weatherOfficeCode)+".json?t="+Date.now(),{signal:controller.signal,cache:"no-store"});clearTimeout(timeoutId);if(!res.ok)throw new Error("weather fetch failed: "+res.status);const data=await res.json();const first=data&&data[0];const ts0=first&&first.timeSeries?first.timeSeries[0]:null;const ts1=first&&first.timeSeries?first.timeSeries[1]:null;const weatherArea=findWeatherArea(ts0&&ts0.areas,setting.weatherAreaCode);const popArea=findWeatherArea(ts1&&ts1.areas,setting.weatherAreaCode);const code=weatherArea&&weatherArea.weatherCodes&&weatherArea.weatherCodes[targetInfo.index]?weatherArea.weatherCodes[targetInfo.index]:(weatherArea&&weatherArea.weatherCodes&&weatherArea.weatherCodes[0]?weatherArea.weatherCodes[0]:"100");const weatherText=weatherArea&&weatherArea.weathers&&weatherArea.weathers[targetInfo.index]?weatherArea.weathers[targetInfo.index]:(weatherArea&&weatherArea.weathers&&weatherArea.weathers[0]?weatherArea.weathers[0]:"天気情報");const pops=getWeatherTimesForTargetDate(ts1&&ts1.timeDefines,popArea&&popArea.pops,targetInfo);const temps=extractWeatherTemps(data,targetInfo);box.innerHTML='<div class="weather-period">'+escapeHtml(targetInfo.label+'（'+targetInfo.displayDate+'）')+'</div><div class="weather-main"><span class="weather-icon-fallback">'+escapeHtml(weatherIconFallback(code))+'</span><img class="weather-icon" src="https://www.jma.go.jp/bosai/forecast/img/'+escapeHtml(code)+'.svg" alt="'+escapeHtml(weatherText)+'" onerror="this.style.display=&#39;none&#39;;this.previousElementSibling.style.display=&#39;flex&#39;;"><div><div class="weather-place">'+escapeHtml(setting.weatherOfficeName||"")+" "+escapeHtml(setting.weatherAreaName||"")+'</div><div class="weather-text">'+escapeHtml(weatherText)+'</div></div></div><div class="weather-temp">最高 <strong>'+escapeHtml(formatWeatherTemp(temps.max))+'℃</strong> / 最低 <strong>'+escapeHtml(formatWeatherTemp(temps.min))+'℃</strong></div><div class="weather-pops">降水確率：'+escapeHtml(pops.length?pops.join(" / "):"--")+'</div><div class="weather-source">提供：気象庁</div>';}catch(error){console.warn(error);box.innerHTML='<div class="weather-mini-error">天気予報を取得できませんでした。<br>時間をおいて再度お試しください。<br>提供：気象庁</div>';}}
-
-
-async function syncWeatherSettingFromCloudForIndex(user){
-  try{
-    if(!user||!user.uid||typeof db==="undefined"||typeof getDoc==="undefined"||typeof doc==="undefined")return null;
-    var setting=null;
-    try{
-      const userSnap=await getDoc(doc(db,"users",user.uid));
-      if(userSnap.exists()){const data=userSnap.data()||{};if(data.weatherSettings&&data.weatherSettings.weatherOfficeCode&&data.weatherSettings.weatherAreaCode)setting=data.weatherSettings;}
-    }catch(e){console.warn("users weatherSettings read failed",e);}
-    if(!setting){
+'+patch;
+  }
+  input.addEventListener('change', function(){
+    var f=input.files&&input.files[0];
+    if(!f){write('ファイルが選択されていません。');return;}
+    write('選択ファイル：'+f.name+'
+自動パッチ適用中です。少しお待ちください。');
+    var reader=new FileReader();
+    reader.onload=function(){
       try{
-        const weatherSnap=await getDoc(doc(db,"weatherSettings",user.uid));
-        if(weatherSnap.exists()){const data=weatherSnap.data()||{};if(data.weatherOfficeCode&&data.weatherAreaCode)setting=data;}
-      }catch(e){console.warn("weatherSettings read failed",e);}
-    }
-    if(setting){
-      localStorage.setItem("bizmonWeatherSettings_"+user.uid,JSON.stringify(setting));
-      localStorage.setItem("bizmonCurrentWeatherUserUid",user.uid);
-      localStorage.removeItem("bizmonWeatherSettings");
-      return setting;
-    }
-  }catch(e){console.warn("weather cloud sync failed",e);}
-  return null;
-}
+        var patched=patchHtml(String(reader.result||''));
+        var outName=f.name.replace(/\.html?$/i,'')+'_weather_auto_fixed_v31.html';
+        download(outName,patched);
+        write('完了：自動パッチを適用しました。
 
+出力ファイル：'+outName+'
 
-async function syncWeatherSettingFromUsersForIndex(user){
-  try{
-    if(!user||!user.uid||typeof db==="undefined"||typeof getDoc==="undefined"||typeof doc==="undefined")return null;
-    const snap=await getDoc(doc(db,"users",user.uid));
-    if(snap.exists()){
-      const data=snap.data()||{};
-      const setting=data.weatherSettings||null;
-      if(setting&&setting.weatherOfficeCode&&setting.weatherAreaCode){
-        localStorage.setItem("bizmonWeatherSettings_"+user.uid,JSON.stringify(setting));
-        localStorage.setItem("bizmonCurrentWeatherUserUid",user.uid);
-        localStorage.removeItem("bizmonWeatherSettings");
-        return setting;
-      }
-    }
-  }catch(e){console.warn("users.weatherSettings read failed",e);}
-  return null;
-}
-
-onAuthStateChanged(auth,async function(user){if(!user){location.href="login.html";return}currentUser=user;try{window.bizmonCurrentWeatherUserUid=user.uid;localStorage.setItem("bizmonCurrentWeatherUserUid",user.uid);}catch(e){}await syncWeatherSettingFromUsersForIndex(user);await loadUserRole(user);loadCalendarResults();setTimeout(function(){try{if(window.bizmonStandaloneWeatherLoad)window.bizmonStandaloneWeatherLoad();}catch(e){console.warn(e);}},100);});
-document.getElementById("logoutBtn").addEventListener("click",async function(){try{try{localStorage.removeItem("bizmonCurrentWeatherUserUid");window.bizmonCurrentWeatherUserUid="";}catch(e){}// BIZMON_WEATHER_ACCOUNT_LOGOUT_CLEAR_V18
-try{localStorage.removeItem("bizmonCurrentWeatherUserUid");window.bizmonCurrentWeatherUserUid="";}catch(e){}// BIZMON_WEATHER_ACCOUNT_LOGOUT_CLEAR_V19
-try{localStorage.removeItem("bizmonCurrentWeatherUserUid");window.bizmonCurrentWeatherUserUid="";}catch(e){}// BIZMON_WEATHER_CLOUD_LOGOUT_CLEAR_V21
-await signOut(auth);location.href="login.html"}catch(error){console.error(error);alert("ログアウトに失敗しました。")}});setAdminMenuVisible("user");setApplicantMenuVisible(false);setMainAvailable(false,"ログイン情報を確認しています。",false);renderCalendarSkeleton({});
-</script>
-
-<script>
-(function(){
-  if(window.BIZMON_WEATHER_STANDALONE_V7_LOADED)return;
-  window.BIZMON_WEATHER_STANDALONE_V7_LOADED=true;
-  var DEFAULT_SETTING={weatherOfficeCode:"130000",weatherOfficeName:"東京都",weatherAreaCode:"130010",weatherAreaName:"東京地方"};
-  function pad2(n){return String(n).padStart(2,"0");}
-  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
-  function setting(){try{var uid="";try{uid=window.bizmonCurrentWeatherUserUid||localStorage.getItem("bizmonCurrentWeatherUserUid")||"";}catch(e){}if(uid){var s=JSON.parse(localStorage.getItem("bizmonWeatherSettings_"+uid)||"null");if(s&&s.weatherOfficeCode&&s.weatherAreaCode)return s;}}catch(e){}return DEFAULT_SETTING;}
-  function icon(code){code=String(code||"");if(code.charAt(0)==="1")return "☀️";if(code.charAt(0)==="2")return "☁️";if(code.charAt(0)==="3")return "☔";if(code.charAt(0)==="4")return "❄️";return "🌤️";}
-  function findArea(areas,code){if(!Array.isArray(areas)||!areas.length)return null;return areas.find(function(a){return a&&a.area&&String(a.area.code)===String(code);})||areas[0];}
-  function target(){var now=new Date();var t=new Date(now.getFullYear(),now.getMonth(),now.getDate()+(now.getHours()>=18?1:0));return{index:now.getHours()>=18?1:0,label:now.getHours()>=18?"明日の天気":"今日の天気",key:t.getFullYear()+"-"+pad2(t.getMonth()+1)+"-"+pad2(t.getDate()),display:(t.getMonth()+1)+"月"+t.getDate()+"日"};}
-  function pops(timeDefines,pops,targetInfo){var arr=[];(timeDefines||[]).forEach(function(x,i){var d=new Date(x);if(isNaN(d.getTime()))return;var key=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());if(key!==targetInfo.key)return;var next=timeDefines[i+1]?new Date(timeDefines[i+1]):new Date(d.getTime()+21600000);var val=pops&&pops[i]!==undefined&&String(pops[i]).trim()!==""?String(pops[i]).trim()+"%":"--%";arr.push(pad2(d.getHours())+"-"+pad2(next.getHours())+"時 "+val);});return arr;}
-  function temps(data,targetInfo){try{var ts=data&&data[0]&&data[0].timeSeries?data[0].timeSeries[2]:null;var area=ts&&ts.areas&&ts.areas[0]?ts.areas[0]:null;var td=ts&&Array.isArray(ts.timeDefines)?ts.timeDefines:[];var ar=area&&Array.isArray(area.temps)?area.temps:[];var values=[];function clean(v){var s=String(v==null?"":v).trim();return s===""||s==="-"||s==="--"?"--":s;}for(var i=0;i<ar.length;i++){var d=td[i]?new Date(td[i]):null;if(!d||isNaN(d.getTime()))continue;var key=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());if(key!==targetInfo.key)continue;values.push(clean(ar[i]));}if(!values.length)return{min:"--",max:"--"};return{min:values[0]||"--",max:values.length>=2?(values[1]||"--"):"--"};}catch(e){return{min:"--",max:"--"};}}
-  async function load(){var box=document.getElementById("weatherMini");if(!box)return;var st=setting();var tg=target();box.innerHTML='<div class="weather-mini-loading">天気予報を読み込み中...</div>';try{var ctl=new AbortController();var timer=setTimeout(function(){ctl.abort();},8000);var res=await fetch("https://www.jma.go.jp/bosai/forecast/data/forecast/"+encodeURIComponent(st.weatherOfficeCode)+".json?t="+Date.now(),{signal:ctl.signal,cache:"no-store"});clearTimeout(timer);if(!res.ok)throw new Error("weather fetch failed");var data=await res.json();var first=data&&data[0];var ts0=first&&first.timeSeries?first.timeSeries[0]:null;var ts1=first&&first.timeSeries?first.timeSeries[1]:null;var wa=findArea(ts0&&ts0.areas,st.weatherAreaCode);var pa=findArea(ts1&&ts1.areas,st.weatherAreaCode);var code=wa&&wa.weatherCodes&&wa.weatherCodes[tg.index]?wa.weatherCodes[tg.index]:(wa&&wa.weatherCodes&&wa.weatherCodes[0]?wa.weatherCodes[0]:"100");var wt=wa&&wa.weathers&&wa.weathers[tg.index]?wa.weathers[tg.index]:(wa&&wa.weathers&&wa.weathers[0]?wa.weathers[0]:"天気情報");var pp=pops(ts1&&ts1.timeDefines,pa&&pa.pops,tg);var tt=temps(data,tg);box.innerHTML='<div class="weather-period">'+esc(tg.label+'（'+tg.display+'）')+'</div><div class="weather-main"><span class="weather-icon-fallback">'+esc(icon(code))+'</span><img class="weather-icon" src="https://www.jma.go.jp/bosai/forecast/img/'+esc(code)+'.svg" alt="'+esc(wt)+'" onerror="this.style.display=&#39;none&#39;;this.previousElementSibling.style.display=&#39;flex&#39;;"><div><div class="weather-place">'+esc(st.weatherOfficeName||"")+" "+esc(st.weatherAreaName||"")+'</div><div class="weather-text">'+esc(wt)+'</div></div></div><div class="weather-temp">最高 <strong>'+esc(tt.max===undefined||tt.max===null||String(tt.max).trim()===""||String(tt.max).trim()==="--"?"-":tt.max)+'℃</strong> / 最低 <strong>'+esc(tt.min===undefined||tt.min===null||String(tt.min).trim()===""||String(tt.min).trim()==="--"?"-":tt.min)+'℃</strong></div><div class="weather-pops">降水確率：'+esc(pp.length?pp.join(" / "):"--")+'</div><div class="weather-source">提供：気象庁</div>'; }catch(e){console.warn(e);box.innerHTML='<div class="weather-mini-error">天気予報を取得できませんでした。<br>時間をおいて再度お試しください。<br>提供：気象庁</div>';}}
-  window.bizmonStandaloneWeatherLoad=load;
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",load);else load();
-  setTimeout(function(){var box=document.getElementById("weatherMini");if(box&&box.textContent.indexOf("読み込み中")>=0)load();},2000);
-})();
-</script>
-
-
-
-<script>
-(function(){
-  if(window.BIZMON_ALMANAC_DESCRIPTION_BOTTOM_V14)return;
-  window.BIZMON_ALMANAC_DESCRIPTION_BOTTOM_V14=true;
-  function moveDescriptionToBottom(){
-    var sidebar=document.querySelector(".right-sidebar");
-    var desc=document.getElementById("almanacDescription");
-    if(!sidebar||!desc)return;
-    if(desc.parentElement!==sidebar || sidebar.lastElementChild!==desc){
-      sidebar.appendChild(desc);
-    }
-  }
-  function start(){
-    moveDescriptionToBottom();
-    var sidebar=document.querySelector(".right-sidebar");
-    if(sidebar&&window.MutationObserver){
-      var observer=new MutationObserver(function(){moveDescriptionToBottom();});
-      observer.observe(sidebar,{childList:true,subtree:true});
-    }
-    var count=0;
-    var timer=setInterval(function(){moveDescriptionToBottom();count++;if(count>=10)clearInterval(timer);},500);
-  }
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();
-})();
-</script>
-
-
-<!-- BIZMON_WEATHER_TEMP_FIX_V22: 気象庁の最低気温未発表時に最高気温を最低へ流用しない修正 -->
-
-<!-- BIZMON_WEATHER_TEMP_JMA_ORDER_FIX_V23: 気象庁HPに合わせ、気温を最小最大計算せず最低欄/最高欄の順で表示 -->
-
-<!-- BIZMON_WEATHER_JMA_HP_TEMP_OVERRIDE_V24_START -->
-<script>
-(function(){
-  if(window.BIZMON_WEATHER_JMA_HP_TEMP_OVERRIDE_V24)return;
-  window.BIZMON_WEATHER_JMA_HP_TEMP_OVERRIDE_V24=true;
-  var DEFAULT_SETTING={weatherOfficeCode:"130000",weatherOfficeName:"東京都",weatherAreaCode:"130010",weatherAreaName:"東京地方"};
-  function pad2(n){return String(n).padStart(2,"0");}
-  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
-  function fmt(v){var s=String(v==null?"":v).trim();return s===""||s==="-"||s==="--"?"-":s;}
-  function setting(){try{var uid="";try{uid=window.bizmonCurrentWeatherUserUid||localStorage.getItem("bizmonCurrentWeatherUserUid")||"";}catch(e){}if(uid){var s=JSON.parse(localStorage.getItem("bizmonWeatherSettings_"+uid)||"null");if(s&&s.weatherOfficeCode&&s.weatherAreaCode)return s;}}catch(e){}return DEFAULT_SETTING;}
-  function icon(code){code=String(code||"");if(code.charAt(0)==="1")return "☀️";if(code.charAt(0)==="2")return "☁️";if(code.charAt(0)==="3")return "☔";if(code.charAt(0)==="4")return "❄️";return "🌤️";}
-  function findArea(areas,code){if(!Array.isArray(areas)||!areas.length)return null;return areas.find(function(a){return a&&a.area&&String(a.area.code)===String(code);})||areas[0];}
-  function target(){var now=new Date();var isTomorrow=now.getHours()>=18;var t=new Date(now.getFullYear(),now.getMonth(),now.getDate()+(isTomorrow?1:0));return{index:isTomorrow?1:0,label:isTomorrow?"明日の天気":"今日の天気",key:t.getFullYear()+"-"+pad2(t.getMonth()+1)+"-"+pad2(t.getDate()),display:(t.getMonth()+1)+"月"+t.getDate()+"日",isTomorrow:isTomorrow};}
-  function pops(timeDefines,pops,targetInfo){var arr=[];(timeDefines||[]).forEach(function(x,i){var d=new Date(x);if(isNaN(d.getTime()))return;var key=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());if(key!==targetInfo.key)return;var next=timeDefines[i+1]?new Date(timeDefines[i+1]):new Date(d.getTime()+21600000);var val=pops&&pops[i]!==undefined&&String(pops[i]).trim()!==""?String(pops[i]).trim()+"%":"--%";arr.push(pad2(d.getHours())+"-"+pad2(next.getHours())+"時 "+val);});return arr;}
-  function cleanTemp(v){var s=String(v==null?"":v).trim();return s===""||s==="-"||s==="--"?"--":s;}
-  function tempsJmaHpLike(data,targetInfo){
-    try{
-      var ts=data&&data[0]&&data[0].timeSeries?data[0].timeSeries[2]:null;
-      var td=ts&&Array.isArray(ts.timeDefines)?ts.timeDefines:[];
-      var areas=ts&&Array.isArray(ts.areas)?ts.areas:[];
-      var area=areas[0]||null;
-      var ar=area&&Array.isArray(area.temps)?area.temps:[];
-      var byHour={};
-      for(var i=0;i<ar.length;i++){
-        var d=td[i]?new Date(td[i]):null;
-        if(!d||isNaN(d.getTime()))continue;
-        var key=d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
-        if(key!==targetInfo.key)continue;
-        byHour[d.getHours()]=cleanTemp(ar[i]);
-      }
-      var low=byHour[0]||"--";
-      var high=byHour[9]||"--";
-      var now=new Date();
-      if(!targetInfo.isTomorrow && low!=="--" && high!=="--" && low===high){
-        if(now.getHours()>=12){high="--";}else{low="--";}
-      }
-      return{min:low,max:high};
-    }catch(e){return{min:"--",max:"--"};}
-  }
-  async function loadFixedWeather(){
-    var box=document.getElementById("weatherMini");if(!box)return;
-    var st=setting(),tg=target();
-    box.innerHTML='<div class="weather-mini-loading">天気予報を読み込み中...</div>';
-    try{
-      var ctl=new AbortController();var timer=setTimeout(function(){ctl.abort();},8000);
-      var res=await fetch("https://www.jma.go.jp/bosai/forecast/data/forecast/"+encodeURIComponent(st.weatherOfficeCode)+".json?t="+Date.now(),{signal:ctl.signal,cache:"no-store"});
-      clearTimeout(timer);if(!res.ok)throw new Error("weather fetch failed");
-      var data=await res.json();var first=data&&data[0];
-      var ts0=first&&first.timeSeries?first.timeSeries[0]:null,ts1=first&&first.timeSeries?first.timeSeries[1]:null;
-      var wa=findArea(ts0&&ts0.areas,st.weatherAreaCode),pa=findArea(ts1&&ts1.areas,st.weatherAreaCode);
-      var code=wa&&wa.weatherCodes&&wa.weatherCodes[tg.index]?wa.weatherCodes[tg.index]:(wa&&wa.weatherCodes&&wa.weatherCodes[0]?wa.weatherCodes[0]:"100");
-      var wt=wa&&wa.weathers&&wa.weathers[tg.index]?wa.weathers[tg.index]:(wa&&wa.weathers&&wa.weathers[0]?wa.weathers[0]:"天気情報");
-      var pp=pops(ts1&&ts1.timeDefines,pa&&pa.pops,tg);var tt=tempsJmaHpLike(data,tg);
-      box.innerHTML='<div class="weather-period">'+esc(tg.label+'（'+tg.display+'）')+'</div><div class="weather-main"><span class="weather-icon-fallback">'+esc(icon(code))+'</span><img class="weather-icon" src="https://www.jma.go.jp/bosai/forecast/img/'+esc(code)+'.svg" alt="'+esc(wt)+'" onerror="this.style.display='none';this.previousElementSibling.style.display='flex';"><div><div class="weather-place">'+esc(st.weatherOfficeName||"")+" "+esc(st.weatherAreaName||"")+'</div><div class="weather-text">'+esc(wt)+'</div></div></div><div class="weather-temp">最高 <strong>'+esc(fmt(tt.max))+'℃</strong> / 最低 <strong>'+esc(fmt(tt.min))+'℃</strong></div><div class="weather-pops">降水確率：'+esc(pp.length?pp.join(" / "):"--")+'</div><div class="weather-source">提供：気象庁</div>';
-    }catch(e){console.warn(e);box.innerHTML='<div class="weather-mini-error">天気予報を取得できませんでした。<br>時間をおいて再度お試しください。<br>提供：気象庁</div>';}
-  }
-  window.bizmonStandaloneWeatherLoad=loadFixedWeather;
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",loadFixedWeather);else loadFixedWeather();
-  setTimeout(loadFixedWeather,500);
-  setTimeout(loadFixedWeather,1500);
-})();
-  <!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29_START -->
-<script>
-(function(){
-  if(window.BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29)return;
-  window.BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29=true;
-
-  function escapeHtml(value){
-    return String(value==null?"":value).replace(/[&<>"']/g,function(c){
-      return {
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        "\"":"&quot;",
-        "'":"&#39;"
-      }[c];
-    });
-  }
-
-  function fixSameWeatherTemp(){
-    try{
-      var el=document.querySelector("#weatherMini .weather-temp");
-      if(!el)return false;
-
-      var text=(el.textContent||"").replace(/\s+/g," ").trim();
-
-      /*
-        「最高 29℃ / 最低 29℃」のように、
-        最高と最低が同じ数値になっている場合だけ補正する。
-      */
-      var m=text.match(/最高\s*([+-]?\d+(?:\.\d+)?)\s*℃\s*\/\s*最低\s*\1\s*℃/);
-      if(!m)return false;
-
-      var value=m[1];
-
-      /*
-        補正ルール：
-        時間に関係なく、
-        最高 -℃ / 最低 数値℃
-        にする。
-      */
-      el.innerHTML='最高 <strong>-℃</strong> / 最低 <strong>'+escapeHtml(value)+'℃</strong>';
-      el.setAttribute("data-bizmon-same-temp-fixed","v29");
-
-      return true;
-    }catch(e){
-      console.warn("BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29 failed",e);
-      return false;
-    }
-  }
-
-  function startSameTempFix(){
-    fixSameWeatherTemp();
-
-    /*
-      天気表示が後から再描画されることがあるため、
-      一定時間、繰り返し補正する。
-    */
-    var count=0;
-    var timer=setInterval(function(){
-      fixSameWeatherTemp();
-      count++;
-      if(count>=120)clearInterval(timer);
-    },500);
-
-    /*
-      weatherMini の中身が書き換わった場合も再補正する。
-    */
-    var box=document.getElementById("weatherMini");
-    if(box&&window.MutationObserver){
-      var observer=new MutationObserver(function(){
-        fixSameWeatherTemp();
-      });
-      observer.observe(box,{
-        childList:true,
-        subtree:true,
-        characterData:true
-      });
-    }
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",startSameTempFix);
-  }else{
-    startSameTempFix();
-  }
-
-  window.addEventListener("load",function(){
-    setTimeout(fixSameWeatherTemp,300);
-    setTimeout(fixSameWeatherTemp,1500);
-    setTimeout(fixSameWeatherTemp,3000);
+このファイルを index.html にリネームして差し替えてください。
+差し替え後、Ctrl + F5 で強制再読み込みしてください。');
+      }catch(e){write('エラー：'+e.message);}
+    };
+    reader.onerror=function(){write('エラー：ファイルの読み込みに失敗しました。');};
+    reader.readAsText(f,'UTF-8');
   });
 })();
 </script>
-<!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29_END -->
-</script>
-<!-- BIZMON_WEATHER_JMA_HP_TEMP_OVERRIDE_V24_END -->
-
 </body>
 </html>
