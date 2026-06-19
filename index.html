@@ -308,6 +308,100 @@ await signOut(auth);location.href="login.html"}catch(error){console.error(error)
   setTimeout(loadFixedWeather,500);
   setTimeout(loadFixedWeather,1500);
 })();
+  <!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29_START -->
+<script>
+(function(){
+  if(window.BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29)return;
+  window.BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29=true;
+
+  function escapeHtml(value){
+    return String(value==null?"":value).replace(/[&<>"']/g,function(c){
+      return {
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        "\"":"&quot;",
+        "'":"&#39;"
+      }[c];
+    });
+  }
+
+  function fixSameWeatherTemp(){
+    try{
+      var el=document.querySelector("#weatherMini .weather-temp");
+      if(!el)return false;
+
+      var text=(el.textContent||"").replace(/\s+/g," ").trim();
+
+      /*
+        「最高 29℃ / 最低 29℃」のように、
+        最高と最低が同じ数値になっている場合だけ補正する。
+      */
+      var m=text.match(/最高\s*([+-]?\d+(?:\.\d+)?)\s*℃\s*\/\s*最低\s*\1\s*℃/);
+      if(!m)return false;
+
+      var value=m[1];
+
+      /*
+        補正ルール：
+        時間に関係なく、
+        最高 -℃ / 最低 数値℃
+        にする。
+      */
+      el.innerHTML='最高 <strong>-℃</strong> / 最低 <strong>'+escapeHtml(value)+'℃</strong>';
+      el.setAttribute("data-bizmon-same-temp-fixed","v29");
+
+      return true;
+    }catch(e){
+      console.warn("BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29 failed",e);
+      return false;
+    }
+  }
+
+  function startSameTempFix(){
+    fixSameWeatherTemp();
+
+    /*
+      天気表示が後から再描画されることがあるため、
+      一定時間、繰り返し補正する。
+    */
+    var count=0;
+    var timer=setInterval(function(){
+      fixSameWeatherTemp();
+      count++;
+      if(count>=120)clearInterval(timer);
+    },500);
+
+    /*
+      weatherMini の中身が書き換わった場合も再補正する。
+    */
+    var box=document.getElementById("weatherMini");
+    if(box&&window.MutationObserver){
+      var observer=new MutationObserver(function(){
+        fixSameWeatherTemp();
+      });
+      observer.observe(box,{
+        childList:true,
+        subtree:true,
+        characterData:true
+      });
+    }
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",startSameTempFix);
+  }else{
+    startSameTempFix();
+  }
+
+  window.addEventListener("load",function(){
+    setTimeout(fixSameWeatherTemp,300);
+    setTimeout(fixSameWeatherTemp,1500);
+    setTimeout(fixSameWeatherTemp,3000);
+  });
+})();
+</script>
+<!-- BIZMON_WEATHER_SAME_TEMP_DOM_FIX_V29_END -->
 </script>
 <!-- BIZMON_WEATHER_JMA_HP_TEMP_OVERRIDE_V24_END -->
 
