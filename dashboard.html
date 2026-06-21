@@ -1,88 +1,836 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ダッシュボード</title>
-<style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box}.wrap{max-width:1480px;margin:24px auto;background:#fff;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box}.header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}h1{margin:0;font-size:28px}.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-link{display:inline-block;margin-top:22px}.status{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:16px;line-height:1.7;white-space:pre-wrap}.ok{color:#166534}.error{color:#dc2626}.notice{background:#fff7ed;border:1px solid #fed7aa;border-left:5px solid #f97316;color:#7c2d12;border-radius:12px;padding:12px 14px;line-height:1.7;margin-bottom:16px}.filter-box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin:16px 0}.filter-title{font-weight:bold;margin-bottom:12px;color:#374151}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;align-items:end}.control-item label{display:block;font-size:12px;color:#6b7280;font-weight:bold;margin-bottom:5px}input,select{width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;background:#fff}.btn-row{display:flex;gap:10px;flex-wrap:wrap}.btn{border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:bold;cursor:pointer;background:#2563eb;color:#fff;min-height:40px}.btn.secondary{background:#f3f4f6;color:#111827;border:1px solid #d1d5db}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0}.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}.card-label{font-size:12px;color:#6b7280;font-weight:bold;margin-bottom:5px}.card-value{font-size:28px;font-weight:900}.card-sub{font-size:12px;color:#6b7280;margin-top:4px}.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;align-items:start}.panel{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04);box-sizing:border-box}.panel-title{font-size:18px;font-weight:bold;margin:0 0 12px}.chart-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px;background:#fff}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#374151;margin:8px 0 12px}.legend-item{display:flex;align-items:center;gap:6px}.dot{width:12px;height:12px;border-radius:3px;display:inline-block}.dot.correct{background:#22c55e}.dot.incorrect{background:#ef4444}.dot.unanswered{background:#f59e0b}.dot.answerRate{background:#2563eb}.dot.correctRate{background:#7c3aed}.svg-chart text{font-family:"Meiryo",sans-serif}.bar-hit{cursor:pointer}.bar-hit:hover{opacity:.85}.table-wrap{overflow:auto;border:1px solid #e5e7eb;border-radius:12px;margin-top:12px;max-height:560px}table{width:100%;border-collapse:collapse;min-width:900px;background:#fff}th,td{border-bottom:1px solid #e5e7eb;padding:10px 12px;text-align:left;vertical-align:top;font-size:13px;white-space:nowrap}th{background:#f3f4f6;font-weight:bold;color:#374151;position:sticky;top:0;z-index:1}.empty{text-align:center;color:#6b7280;padding:24px}.rank-list{display:grid;gap:8px}.rank-item{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px}.rank-name{font-weight:bold}.rank-sub{font-size:12px;color:#6b7280}.progress{height:8px;background:#e5e7eb;border-radius:999px;margin-top:6px;overflow:hidden}.progress-bar{height:100%;background:#16a34a;border-radius:999px}.note{font-size:12px;color:#6b7280;line-height:1.7;margin-top:10px}@media(max-width:980px){.grid{grid-template-columns:1fr}.wrap{padding:20px}}@media(max-width:640px){body{padding:14px}.header{align-items:flex-start}h1{font-size:24px}.btn{width:100%}.btn-row{display:grid}.card-value{font-size:24px}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ビズもん 管理ダッシュボード</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --blue:#2563eb;
+      --blue-hover:#1d4ed8;
+      --orange:#f97316;
+      --green:#16a34a;
+      --red:#dc2626;
+      --gray:#9ca3af;
+      --shadow:0 8px 24px rgba(15,23,42,.08);
+      --radius:16px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Yu Gothic",YuGothic,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+      line-height:1.6;
+    }
+
+    .page{
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px;
+    }
+
+    .header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .title-block h1{
+      margin:0;
+      font-size:26px;
+      letter-spacing:.02em;
+    }
+
+    .title-block p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+    }
+
+    .select,
+    .input{
+      height:38px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:#fff;
+      color:var(--text);
+      padding:0 10px;
+      font-size:14px;
+    }
+
+    .btn{
+      height:38px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:#fff;
+      color:var(--text);
+      padding:0 14px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.15s ease;
+      white-space:nowrap;
+    }
+
+    .btn:hover{filter:brightness(.98)}
+
+    /* 「再読み込み」を青色にする */
+    #reloadBtn,
+    .reload-btn,
+    button[data-action="reload"]{
+      background:var(--blue) !important;
+      border-color:var(--blue) !important;
+      color:#fff !important;
+    }
+
+    #reloadBtn:hover,
+    .reload-btn:hover,
+    button[data-action="reload"]:hover{
+      background:var(--blue-hover) !important;
+      border-color:var(--blue-hover) !important;
+    }
+
+    /* 「表示読込」は不要なので非表示 */
+    #displayLoadBtn,
+    .display-load-btn,
+    button[data-action="display-load"]{
+      display:none !important;
+    }
+
+    .status{
+      margin:0 0 14px;
+      padding:10px 12px;
+      background:#eef2ff;
+      border:1px solid #dbeafe;
+      color:#1e3a8a;
+      border-radius:12px;
+      font-size:14px;
+    }
+
+    .status.error{
+      background:#fef2f2;
+      border-color:#fecaca;
+      color:#991b1b;
+    }
+
+    .summary-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:16px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+
+    .metric-label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:4px;
+    }
+
+    .metric-value{
+      font-size:28px;
+      font-weight:800;
+      line-height:1.2;
+    }
+
+    .metric-sub{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:4px;
+    }
+
+    section.card{
+      margin-bottom:16px;
+    }
+
+    .section-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .section-header h2{
+      margin:0;
+      font-size:19px;
+    }
+
+    .section-note{
+      margin:2px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    /* 日別推移グラフを31日分・画面幅100%に収める */
+    .daily-trend-chart-wrap{
+      width:100%;
+      max-width:100%;
+      overflow:hidden;
+    }
+
+    .daily-trend-chart-inner{
+      width:100%;
+      max-width:100%;
+      height:360px;
+    }
+
+    .daily-trend-chart-inner canvas,
+    #dailyTrendChart{
+      width:100% !important;
+      max-width:100% !important;
+      height:360px !important;
+    }
+
+    .chart-wrap{
+      width:100%;
+      max-width:100%;
+      height:340px;
+      overflow:hidden;
+    }
+
+    .chart-wrap canvas{
+      width:100% !important;
+      height:340px !important;
+    }
+
+    /* カテゴリー別 正解率は日別推移の直下 */
+    #categoryAccuracySection{
+      margin-top:0;
+      margin-bottom:16px;
+    }
+
+    .table-wrap{
+      width:100%;
+      overflow:auto;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:720px;
+    }
+
+    th,td{
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      text-align:left;
+      font-size:13px;
+      white-space:nowrap;
+    }
+
+    th{
+      background:#f9fafb;
+      color:#374151;
+      font-weight:800;
+    }
+
+    tr:last-child td{border-bottom:none}
+
+    .small-muted{
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    @media (max-width:900px){
+      .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .header{display:block;}
+      .toolbar{justify-content:flex-start;margin-top:12px;}
+    }
+
+    @media (max-width:768px){
+      .page{padding:14px;}
+      .title-block h1{font-size:22px;}
+      .summary-grid{grid-template-columns:1fr;}
+      .daily-trend-chart-inner{height:300px;}
+      .daily-trend-chart-inner canvas,#dailyTrendChart{height:300px !important;}
+      .chart-wrap{height:300px;}
+      .chart-wrap canvas{height:300px !important;}
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="header"><h1>ダッシュボード</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div>
-  <div id="status" class="status">HTML読込完了。JavaScript起動待ち...</div>
-  <div class="notice"><strong>表示ルール：</strong><br>対象期間は「今月」または「前月」です。対象登録人数は active ユーザーのみです。</div>
-  <div class="filter-box" id="filterBox" style="display:none;">
-    <div class="filter-title">表示条件</div>
-    <div class="controls">
-      <div class="control-item"><label for="periodPreset">該当期間</label><select id="periodPreset"><option value="thisMonth">今月</option><option value="prevMonth">前月</option></select></div>
-      <div class="control-item"><label for="startDate">開始日</label><input id="startDate" type="date" disabled></div>
-      <div class="control-item"><label for="endDate">終了日</label><input id="endDate" type="date" disabled></div>
-      <div class="control-item"><label for="departmentFilter">部署</label><select id="departmentFilter"><option value="all">すべて</option></select></div>
-      <div class="control-item"><label for="positionFilter">役職</label><select id="positionFilter"><option value="all">すべて</option></select></div>
-      <div class="control-item"><label>&nbsp;</label><div class="btn-row"><button class="btn" id="applyBtn" type="button">表示更新</button><button class="btn secondary" id="reloadBtn" type="button">再読み込み</button></div></div>
-    </div>
-    <div class="note" id="periodHelp"></div>
-  </div>
-  <div class="cards" id="summaryCards" style="display:none;">
-    <div class="card"><div class="card-label">対象登録人数</div><div class="card-value" id="registeredTotal">0</div><div class="card-sub">activeユーザーのみ</div></div>
-    <div class="card"><div class="card-label">期間内回答者数</div><div class="card-value" id="answeredUsersTotal">0</div><div class="card-sub">1回以上回答</div></div>
-    <div class="card"><div class="card-label">平均回答率</div><div class="card-value" id="averageAnswerRate">0%</div><div class="card-sub">日別平均</div></div>
-    <div class="card"><div class="card-label">平均正解率</div><div class="card-value" id="averageCorrectRate">0%</div><div class="card-sub">回答者ベース</div></div>
-  </div>
-  <div class="grid" id="mainGrid" style="display:none;">
-    <div class="panel"><p class="panel-title">日別推移：人数内訳＋回答率・正解率</p><div class="legend"><span class="legend-item"><span class="dot correct"></span>正解者数</span><span class="legend-item"><span class="dot incorrect"></span>不正解者数</span><span class="legend-item"><span class="dot unanswered"></span>未実施者数</span><span class="legend-item"><span class="dot answerRate"></span>回答率</span><span class="legend-item"><span class="dot correctRate"></span>正解率</span></div><div class="chart-wrap"><div id="chartArea"></div></div><div class="note">棒＝人数内訳、線＝率。棒をクリックすると未実施者一覧を対象日のみに絞り込みます。</div></div>
-    <div class="panel"><p class="panel-title">カテゴリー別 正解率</p><div id="categoryRanking" class="rank-list"></div></div>
-  </div>
-  <div class="panel" id="dailyPanel" style="display:none;margin-top:16px;"><p class="panel-title">日別詳細</p><div class="table-wrap"><table><thead><tr><th>対象日</th><th>登録人数</th><th>正解者数</th><th>不正解者数</th><th>未実施者数</th><th>回答率</th><th>正解率（回答者ベース）</th></tr></thead><tbody id="dailyBody"></tbody></table></div></div>
-  <div class="panel" id="unansweredPanel" style="display:none;margin-top:16px;"><p class="panel-title">該当期間の未実施者一覧 <span id="selectedDateLabel" class="note"></span></p><div class="table-wrap"><table><thead><tr><th>対象日</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th></tr></thead><tbody id="unansweredBody"></tbody></table></div><div class="note">初期表示は期間全体です。グラフの棒をクリックすると対象日だけに絞り込みます。</div></div>
-  <a class="bottom-link" href="index.html">← マイページへ戻る</a>
-</div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <main class="page">
+    <header class="header">
+      <div class="title-block">
+        <h1>ビズもん 管理ダッシュボード</h1>
+        <p>回答状況・正解率・カテゴリー別傾向を確認できます。</p>
+      </div>
 
-const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
-const CATEGORY_ORDER = ["コミュニケーション・ビジネススキル", "読解力・思考力", "キャリア・自己管理", "IT・デジタル", "情報管理・セキュリティ", "データ分析・活用", "プロジェクト管理", "業務改善・品質管理", "経営・戦略", "顧客理解・マーケティング", "会計・財務・税務", "税金・年末調整", "社会保険", "勤怠管理", "労務・雇用", "法務・コンプライアンス", "組織・マネジメント", "リスク管理・危機対応", "サステナビリティ・ESG", "グローバル・ダイバーシティ", "心理・行動"];
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);setPersistence(auth,browserLocalPersistence).catch(console.warn);
-let currentUserData=null,allUsers=[],allResults=[],dailyRows=[],selectedDate='';
-const $=id=>document.getElementById(id);
-function setStatus(msg,type){$('status').textContent=msg;$('status').className='status '+(type||'');}
-function escapeHtml(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function pad2(n){return String(n).padStart(2,'0')}
-function dateKey(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
-function todayKey(){return dateKey(new Date())}
-function parseDateKey(s){const p=String(s||'').split('-');return new Date(Number(p[0]),Number(p[1])-1,Number(p[2]))}
-function addDays(k,n){const d=parseDateKey(k);d.setDate(d.getDate()+n);return dateKey(d)}
-function dateRange(start,end){const arr=[];let cur=start,guard=0;while(cur&&end&&cur<=end&&guard<370){arr.push(cur);cur=addDays(cur,1);guard++;}return arr;}
-function presetRange(p){const d=new Date();if(p==='prevMonth')return{start:dateKey(new Date(d.getFullYear(),d.getMonth()-1,1)),end:dateKey(new Date(d.getFullYear(),d.getMonth(),0))};return{start:dateKey(new Date(d.getFullYear(),d.getMonth(),1)),end:todayKey()};}
-function applyPreset(){const r=presetRange($('periodPreset').value);$('startDate').value=r.start;$('endDate').value=r.end;$('periodHelp').textContent=r.start+' ～ '+r.end+' を表示します。部署・役職で絞り込みできます。';}
-function first(){for(let i=0;i<arguments.length;i++){const v=arguments[i];if(v!==undefined&&v!==null&&String(v).trim()!=='')return String(v).trim()}return ''}
-function isActive(d){if(d.active===false)return false;const st=String(d.status||'').toLowerCase();if(st==='inactive'||st==='disabled'||st==='退職')return false;if(st==='active')return true;return true;}
-function normalizeUser(ds){const d=ds.data()||{};return{uid:ds.id,employeeCode:first(d.employeeCode,d.employeeId,d.staffCode),name:first(d.name,d.displayName),department:first(d.department),position:first(d.position),role:first(d.role,'user'),companyId:first(d.companyId),active:isActive(d)};}
-function isCorrect(d){if(d.isCorrect===true)return true;if(d.isCorrect===false)return false;const x=String(d.result||d.judgement||d.resultText||'').toLowerCase();if(x.includes('incorrect')||x.includes('wrong')||x.includes('不正解')||x.includes('×'))return false;if(x.includes('correct')||x.includes('正解')||x.includes('○'))return true;const s=first(d.selectedChoice,d.selectedAnswer,d.userAnswer).toUpperCase(),c=first(d.correctChoice,d.correctAnswer).toUpperCase();return !!(s&&c&&s===c);}
-function normalizeResult(ds){const d=ds.data()||{};return{id:ds.id,uid:first(d.uid),dateKey:first(d.dateKey,d.date),employeeCode:first(d.employeeCode,d.staffCode),name:first(d.name,d.displayName),department:first(d.department),position:first(d.position),category1:first(d.category1,d.largeCategory,d.mainCategory,'未分類'),isCorrect:isCorrect(d),companyId:first(d.companyId)};}
-async function loadCurrentUser(user){const snap=await getDoc(doc(db,'users',user.uid));if(!snap.exists())throw new Error('users/'+user.uid+' が見つかりません。');const data=snap.data()||{};if(data.role!=='admin')throw new Error('このダッシュボードは管理者のみ利用できます。現在のrole：'+(data.role||'未設定'));if(!data.companyId)throw new Error('users/'+user.uid+' に companyId がありません。');currentUserData=data;return data;}
-function activeUsers(){return allUsers.filter(u=>u.active)}
-function unique(list,key){return [...new Set(list.map(x=>String(x[key]||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'))}
-function setSelectOptions(id,values,keep){const s=$(id),cur=keep?s.value:'all';s.innerHTML='<option value="all">すべて</option>'+values.map(v=>'<option value="'+escapeHtml(v)+'">'+escapeHtml(v)+'</option>').join('');s.value=values.includes(cur)?cur:'all';}
-function populateFilters(keep){setSelectOptions('departmentFilter',unique(activeUsers(),'department'),keep);setSelectOptions('positionFilter',unique(activeUsers(),'position'),keep);}
-function filteredUsers(){const dept=$('departmentFilter').value,pos=$('positionFilter').value;return activeUsers().filter(u=>(dept==='all'||u.department===dept)&&(pos==='all'||u.position===pos));}
-function filteredResults(){const map={};filteredUsers().forEach(u=>map[u.uid]=u);return allResults.filter(r=>map[r.uid]).map(r=>Object.assign({},r,{employeeCode:r.employeeCode||map[r.uid].employeeCode,name:r.name||map[r.uid].name,department:r.department||map[r.uid].department,position:r.position||map[r.uid].position}));}
-async function loadData(){applyPreset();selectedDate='';const companyId=currentUserData.companyId,start=$('startDate').value,end=$('endDate').value;setStatus('ダッシュボードデータを読み込み中...\n取得範囲：'+start+' ～ '+end);try{const usQ=query(collection(db,'users'),where('companyId','==',companyId));const rsQ=query(collection(db,'quizResults'),where('companyId','==',companyId),where('dateKey','>=',start),where('dateKey','<=',end));const [usSnap,rsSnap]=await Promise.all([getDocs(usQ),getDocs(rsQ)]);allUsers=usSnap.docs.map(normalizeUser);allResults=rsSnap.docs.map(normalizeResult);populateFilters(true);renderDashboard();['filterBox','dailyPanel','unansweredPanel'].forEach(id=>$(id).style.display='block');$('summaryCards').style.display='grid';$('mainGrid').style.display='grid';setStatus('ダッシュボードを読み込みました。\n取得範囲：'+start+' ～ '+end+'\n回答件数：'+allResults.length+'件','ok');}catch(e){console.error(e);let msg='ダッシュボードデータの取得に失敗しました。\n'+(e.code||e.message||e);if(e.code==='failed-precondition')msg+='\n\nFirestoreの複合インデックスが未作成です。quizResults の companyId 昇順 + dateKey 昇順 を作成してください。';setStatus(msg,'error');}}
-function buildDaily(){const users=filteredUsers(),count=users.length,results=filteredResults(),dates=dateRange($('startDate').value,$('endDate').value);dailyRows=dates.map(dk=>{const by={};results.forEach(r=>{if(r.dateKey===dk)by[r.uid]=r});const ids=Object.keys(by);let c=0,n=0;ids.forEach(uid=>by[uid].isCorrect?c++:n++);return{dateKey:dk,registered:count,answered:ids.length,correct:c,incorrect:n,unanswered:Math.max(count-ids.length,0),answerRate:count?ids.length/count*100:0,correctRate:ids.length?c/ids.length*100:0};});}
-function renderDashboard(){buildDaily();renderSummary();renderChart();renderDailyTable();renderUnanswered('');renderCategories();}
-function renderSummary(){const users=filteredUsers(),results=filteredResults(),answered={};results.forEach(r=>answered[r.uid]=true);const correct=results.filter(r=>r.isCorrect).length;const avgAns=dailyRows.length?dailyRows.reduce((a,b)=>a+b.answerRate,0)/dailyRows.length:0;const avgCor=results.length?correct/results.length*100:0;$('registeredTotal').textContent=users.length;$('answeredUsersTotal').textContent=Object.keys(answered).length;$('averageAnswerRate').textContent=(Math.round(avgAns*10)/10)+'%';$('averageCorrectRate').textContent=(Math.round(avgCor*10)/10)+'%';}
-function renderChart(){const rows=dailyRows,w=Math.max(900,rows.length*58+120),h=430,top=30,bottom=88,left=54,right=54,ch=h-top-bottom,cw=w-left-right,max=Math.max(1,...rows.map(r=>r.registered));const y=v=>top+ch-(v/max)*ch,yr=p=>top+ch-(p/100)*ch,gw=cw/Math.max(rows.length,1),bw=Math.min(34,Math.max(18,gw*.52));let svg='<svg class="svg-chart" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><rect width="'+w+'" height="'+h+'" fill="#fff"/>';for(let i=0;i<=4;i++){const val=Math.round(max*i/4),yy=y(val),pct=i*25;svg+='<line x1="'+left+'" y1="'+yy+'" x2="'+(w-right)+'" y2="'+yy+'" stroke="#e5e7eb"/><text x="'+(left-8)+'" y="'+(yy+4)+'" text-anchor="end" font-size="11" fill="#6b7280">'+val+'</text><text x="'+(w-right+8)+'" y="'+(yr(pct)+4)+'" text-anchor="start" font-size="11" fill="#6b7280">'+pct+'%</text>'}let p1=[],p2=[];rows.forEach((r,i)=>{const gx=left+i*gw+gw/2,x=gx-bw/2,base=top+ch,cH=(r.correct/max)*ch,iH=(r.incorrect/max)*ch,uH=(r.unanswered/max)*ch,yC=base-cH,yI=yC-iH,yU=yI-uH;svg+='<rect class="bar-hit" data-date="'+r.dateKey+'" x="'+x+'" y="'+yU+'" width="'+bw+'" height="'+Math.max(0,uH)+'" fill="#f59e0b"></rect><rect class="bar-hit" data-date="'+r.dateKey+'" x="'+x+'" y="'+yI+'" width="'+bw+'" height="'+Math.max(0,iH)+'" fill="#ef4444"></rect><rect class="bar-hit" data-date="'+r.dateKey+'" x="'+x+'" y="'+yC+'" width="'+bw+'" height="'+Math.max(0,cH)+'" fill="#22c55e"></rect><rect class="bar-hit" data-date="'+r.dateKey+'" x="'+x+'" y="'+yU+'" width="'+bw+'" height="'+(base-yU)+'" fill="transparent" stroke="#6b7280"></rect><text x="'+gx+'" y="'+(h-52)+'" text-anchor="middle" font-size="10" fill="#374151" transform="rotate(-45 '+gx+' '+(h-52)+')">'+r.dateKey.substring(5)+'</text>';p1.push(gx+','+yr(r.answerRate));p2.push(gx+','+yr(r.correctRate));});svg+='<polyline points="'+p1.join(' ')+'" fill="none" stroke="#2563eb" stroke-width="2.5"/><polyline points="'+p2.join(' ')+'" fill="none" stroke="#7c3aed" stroke-width="2.5"/>';rows.forEach((r,i)=>{const gx=left+i*gw+gw/2;svg+='<circle cx="'+gx+'" cy="'+yr(r.answerRate)+'" r="3" fill="#2563eb"/><circle cx="'+gx+'" cy="'+yr(r.correctRate)+'" r="3" fill="#7c3aed"/>'});svg+='<line x1="'+left+'" y1="'+(top+ch)+'" x2="'+(w-right)+'" y2="'+(top+ch)+'" stroke="#9ca3af"/><text x="'+left+'" y="18" font-size="12" fill="#6b7280">人数</text><text x="'+(w-right)+'" y="18" text-anchor="end" font-size="12" fill="#6b7280">率</text></svg>';$('chartArea').innerHTML=svg;$('chartArea').querySelectorAll('.bar-hit').forEach(el=>el.addEventListener('click',()=>renderUnanswered(el.getAttribute('data-date'))));}
-function renderDailyTable(){if(!dailyRows.length){$('dailyBody').innerHTML='<tr><td colspan="7" class="empty">日別データがありません。</td></tr>';return;}$('dailyBody').innerHTML=dailyRows.map(r=>'<tr><td>'+escapeHtml(r.dateKey)+'</td><td>'+r.registered+'</td><td>'+r.correct+'</td><td>'+r.incorrect+'</td><td>'+r.unanswered+'</td><td>'+Math.round(r.answerRate*10)/10+'%</td><td>'+Math.round(r.correctRate*10)/10+'%</td></tr>').join('');}
-function unansweredForDate(dk){const ans={};filteredResults().forEach(r=>{if(r.dateKey===dk)ans[r.uid]=true});return filteredUsers().filter(u=>!ans[u.uid]);}
-function renderUnanswered(dk){selectedDate=dk||'';const dates=dk?[dk]:dateRange($('startDate').value,$('endDate').value),list=[];dates.forEach(d=>unansweredForDate(d).forEach(u=>list.push({d,u})));$('selectedDateLabel').textContent=dk?'（'+dk+'）':'（期間全体）';if(!list.length){$('unansweredBody').innerHTML='<tr><td colspan="5" class="empty">未実施者はいません。</td></tr>';return;}$('unansweredBody').innerHTML=list.map(x=>'<tr><td>'+escapeHtml(x.d)+'</td><td>'+escapeHtml(x.u.employeeCode)+'</td><td>'+escapeHtml(x.u.name)+'</td><td>'+escapeHtml(x.u.department)+'</td><td>'+escapeHtml(x.u.position)+'</td></tr>').join('');}
-function catSort(a,b){const ia=CATEGORY_ORDER.indexOf(a),ib=CATEGORY_ORDER.indexOf(b);if(ia>=0&&ib>=0)return ia-ib;if(ia>=0)return -1;if(ib>=0)return 1;return a.localeCompare(b,'ja')}
-function renderCategories(){const map={};filteredResults().forEach(r=>{const k=r.category1||'未分類';if(!map[k])map[k]={total:0,correct:0};map[k].total++;if(r.isCorrect)map[k].correct++;});const keys=Object.keys(map).sort(catSort);if(!keys.length){$('categoryRanking').innerHTML='<div class="empty">カテゴリー別データがありません。</div>';return;}$('categoryRanking').innerHTML=keys.map(k=>{const m=map[k],rate=m.total?Math.round(m.correct/m.total*1000)/10:0;return '<div class="rank-item"><div><div class="rank-name">'+escapeHtml(k)+'</div><div class="rank-sub">正解 '+m.correct+' / 回答 '+m.total+'</div><div class="progress"><div class="progress-bar" style="width:'+rate+'%"></div></div></div><div><strong>'+rate+'%</strong></div></div>';}).join('');}
-$('periodPreset').addEventListener('change',loadData);$('applyBtn').addEventListener('click',loadData);$('reloadBtn').addEventListener('click',loadData);['departmentFilter','positionFilter'].forEach(id=>$(id).addEventListener('change',renderDashboard));
-applyPreset();setStatus('Firebase認証を確認中...');onAuthStateChanged(auth,async user=>{if(!user){location.href='login.html';return}try{await loadCurrentUser(user);await loadData();}catch(e){console.error(e);setStatus('ダッシュボードの読み込みに失敗しました。\n'+(e.message||e),'error')}});
-</script>
+      <div class="toolbar">
+        <select id="rangeSelect" class="select" aria-label="表示期間">
+          <option value="31" selected>直近31日</option>
+          <option value="14">直近14日</option>
+          <option value="7">直近7日</option>
+        </select>
+        <button id="displayLoadBtn" class="btn display-load-btn" type="button">表示読込</button>
+        <button id="reloadBtn" class="btn reload-btn" data-action="reload" type="button">再読み込み</button>
+      </div>
+    </header>
+
+    <p id="status" class="status">ダッシュボードを読み込み中...</p>
+
+    <div class="summary-grid">
+      <div class="card">
+        <div class="metric-label">対象者数</div>
+        <div id="totalUsersMetric" class="metric-value">-</div>
+        <div class="metric-sub">会社内ユーザー</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">本日の回答者数</div>
+        <div id="todayAnsweredMetric" class="metric-value">-</div>
+        <div class="metric-sub">本日分の回答</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">本日の回答率</div>
+        <div id="todayAnswerRateMetric" class="metric-value">-</div>
+        <div class="metric-sub">回答者数 ÷ 対象者数</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">本日の正解率</div>
+        <div id="todayCorrectRateMetric" class="metric-value">-</div>
+        <div class="metric-sub">正解数 ÷ 回答数</div>
+      </div>
+    </div>
+
+    <section id="dailyTrendSection" class="card">
+      <div class="section-header">
+        <div>
+          <h2>日別推移：人数内訳＋回答率・正解率</h2>
+          <p class="section-note">31日分を画面幅100%内に収めて表示します。</p>
+        </div>
+      </div>
+      <div class="daily-trend-chart-wrap">
+        <div class="daily-trend-chart-inner">
+          <canvas id="dailyTrendChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ここを日別推移の直下に配置 -->
+    <section id="categoryAccuracySection" class="card">
+      <div class="section-header">
+        <div>
+          <h2>カテゴリー別 正解率</h2>
+          <p class="section-note">カテゴリーごとの弱点・強みを確認できます。</p>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="categoryAccuracyChart"></canvas>
+      </div>
+    </section>
+
+    <section id="dailyTableSection" class="card">
+      <div class="section-header">
+        <div>
+          <h2>日別明細</h2>
+          <p class="section-note">日ごとの人数内訳、回答率、正解率です。</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>出題ID</th>
+              <th>大項目</th>
+              <th>対象者数</th>
+              <th>回答者数</th>
+              <th>未回答者数</th>
+              <th>回答率</th>
+              <th>正解率</th>
+            </tr>
+          </thead>
+          <tbody id="dailyTableBody">
+            <tr><td colspan="8" class="small-muted">読み込み中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    /********************************************************************
+     * Firebase設定
+     * 既存のビズもんで使用している firebaseConfig に差し替えてください。
+     ********************************************************************/
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      collectionGroup,
+      doc,
+      getDoc,
+      getDocs,
+      query,
+      where,
+      orderBy,
+      limit
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const statusEl = document.getElementById("status");
+    const reloadBtn = document.getElementById("reloadBtn");
+    const rangeSelect = document.getElementById("rangeSelect");
+
+    const totalUsersMetric = document.getElementById("totalUsersMetric");
+    const todayAnsweredMetric = document.getElementById("todayAnsweredMetric");
+    const todayAnswerRateMetric = document.getElementById("todayAnswerRateMetric");
+    const todayCorrectRateMetric = document.getElementById("todayCorrectRateMetric");
+    const dailyTableBody = document.getElementById("dailyTableBody");
+
+    let dailyTrendChart = null;
+    let categoryAccuracyChart = null;
+    let currentUser = null;
+    let currentCompanyId = null;
+
+    function setStatus(message, isError = false){
+      statusEl.textContent = message;
+      statusEl.classList.toggle("error", Boolean(isError));
+    }
+
+    function toYmd(date){
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function shortDateLabel(ymd){
+      const parts = String(ymd).split("-");
+      if(parts.length === 3){
+        return `${Number(parts[1])}/${Number(parts[2])}`;
+      }
+      return ymd;
+    }
+
+    function percent(numerator, denominator){
+      if(!denominator) return 0;
+      return Math.round((numerator / denominator) * 1000) / 10;
+    }
+
+    function getLastDates(days){
+      const result = [];
+      const today = new Date();
+      for(let i = days - 1; i >= 0; i--){
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        result.push(toYmd(d));
+      }
+      return result;
+    }
+
+    function normalizeBool(value){
+      return value === true || value === "true" || value === 1 || value === "1";
+    }
+
+    async function getLoginUserProfile(user){
+      // 想定1: users/{uid}
+      const directRef = doc(db, "users", user.uid);
+      const directSnap = await getDoc(directRef);
+      if(directSnap.exists()){
+        return { id: directSnap.id, ...directSnap.data() };
+      }
+
+      // 想定2: collectionGroup users where uid == user.uid
+      const q = query(collectionGroup(db, "users"), where("uid", "==", user.uid), limit(1));
+      const snap = await getDocs(q);
+      if(!snap.empty){
+        const d = snap.docs[0];
+        return { id: d.id, ...d.data() };
+      }
+
+      return null;
+    }
+
+    async function resolveCompanyId(user){
+      const profile = await getLoginUserProfile(user);
+      const cid = profile?.companyId || profile?.companyID || profile?.company || user?.companyId;
+      if(!cid){
+        throw new Error("companyIdを取得できませんでした。users/{uid} に companyId があるか確認してください。");
+      }
+      return cid;
+    }
+
+    async function loadCompanyUsers(companyId){
+      // 推奨: users コレクションに companyId を持たせる
+      const q = query(collection(db, "users"), where("companyId", "==", companyId));
+      const snap = await getDocs(q);
+      return snap.docs
+        .map(d => ({ id:d.id, ...d.data() }))
+        .filter(u => u.active !== false && u.disabled !== true);
+    }
+
+    async function loadAssignments(companyId, dates){
+      // 想定: dailyQuizAssignments/{companyId_YYYY-MM-DD} または doc内に companyId/date
+      const start = dates[0];
+      const end = dates[dates.length - 1];
+      const q = query(
+        collection(db, "dailyQuizAssignments"),
+        where("companyId", "==", companyId),
+        where("date", ">=", start),
+        where("date", "<=", end),
+        orderBy("date", "asc")
+      );
+      const snap = await getDocs(q);
+      const map = new Map();
+      snap.docs.forEach(d => {
+        const data = { id:d.id, ...d.data() };
+        if(data.date) map.set(data.date, data);
+      });
+      return map;
+    }
+
+    async function loadAnswers(companyId, dates){
+      // 想定: quizAnswers に companyId/date/isCorrect/category1 等がある
+      const start = dates[0];
+      const end = dates[dates.length - 1];
+      const q = query(
+        collection(db, "quizAnswers"),
+        where("companyId", "==", companyId),
+        where("date", ">=", start),
+        where("date", "<=", end),
+        orderBy("date", "asc")
+      );
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    }
+
+    function buildDailyRows(dates, users, assignmentMap, answers){
+      const totalUsers = users.length;
+      const answersByDate = new Map();
+
+      for(const ans of answers){
+        const date = ans.date || ans.answeredDate || ans.ymd;
+        if(!date) continue;
+        if(!answersByDate.has(date)) answersByDate.set(date, []);
+        answersByDate.get(date).push(ans);
+      }
+
+      return dates.map(date => {
+        const dayAnswers = answersByDate.get(date) || [];
+        const answeredUserIds = new Set();
+        let correctCount = 0;
+
+        for(const ans of dayAnswers){
+          const uid = ans.userId || ans.uid || ans.userID;
+          if(uid) answeredUserIds.add(uid);
+          if(normalizeBool(ans.isCorrect ?? ans.correct)) correctCount++;
+        }
+
+        const answeredCount = answeredUserIds.size || dayAnswers.length;
+        const unansweredCount = Math.max(totalUsers - answeredCount, 0);
+        const assignment = assignmentMap.get(date) || {};
+
+        return {
+          date,
+          questionId: assignment.questionId || assignment.id || assignment.questionID || "-",
+          category1: assignment.category1 || assignment.category || "-",
+          totalUsers,
+          answeredCount,
+          unansweredCount,
+          answerRate: percent(answeredCount, totalUsers),
+          correctRate: percent(correctCount, dayAnswers.length),
+          answerCountRaw: dayAnswers.length,
+          correctCount
+        };
+      });
+    }
+
+    function buildCategoryRows(answers){
+      const map = new Map();
+      for(const ans of answers){
+        const category = ans.category1 || ans.category || ans.largeCategory || "未分類";
+        if(!map.has(category)) map.set(category, { category, total:0, correct:0 });
+        const row = map.get(category);
+        row.total++;
+        if(normalizeBool(ans.isCorrect ?? ans.correct)) row.correct++;
+      }
+      return [...map.values()]
+        .map(r => ({ ...r, correctRate: percent(r.correct, r.total) }))
+        .sort((a,b) => b.total - a.total || a.category.localeCompare(b.category, "ja"));
+    }
+
+    function renderSummary(rows, totalUsers){
+      const today = toYmd(new Date());
+      const todayRow = rows.find(r => r.date === today) || rows[rows.length - 1];
+      totalUsersMetric.textContent = `${totalUsers}`;
+      todayAnsweredMetric.textContent = `${todayRow?.answeredCount ?? 0}`;
+      todayAnswerRateMetric.textContent = `${todayRow?.answerRate ?? 0}%`;
+      todayCorrectRateMetric.textContent = `${todayRow?.correctRate ?? 0}%`;
+    }
+
+    function renderDailyChart(rows){
+      const ctx = document.getElementById("dailyTrendChart");
+      const labels = rows.map(r => shortDateLabel(r.date));
+
+      if(dailyTrendChart) dailyTrendChart.destroy();
+
+      dailyTrendChart = new Chart(ctx, {
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "回答者数",
+              data: rows.map(r => r.answeredCount),
+              type: "bar",
+              backgroundColor: "rgba(59, 130, 246, 0.35)",
+              borderColor: "#3b82f6",
+              borderWidth: 1,
+              yAxisID: "yCount",
+              order: 2
+            },
+            {
+              label: "未回答者数",
+              data: rows.map(r => r.unansweredCount),
+              type: "bar",
+              backgroundColor: "rgba(156, 163, 175, 0.35)",
+              borderColor: "#9ca3af",
+              borderWidth: 1,
+              yAxisID: "yCount",
+              order: 2
+            },
+            {
+              label: "回答率",
+              data: rows.map(r => r.answerRate),
+              type: "line",
+              borderColor: "#2563eb",
+              backgroundColor: "rgba(37, 99, 235, 0.12)",
+              borderWidth: 3,
+              tension: 0.25,
+              pointRadius: 2.5,
+              pointHoverRadius: 5,
+              yAxisID: "yRate",
+              order: 1
+            },
+            {
+              label: "正解率",
+              data: rows.map(r => r.correctRate),
+              type: "line",
+              borderColor: "#f97316",
+              backgroundColor: "rgba(249, 115, 22, 0.12)",
+              borderWidth: 3,
+              tension: 0.25,
+              pointRadius: 2.5,
+              pointHoverRadius: 5,
+              yAxisID: "yRate",
+              order: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: { position: "top" },
+            tooltip: {
+              callbacks: {
+                label: function(context){
+                  const label = context.dataset.label || "";
+                  const value = context.raw;
+                  return label.includes("率") ? `${label}: ${value}%` : `${label}: ${value}人`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                autoSkip: false,
+                maxRotation: 45,
+                minRotation: 0,
+                font: { size: 10 }
+              },
+              grid: { display: false }
+            },
+            yCount: {
+              type: "linear",
+              position: "left",
+              beginAtZero: true,
+              stacked: false,
+              title: { display: true, text: "人数" },
+              ticks: { precision: 0 }
+            },
+            yRate: {
+              type: "linear",
+              position: "right",
+              beginAtZero: true,
+              max: 100,
+              title: { display: true, text: "率" },
+              ticks: { callback: value => value + "%" },
+              grid: { drawOnChartArea: false }
+            }
+          }
+        }
+      });
+    }
+
+    function renderCategoryChart(categoryRows){
+      const ctx = document.getElementById("categoryAccuracyChart");
+      const rows = categoryRows.length ? categoryRows : [{ category:"データなし", correctRate:0, total:0, correct:0 }];
+
+      if(categoryAccuracyChart) categoryAccuracyChart.destroy();
+
+      categoryAccuracyChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: rows.map(r => r.category),
+          datasets: [{
+            label: "正解率",
+            data: rows.map(r => r.correctRate),
+            backgroundColor: "rgba(22, 163, 74, 0.35)",
+            borderColor: "#16a34a",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context){
+                  const row = rows[context.dataIndex];
+                  return `正解率: ${row.correctRate}%（${row.correct}/${row.total}問）`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { autoSkip:false, maxRotation:45, minRotation:0, font:{ size:11 } },
+              grid: { display:false }
+            },
+            y: {
+              beginAtZero:true,
+              max:100,
+              ticks:{ callback:value => value + "%" },
+              title:{ display:true, text:"正解率" }
+            }
+          }
+        }
+      });
+    }
+
+    function renderDailyTable(rows){
+      if(!rows.length){
+        dailyTableBody.innerHTML = `<tr><td colspan="8" class="small-muted">表示できるデータがありません。</td></tr>`;
+        return;
+      }
+
+      dailyTableBody.innerHTML = rows.map(r => `
+        <tr>
+          <td>${r.date}</td>
+          <td>${r.questionId}</td>
+          <td>${r.category1}</td>
+          <td>${r.totalUsers}</td>
+          <td>${r.answeredCount}</td>
+          <td>${r.unansweredCount}</td>
+          <td>${r.answerRate}%</td>
+          <td>${r.correctRate}%</td>
+        </tr>
+      `).join("");
+    }
+
+    async function loadDashboard(){
+      if(!currentUser) return;
+
+      try{
+        reloadBtn.disabled = true;
+        setStatus("ダッシュボードを読み込み中...");
+
+        if(!currentCompanyId){
+          currentCompanyId = await resolveCompanyId(currentUser);
+        }
+
+        const days = Number(rangeSelect.value || 31);
+        const dates = getLastDates(days);
+
+        const [users, assignmentMap, answers] = await Promise.all([
+          loadCompanyUsers(currentCompanyId),
+          loadAssignments(currentCompanyId, dates),
+          loadAnswers(currentCompanyId, dates)
+        ]);
+
+        const dailyRows = buildDailyRows(dates, users, assignmentMap, answers);
+        const categoryRows = buildCategoryRows(answers);
+
+        renderSummary(dailyRows, users.length);
+        renderDailyChart(dailyRows);
+        renderCategoryChart(categoryRows);
+        renderDailyTable(dailyRows);
+
+        setStatus(`読み込み完了：${currentCompanyId} / 直近${days}日`);
+      }catch(error){
+        console.error(error);
+        setStatus(`読み込みに失敗しました。 ${error.message || error}`, true);
+      }finally{
+        reloadBtn.disabled = false;
+      }
+    }
+
+    reloadBtn.addEventListener("click", loadDashboard);
+    rangeSelect.addEventListener("change", loadDashboard);
+
+    onAuthStateChanged(auth, async user => {
+      if(!user){
+        setStatus("ログインしていません。ログイン後に再度開いてください。", true);
+        return;
+      }
+      currentUser = user;
+      await loadDashboard();
+    });
+  </script>
 </body>
 </html>
