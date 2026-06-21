@@ -27,7 +27,7 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
     </div>
     <div class="note" id="periodHelp"></div>
   </div>
- <div class="cards" id="summaryCards" style="display:none;">
+<div class="cards" id="summaryCards" style="display:none;">
   <div class="card">
     <div class="card-label">対象登録人数</div>
     <div class="card-value" id="registeredTotal">0</div>
@@ -47,12 +47,6 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
   </div>
 
   <div class="card">
-    <div class="card-label">平均正解率</div>
-    <div class="card-value" id="averageCorrectRate">0%</div>
-    <div class="card-sub">回答者ベース</div>
-  </div>
-
-  <div class="card">
     <div class="card-label">回答数</div>
     <div class="card-value" id="answerTotal">0</div>
     <div class="card-sub">期間内の総回答数</div>
@@ -69,6 +63,13 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
     <div class="card-value" id="incorrectTotal">0</div>
     <div class="card-sub">期間内の不正解数</div>
   </div>
+
+  <div class="card">
+    <div class="card-label">平均正解率</div>
+    <div class="card-value" id="averageCorrectRate">0%</div>
+    <div class="card-sub">回答者ベース</div>
+  </div>
+</div>
 </div>
   <div class="grid" id="mainGrid" style="display:none;">
     <div class="panel"><p class="panel-title">日別推移：人数内訳</p><div class="legend"><span class="legend-item"><span class="dot correct"></span>正解者数</span><span class="legend-item"><span class="dot incorrect"></span>不正解者数</span><span class="legend-item"><span class="dot unanswered"></span>未実施者数</span></div><div class="chart-wrap"><div id="countChartArea" class="chart-area-fixed"></div></div><div class="rate-table-wrap"><table class="rate-table"><thead><tr><th>対象日</th><th>回答率</th><th>正解率</th></tr></thead><tbody id="rateBody"></tbody></table></div><div class="note">日付の下に、回答率（回）と正解率（正）を数値で表示します。</div></div>
