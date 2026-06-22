@@ -1,5 +1,83 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>お知らせ</title><style>body{margin:0;font-family:"Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:32px}.box{max-width:900px;margin:30px auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 4px 12px rgba(0,0,0,.08)}a{color:#2563eb;text-decoration:none;font-weight:bold}</style></head>
-<body><div class="box"><h1>お知らせ</h1><p>このページは後で内容を追加するための仮ページです。</p><p><a href="index.html">← マイページへ戻る</a></p></div></body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>お知らせ｜ビズもん</title>
+<style>
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box;line-height:1.7}
+.wrap{max-width:980px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}
+.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{margin:0}.top-link,.bottom-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-link{display:inline-block;margin-top:22px}.sub{color:#6b7280;font-size:14px;margin:6px 0 20px}
+.status,.box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:14px;line-height:1.7;white-space:pre-wrap}.status{display:none}.status.error,.status.ok,.status.warn,.status.note{display:block}.error{color:#dc2626}.ok{color:#166534}.warn{color:#92400e;background:#fffbeb;border-color:#fde68a}.note{color:#374151}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}.btn{border:none;border-radius:10px;background:#2563eb;color:#fff;padding:10px 14px;font-size:14px;font-weight:bold;cursor:pointer}.btn.secondary{background:#64748b}.btn.light{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}.btn:disabled{opacity:.6;cursor:not-allowed}
+.news-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0}.news-toolbar input,.news-toolbar select{border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;box-sizing:border-box}.news-toolbar input{flex:1;min-width:220px}.news-toolbar select{min-width:150px}
+.pin-area{margin:18px 0}.pin-card{background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:16px;margin-bottom:12px}.news-list{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}.news-card{border:1px solid #e5e7eb;border-radius:14px;background:#fff;padding:16px;box-sizing:border-box}.news-card.important{border-color:#fecaca;background:#fffafa}.news-card.learning{border-color:#bfdbfe;background:#fbfdff}.news-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}.news-title{font-size:17px;font-weight:bold;color:#111827;margin:0}.news-date{font-size:12px;color:#6b7280;white-space:nowrap}.news-body{font-size:14px;color:#374151;white-space:pre-wrap;margin-top:8px}.news-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:bold}.badge.important{background:#fee2e2;color:#991b1b}.badge.normal{background:#f3f4f6;color:#374151}.badge.learning{background:#dbeafe;color:#1e40af}.badge.maintenance{background:#fef3c7;color:#92400e}.badge.update{background:#dcfce7;color:#166534}.empty{background:#f9fafb;border:1px dashed #d1d5db;border-radius:12px;padding:20px;text-align:center;color:#6b7280}.admin-area{display:none;margin-top:22px}.admin-area.show{display:block}.form-grid{display:grid;grid-template-columns:160px 1fr;gap:12px 14px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}.form-grid input,.form-grid select,.form-grid textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;box-sizing:border-box}.form-grid textarea{min-height:120px;resize:vertical;line-height:1.6}.small{font-size:13px;color:#6b7280;line-height:1.7}.hidden{display:none!important}.page-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#eef2f7;color:#1f2937;font-weight:bold}.page-loading.hidden{display:none!important}.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:24px 28px;box-shadow:0 4px 12px rgba(0,0,0,.08)}.loading-spinner{width:42px;height:42px;border:5px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spin .9s linear infinite}.loading-text{font-size:14px;color:#374151}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:640px){body{padding:16px}.header{flex-direction:column;align-items:flex-start}.wrap{padding:24px}.form-grid{grid-template-columns:1fr;gap:7px}.news-head{flex-direction:column}.news-date{white-space:normal}.btn{width:100%}.news-toolbar input,.news-toolbar select{width:100%;min-width:0}}
+</style>
+</head>
+<body>
+<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div id="loadingText" class="loading-text">お知らせを読み込み中...</div></div></div>
+<script>
+(function(){function h(){var l=document.getElementById('pageLoading');if(l){l.classList.add('hidden');l.style.display='none'}}function s(t){var l=document.getElementById('pageLoading'),x=document.getElementById('loadingText');if(x&&t)x.textContent=t;if(l){l.classList.remove('hidden');l.style.display='flex'}}window.bizmonHideNewsLoading=h;window.bizmonShowNewsLoading=s;setTimeout(function(){var l=document.getElementById('pageLoading');if(l&&!l.classList.contains('hidden'))h()},8000);window.addEventListener('error',h);window.addEventListener('unhandledrejection',h)})();
+</script>
+<div class="wrap">
+  <div class="header"><h1>お知らせ</h1><a class="top-link" href="index.html">← マイページへ戻る</a></div>
+  <div class="sub">ビズもんの機能追加、メンテナンス、学習トピックなどを確認できます。</div>
+  <div id="status" class="status"></div>
+
+  <div id="pinnedArea" class="pin-area hidden"></div>
+
+  <div class="news-toolbar">
+    <input id="searchInput" type="search" placeholder="タイトル・本文で検索">
+    <select id="typeFilter">
+      <option value="all">すべて</option>
+      <option value="important">重要</option>
+      <option value="normal">通常</option>
+      <option value="learning">学習</option>
+      <option value="maintenance">メンテナンス</option>
+      <option value="update">更新</option>
+    </select>
+    <button class="btn secondary" id="reloadBtn" type="button">再読み込み</button>
+  </div>
+
+  <div id="newsList" class="news-list"></div>
+
+  <div id="adminArea" class="admin-area">
+    <div class="box">
+      <strong>管理者用：お知らせ投稿</strong>
+      <p class="small">Firestore の news コレクションへ投稿します。一般ユーザーには表示されません。</p>
+      <div class="form-grid">
+        <div class="label">種別</div><select id="newsType"><option value="normal">通常</option><option value="important">重要</option><option value="learning">学習</option><option value="maintenance">メンテナンス</option><option value="update">更新</option></select>
+        <div class="label">タイトル</div><input id="newsTitle" placeholder="例：レポート画面を改善しました">
+        <div class="label">本文</div><textarea id="newsBody" placeholder="お知らせ本文を入力してください"></textarea>
+        <div class="label">固定表示</div><select id="newsPinned"><option value="false">しない</option><option value="true">する</option></select>
+      </div>
+      <div class="actions"><button class="btn" id="postBtn" type="button">お知らせを投稿</button></div>
+      <div id="postStatus" class="status"></div>
+    </div>
+  </div>
+
+  <a class="bottom-link" href="index.html">← マイページへ戻る</a>
+</div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,query,orderBy,getDocs,doc,getDoc,addDoc,serverTimestamp,limit}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
+const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFirestore(app);let loginUser=null;let loginUserData=null;let newsItems=[];const $=id=>document.getElementById(id);
+const sampleNews=[{type:"important",title:"お知らせページを公開しました",body:"ビズもんの機能追加、メンテナンス、学習トピックを確認できるページです。",pinned:true,createdAtText:"2026-06-22"},{type:"learning",title:"今週の学習テーマ：情報セキュリティ",body:"パスワードの使い回しや、不審なメールへの対応を意識しましょう。日々の小さな注意が情報漏えい防止につながります。",pinned:false,createdAtText:"2026-06-22"},{type:"update",title:"学習履歴・レポート機能を改善しました",body:"回答・解答の表示、日別履歴、CSV出力などを確認しやすくしました。",pinned:false,createdAtText:"2026-06-22"}];
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function setStatus(msg,type){const el=$("status");el.textContent=msg||"";el.className="status "+(type||"");if(!type)el.style.display="none";else el.style.display="block"}
+function setPostStatus(msg,type){const el=$("postStatus");el.textContent=msg||"";el.className="status "+(type||"");if(!type)el.style.display="none";else el.style.display="block"}
+function fmt(d){try{if(d&&typeof d.toDate==="function"){const x=d.toDate();return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")} }catch(e){}return d||""}
+function typeLabel(t){return {important:"重要",normal:"通常",learning:"学習",maintenance:"メンテナンス",update:"更新"}[t]||"通常"}
+function filteredNews(){const q=($("searchInput").value||"").toLowerCase().trim();const type=$("typeFilter").value;return newsItems.filter(n=>(type==="all"||n.type===type)&&(!q||(String(n.title||"").toLowerCase().includes(q)||String(n.body||"").toLowerCase().includes(q))))}
+function cardHtml(n,pin){const cls=n.type||"normal";return `<article class="${pin?'pin-card':'news-card'} ${esc(cls)}"><div class="news-head"><h2 class="news-title">${esc(n.title)}</h2><div class="news-date">${esc(fmt(n.createdAt)||n.createdAtText||"")}</div></div><div class="news-body">${esc(n.body)}</div><div class="news-meta"><span class="badge ${esc(cls)}">${esc(typeLabel(cls))}</span>${n.pinned?'<span class="badge important">固定表示</span>':''}</div></article>`}
+function renderNews(){const rows=filteredNews();const pinned=rows.filter(n=>n.pinned);const normal=rows.filter(n=>!n.pinned);const p=$("pinnedArea");if(pinned.length){p.classList.remove("hidden");p.innerHTML=pinned.map(n=>cardHtml(n,true)).join("")}else{p.classList.add("hidden");p.innerHTML=""}$("newsList").innerHTML=normal.length?normal.map(n=>cardHtml(n,false)).join(""):'<div class="empty">表示できるお知らせはありません。</div>'}
+async function loadUser(user){loginUser=user;const snap=await getDoc(doc(db,"users",user.uid));if(snap.exists()){loginUserData=snap.data()||{};if(loginUserData.role==="admin"&&loginUserData.status==="active")$("adminArea").classList.add("show")}}
+async function loadNews(){if(window.bizmonShowNewsLoading)window.bizmonShowNewsLoading("お知らせを読み込み中...");setStatus("","");try{const q=query(collection(db,"news"),orderBy("createdAt","desc"),limit(50));const snap=await getDocs(q);newsItems=[];snap.forEach(ds=>{const d=ds.data()||{};if(d.visible===false)return;newsItems.push({id:ds.id,type:d.type||"normal",title:d.title||"無題",body:d.body||"",pinned:d.pinned===true,createdAt:d.createdAt,createdAtText:d.createdAtText||""})});if(!newsItems.length){newsItems=sampleNews;setStatus("現在、登録済みのお知らせがないためサンプルを表示しています。","warn")}renderNews()}catch(e){console.error(e);newsItems=sampleNews;renderNews();setStatus("Firestoreのお知らせ取得に失敗したため、サンプルを表示しています。\n"+(e.message||e),"warn")}finally{if(window.bizmonHideNewsLoading)window.bizmonHideNewsLoading()}}
+async function postNews(){const title=($("newsTitle").value||"").trim();const body=($("newsBody").value||"").trim();const type=$("newsType").value;const pinned=$("newsPinned").value==="true";if(!title){setPostStatus("タイトルを入力してください。","error");return}if(!body){setPostStatus("本文を入力してください。","error");return}try{$("postBtn").disabled=true;setPostStatus("投稿中...","note");await addDoc(collection(db,"news"),{title,body,type,pinned,visible:true,createdAt:serverTimestamp(),createdBy:loginUser?loginUser.uid:"",companyId:loginUserData?loginUserData.companyId:""});$("newsTitle").value="";$("newsBody").value="";$("newsPinned").value="false";setPostStatus("投稿しました。","ok");await loadNews()}catch(e){console.error(e);setPostStatus("投稿に失敗しました。\n"+(e.message||e),"error")}finally{$("postBtn").disabled=false}}
+$("searchInput").addEventListener("input",renderNews);$("typeFilter").addEventListener("change",renderNews);$("reloadBtn").addEventListener("click",loadNews);$("postBtn").addEventListener("click",postNews);
+onAuthStateChanged(auth,async user=>{if(!user){location.href="login.html";return}try{await loadUser(user)}catch(e){console.error(e)}await loadNews()});
+</script>
+</body>
 </html>
