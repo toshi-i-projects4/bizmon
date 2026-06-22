@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>リマインド設定確認画面</title>
+  <title>リマインド設定</title>
   <style>
     body { margin: 0; font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic UI", "Meiryo", sans-serif; background: #ffffff; color: #111827; padding: 28px; box-sizing: border-box; }
     .page { max-width: 920px; margin: 0 auto; }
@@ -30,19 +30,22 @@
     .primary-btn { background: #2563eb; color: #ffffff; }
     .primary-btn:hover { background: #1d4ed8; }
     .secondary-btn { background: #f3f4f6; color: #111827; }
-    .preview-box { background: #eff6ff; border-left: 4px solid #2563eb; border-radius: 10px; padding: 14px 16px; color: #1e3a8a; font-size: 14px; line-height: 1.7; white-space: pre-wrap; font-weight: bold; }
     .status { min-height: 24px; margin-top: 16px; font-size: 14px; line-height: 1.6; color: #166534; white-space: pre-wrap; }
-    .warning { background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 10px; padding: 14px 16px; color: #92400e; font-size: 14px; line-height: 1.7; margin-top: 16px; }
     .rule-box { background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 10px; padding: 14px 16px; color: #166534; font-size: 14px; line-height: 1.8; margin: 14px 0 18px; }
     .rule-box strong { color: #14532d; }
     .sub-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 14px; padding: 18px; margin-top: 18px; }
+    .page-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff;color:#1f2937;font-weight:bold}.page-loading.hidden{display:none!important}.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:24px 28px;box-shadow:0 4px 12px rgba(0,0,0,.08)}.loading-spinner{width:42px;height:42px;border:5px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spin .9s linear infinite}.loading-text{font-size:14px;color:#374151}@keyframes spin{to{transform:rotate(360deg)}}
     @media (max-width: 720px) { body { padding: 18px; } .header { flex-direction: column; align-items: flex-start; } .form-grid { grid-template-columns: 1fr; gap: 8px 0; } .button-row { flex-direction: column; } .primary-btn, .secondary-btn { width: 100%; } }
   </style>
 </head>
 <body>
+  <div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div class="loading-text">リマインド設定を読み込み中...</div></div></div>
+  <script>
+    (function(){function h(){var l=document.getElementById('pageLoading');if(l){l.classList.add('hidden');l.style.display='none'}}window.bizmonHideRemindLoading=h;setTimeout(h,5000);window.addEventListener('error',h);window.addEventListener('unhandledrejection',h);})();
+  </script>
   <div class="page">
     <div class="header">
-      <h1>リマインド設定確認画面</h1>
+      <h1>リマインド設定</h1>
       <a class="back-link" href="index.html">← マイページへ戻る</a>
     </div>
 
@@ -104,22 +107,15 @@
       </div>
 
       <div class="button-row">
-        <button type="button" class="secondary-btn" id="previewBtn">プレビュー更新</button>
         <button type="button" class="primary-btn" id="saveBtn">設定を保存</button>
       </div>
       <div id="status" class="status"></div>
     </div>
 
-    <div class="card">
-      <p class="section-title">設定プレビュー</p>
-      <div id="previewBox" class="preview-box">読み込み中...</div>
-      <div class="warning">注意：この画面では「いつ通知するか」の設定を保存します。実際に毎日8:00や未回答者への17:00通知を送るには、Firebase Cloud Functionsなどのサーバー側処理を後で追加する必要があります。</div>
-    </div>
-
     <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
   </div>
 
-  <script type="module">
+  <script type="module" onerror="window.bizmonHideRemindLoading&&window.bizmonHideRemindLoading()">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -137,15 +133,12 @@
     const unansweredReminderTimeEl = document.getElementById("unansweredReminderTime");
     const messageTextEl = document.getElementById("messageText");
     const weekdayListEl = document.getElementById("weekdayList");
-    const previewBoxEl = document.getElementById("previewBox");
     const statusEl = document.getElementById("status");
     const saveBtn = document.getElementById("saveBtn");
-    const previewBtn = document.getElementById("previewBtn");
 
+    function hideLoading(){ if(window.bizmonHideRemindLoading) window.bizmonHideRemindLoading(); }
     function getSelectedWeekdays() { return Array.from(weekdayListEl.querySelectorAll("input:checked")).map(function (input) { return Number(input.value); }); }
     function setSelectedWeekdays(days) { const dayValues = Array.isArray(days) ? days.map(Number) : []; Array.from(weekdayListEl.querySelectorAll("input")).forEach(function (input) { input.checked = dayValues.indexOf(Number(input.value)) !== -1; }); }
-    function getWeekdayText(days) { const names = {0:"日",1:"月",2:"火",3:"水",4:"木",5:"金",6:"土"}; return days.map(function (day) { return names[day]; }).join("・"); }
-    function getScheduleText(type, days) { if (type === "daily") return "毎日"; if (type === "weekdays") return "平日（月〜金）"; if (type === "custom") { if (!days || days.length === 0) return "曜日未指定"; return "毎週 " + getWeekdayText(days); } return "未設定"; }
     function updateWeekdayDisabled() { const isCustom = scheduleTypeEl.value === "custom"; Array.from(weekdayListEl.querySelectorAll("input")).forEach(function (input) { input.disabled = !isCustom; }); weekdayListEl.style.opacity = isCustom ? "1" : "0.45"; }
 
     function makeSettings() {
@@ -158,23 +151,7 @@
       return { enabled: enabledEl.checked, scheduleType: type, time: remindTimeEl.value || "08:00", weekdays: days, customWeekdays: customDays, unansweredReminderEnabled: unansweredReminderEnabledEl.checked, unansweredReminderTime: unansweredReminderTimeEl.value || "17:00", message: messageTextEl.value.trim() || "本日のクイズの回答をお願いします。", timezone: "Asia/Tokyo" };
     }
 
-    function updatePreview() {
-      updateWeekdayDisabled();
-      const settings = makeSettings();
-      const enabledText = settings.enabled ? "有効" : "無効";
-      const unansweredText = settings.unansweredReminderEnabled ? "有効" : "無効";
-      previewBoxEl.textContent =
-        "状態：" + enabledText + "\n" +
-        "頻度：" + getScheduleText(settings.scheduleType, settings.weekdays) + "\n" +
-        "通常リマインド時刻：" + settings.time + "\n" +
-        "未回答時の追加リマインド：" + unansweredText + "\n" +
-        "未回答リマインド時刻：" + settings.unansweredReminderTime + "\n" +
-        "実行条件：リマインドが有効、かつ通知タイミングに該当する日、かつ未回答時の追加リマインドが有効、かつ指定時刻時点で本日のクイズに未回答の場合のみ送信" + "\n" +
-        "通知対象外の日：送信しない" + "\n" +
-        "リマインド無効時：送信しない" + "\n" +
-        "タイムゾーン：" + settings.timezone + "\n" +
-        "メッセージ：" + settings.message;
-    }
+    function updateFormState() { updateWeekdayDisabled(); }
 
     async function loadSettings() {
       if (!currentUser) return;
@@ -201,11 +178,13 @@
           setSelectedWeekdays([1,2,3,4,5]);
           statusEl.textContent = "まだ保存済みの設定はありません。";
         }
-        updatePreview();
+        updateFormState();
       } catch (error) {
         console.error(error);
         statusEl.textContent = "設定の読み込みに失敗しました。Firestoreのルールを確認してください。";
-        updatePreview();
+        updateFormState();
+      } finally {
+        hideLoading();
       }
     }
 
@@ -219,7 +198,7 @@
         const ref = doc(db, "reminderSettings", currentUser.uid);
         await setDoc(ref, { uid: currentUser.uid, email: currentUser.email || "", enabled: settings.enabled, scheduleType: settings.scheduleType, time: settings.time, weekdays: settings.weekdays, customWeekdays: settings.customWeekdays, unansweredReminderEnabled: settings.unansweredReminderEnabled, unansweredReminderTime: settings.unansweredReminderTime, message: settings.message, timezone: settings.timezone, updatedAt: serverTimestamp() }, { merge: true });
         statusEl.textContent = "リマインド設定を保存しました。";
-        updatePreview();
+        updateFormState();
       } catch (error) {
         console.error(error);
         statusEl.textContent = "リマインド設定の保存に失敗しました。Firestoreのルールを確認してください。";
@@ -229,18 +208,17 @@
       }
     }
 
-    scheduleTypeEl.addEventListener("change", updatePreview);
-    remindTimeEl.addEventListener("change", updatePreview);
-    unansweredReminderEnabledEl.addEventListener("change", updatePreview);
-    unansweredReminderTimeEl.addEventListener("change", updatePreview);
-    messageTextEl.addEventListener("input", updatePreview);
-    enabledEl.addEventListener("change", updatePreview);
-    weekdayListEl.addEventListener("change", updatePreview);
-    previewBtn.addEventListener("click", updatePreview);
+    scheduleTypeEl.addEventListener("change", updateFormState);
+    remindTimeEl.addEventListener("change", updateFormState);
+    unansweredReminderEnabledEl.addEventListener("change", updateFormState);
+    unansweredReminderTimeEl.addEventListener("change", updateFormState);
+    messageTextEl.addEventListener("input", updateFormState);
+    enabledEl.addEventListener("change", updateFormState);
+    weekdayListEl.addEventListener("change", updateFormState);
     saveBtn.addEventListener("click", saveSettings);
 
     onAuthStateChanged(auth, function (user) { if (!user) { location.href = "login.html"; return; } currentUser = user; loadSettings(); });
-    updatePreview();
+    updateFormState();
   </script>
 </body>
 </html>
