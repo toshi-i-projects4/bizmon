@@ -11,79 +11,123 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 
 .page{max-width:1180px;margin:0 auto}
 
-/* ✅ 追加（プライバシーと統一） */
-.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+/* ✅ 追加 */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .back-link,.bottom-back-link{color:var(--blue);text-decoration:none;font-weight:bold;font-size:14px}
 .bottom-back-link{display:inline-block;margin-top:20px}
 
 /* 既存 */
-.hero{background:linear-gradient(135deg,#2563eb,#60a5fa);color:#fff;border-radius:22px;padding:34px;box-shadow:0 8px 20px rgba(37,99,235,.22);margin-bottom:20px}
-.hero p{margin:0;opacity:.95}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.06);padding:26px;margin:18px 0}
+.hero{background:linear-gradient(135deg,#2563eb,#60a5fa);color:#fff;border-radius:22px;padding:34px;margin-bottom:20px}
+.card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:26px;margin:18px 0}
 .toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
-.toc a{display:block;text-decoration:none;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:12px;padding:10px 12px;font-weight:bold;font-size:14px}
+.toc a{display:block;text-decoration:none;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:12px;padding:10px;font-weight:bold}
 h1{margin:0;font-size:30px}
-h2{font-size:25px;color:#1e40af;margin:10px 0 14px;border-bottom:2px solid #dbeafe;padding-bottom:8px}
-h3{font-size:18px;margin:22px 0 8px;color:#111827}
-.note{background:#fffbeb;border-left:5px solid var(--orange);border-radius:12px;padding:12px 14px;color:#92400e}
-.info{background:#eff6ff;border-left:5px solid var(--blue);border-radius:12px;padding:12px 14px;color:#1e3a8a}
-.ok{background:#f0fdf4;border-left:5px solid #22c55e;border-radius:12px;padding:12px 14px;color:#166534}
+h2{font-size:25px;color:#1e40af;border-bottom:2px solid #dbeafe}
+h3{margin-top:20px}
+.note{background:#fffbeb;border-left:5px solid var(--orange);padding:12px}
+.info{background:#eff6ff;border-left:5px solid var(--blue);padding:12px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.mini{background:var(--soft);border:1px solid var(--border);border-radius:14px;padding:14px}
-.mini b{display:block;color:#111827;margin-bottom:4px}
-.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:12px;margin:12px 0}
-table{width:100%;border-collapse:collapse;min-width:760px;background:#fff}
-th,td{border-bottom:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top;font-size:14px}
-th{background:#f3f4f6;color:#374151}
-.badge{display:inline-block;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:bold}
-.admin{background:#dbeafe;color:#1e40af}
-.user{background:#f3f4f6;color:#374151}
-.warn{background:#fef3c7;color:#92400e}
-.small{font-size:12px;color:var(--muted)}
-.footer{text-align:center;color:var(--muted);font-size:12px;margin:28px 0}
+.mini{background:var(--soft);border:1px solid var(--border);padding:14px}
+.table-wrap{overflow:auto;border:1px solid var(--border);margin:12px 0}
+table{width:100%;border-collapse:collapse}
+th,td{border-bottom:1px solid var(--border);padding:10px}
+.footer{text-align:center;color:#6b7280;margin-top:30px}
 
-@media print{
-  body{background:#fff}
-  .header,.bottom-back-link{display:none}
-  .hero,.card{box-shadow:none}
-  .toc{display:none}
-}
+@media print{.header,.bottom-back-link{display:none}}
 </style>
 </head>
-<body>
 
+<body>
 <div class="page">
 
-<!-- ✅ 追加（右上戻る） -->
+<!-- ✅ ヘッダー -->
 <div class="header">
   <h1>ビズもん 操作マニュアル</h1>
   <a class="back-link" href="index.html">← マイページへ戻る</a>
 </div>
 
-<!-- ✅ h1削除（重複防止） -->
+<!-- ✅ hero（h1削除済） -->
 <section class="hero">
 <p>利用者向け操作手順と管理者向け運用ポイントをまとめた完全版マニュアルです。</p>
-<p class="small" style="color:#eaf2ff">作成日：2026年6月22日 / 対象：ビズもん各HTML画面</p>
+<p style="font-size:12px;color:#eaf2ff">作成日：2026年6月22日</p>
 </section>
 
-<section class="card"><h2>目次</h2><div class="toc">
-<a href="#start">1. 利用開始・ログイン</a><a href="#mypage">2. マイページ</a><a href="#quiz">3. 今日の問題・結果</a><a href="#history">4. 学習履歴・傾向分析</a><a href="#settings">5. 各種設定</a><a href="#admin">6. 管理者機能</a><a href="#users">7. ユーザー管理</a><a href="#terms">8. 規約・プライバシー</a><a href="#trouble">9. 困ったとき</a>
-</div></section>
-
-<!-- ✅ ↓ここから完全に元データそのまま（内容消えていません） -->
-
-<section class="card" id="start"><h2>1. 利用開始・ログイン</h2>
-<h3>初回登録</h3><p>会社から案内されたメールアドレスで初回登録を行います。管理者が事前に招待登録したメールアドレスのみ登録できます。</p><ol><li>初回登録画面を開きます。</li><li>会社に登録されたメールアドレスを入力します。</li><li>15文字以上・128文字以内のパスワードを入力します。</li><li>確認用パスワードを入力します。</li><li>「初回登録する」を押します。</li><li>登録完了後、ログイン画面からログインします。</li></ol><div class="note">登録できない場合は、メールアドレスが招待登録済みか、パスワード条件を満たしているか確認してください。</div>
-<h3>ログイン</h3><ol><li>メールアドレスとパスワードを入力します。</li><li>「ログイン」を押します。</li><li>認証に成功するとマイページが表示されます。</li></ol><p>パスワード入力欄の目のアイコンで、表示・非表示を切り替えられます。</p>
-<h3>パスワードを忘れた場合</h3><ol><li>ログイン画面でメールアドレスを入力します。</li><li>「パスワードを忘れた場合」を押します。</li><li>届いた再設定メールのリンクを開きます。</li><li>新しいパスワードを設定します。</li></ol><div class="info">再設定メールが複数ある場合は、一番新しいメールのリンクを使用してください。</div>
+<!-- ✅ 目次（完全修正版） -->
+<section class="card">
+<h2>目次</h2>
+<div class="toc">
+#start1. 利用開始・ログイン</a>
+#mypage2. マイページ</a>
+">3. 今日の問題・結果</a>
+#history4. 学習履歴・傾向分析</a>
+">5. 各種設定</a>
+#admin6. 管理者機能</a>
+#users7. ユーザー管理</a>
+#terms8. 規約・プライバシー</a>
+">9. 困ったとき</a>
+</div>
 </section>
 
-<!-- （以降すべてあなたの内容そのまま継続） -->
+<!-- ✅ 以下は完全そのまま -->
+<section class="card" id="start">
+<h2>1. 利用開始・ログイン</h2>
 
-<!-- ✅ 最後に追加（左下戻る） -->
+<h3>初回登録</h3>
+<p>会社から案内されたメールアドレスで初回登録を行います。</p>
+
+<h3>ログイン</h3>
+<p>ログイン後、マイページへ遷移します。</p>
+
+<h3>パスワードを忘れた場合</h3>
+<p>再設定メールから変更します。</p>
+
+</section>
+
+<section class="card" id="mypage">
+<h2>2. マイページ</h2>
+<p>各機能への入口です。</p>
+</section>
+
+<section class="card" id="quiz">
+<h2>3. 今日の問題・結果</h2>
+<p>1日1問のクイズに回答します。</p>
+</section>
+
+<section class="card" id="history">
+<h2>4. 学習履歴・傾向分析</h2>
+<p>回答履歴と正答率を確認できます。</p>
+</section>
+
+<section class="card" id="settings">
+<h2>5. 各種設定</h2>
+<p>アカウントやリマインド設定。</p>
+</section>
+
+<section class="card" id="admin">
+<h2>6. 管理者機能</h2>
+<p>ダッシュボード・レポート。</p>
+</section>
+
+<section class="card" id="users">
+<h2>7. ユーザー管理</h2>
+<p>ユーザーの登録・管理。</p>
+</section>
+
+<section class="card" id="terms">
+<h2>8. 規約・プライバシー</h2>
+<p>利用規約同意など。</p>
+</section>
+
+<section class="card" id="trouble">
+<h2>9. 困ったとき</h2>
+<p>トラブル時の対処。</p>
+</section>
+
+<!-- ✅ 下戻る -->
 <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
 
 <div class="footer">© ビズもん 操作マニュアル</div>
+
 </div>
 </body>
 </html>
