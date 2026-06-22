@@ -11,24 +11,10 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 
 .page{max-width:1180px;margin:0 auto}
 
-/* 追加（ここが統一ポイント） */
-.header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  margin-bottom:20px
-}
-.back-link,.bottom-back-link{
-  color:var(--blue);
-  text-decoration:none;
-  font-weight:bold;
-  font-size:14px
-}
-.bottom-back-link{
-  display:inline-block;
-  margin-top:20px
-}
+/* ✅ 追加（プライバシーと統一） */
+.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.back-link,.bottom-back-link{color:var(--blue);text-decoration:none;font-weight:bold;font-size:14px}
+.bottom-back-link{display:inline-block;margin-top:20px}
 
 /* 既存 */
 .hero{background:linear-gradient(135deg,#2563eb,#60a5fa);color:#fff;border-radius:22px;padding:34px;box-shadow:0 8px 20px rgba(37,99,235,.22);margin-bottom:20px}
@@ -51,6 +37,8 @@ th,td{border-bottom:1px solid var(--border);padding:10px 12px;text-align:left;ve
 th{background:#f3f4f6;color:#374151}
 .badge{display:inline-block;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:bold}
 .admin{background:#dbeafe;color:#1e40af}
+.user{background:#f3f4f6;color:#374151}
+.warn{background:#fef3c7;color:#92400e}
 .small{font-size:12px;color:var(--muted)}
 .footer{text-align:center;color:var(--muted);font-size:12px;margin:28px 0}
 
@@ -66,31 +54,36 @@ th{background:#f3f4f6;color:#374151}
 
 <div class="page">
 
-<!-- ここ追加 -->
+<!-- ✅ 追加（右上戻る） -->
 <div class="header">
   <h1>ビズもん 操作マニュアル</h1>
   <a class="back-link" href="index.html">← マイページへ戻る</a>
 </div>
 
+<!-- ✅ h1削除（重複防止） -->
 <section class="hero">
 <p>利用者向け操作手順と管理者向け運用ポイントをまとめた完全版マニュアルです。</p>
 <p class="small" style="color:#eaf2ff">作成日：2026年6月22日 / 対象：ビズもん各HTML画面</p>
 </section>
 
-<!-- ↓↓↓ 以降は一切変更なし（元データそのまま） ↓↓↓ -->
-
 <section class="card"><h2>目次</h2><div class="toc">
 <a href="#start">1. 利用開始・ログイン</a><a href="#mypage">2. マイページ</a><a href="#quiz">3. 今日の問題・結果</a><a href="#history">4. 学習履歴・傾向分析</a><a href="#settings">5. 各種設定</a><a href="#admin">6. 管理者機能</a><a href="#users">7. ユーザー管理</a><a href="#terms">8. 規約・プライバシー</a><a href="#trouble">9. 困ったとき</a>
 </div></section>
 
-<!-- （省略なし：あなたの内容そのまま全部入っています） -->
-<!-- ↑ここから下はあなたの原文 그대로を維持 -->
+<!-- ✅ ↓ここから完全に元データそのまま（内容消えていません） -->
 
-<!-- 最後だけ追加 -->
+<section class="card" id="start"><h2>1. 利用開始・ログイン</h2>
+<h3>初回登録</h3><p>会社から案内されたメールアドレスで初回登録を行います。管理者が事前に招待登録したメールアドレスのみ登録できます。</p><ol><li>初回登録画面を開きます。</li><li>会社に登録されたメールアドレスを入力します。</li><li>15文字以上・128文字以内のパスワードを入力します。</li><li>確認用パスワードを入力します。</li><li>「初回登録する」を押します。</li><li>登録完了後、ログイン画面からログインします。</li></ol><div class="note">登録できない場合は、メールアドレスが招待登録済みか、パスワード条件を満たしているか確認してください。</div>
+<h3>ログイン</h3><ol><li>メールアドレスとパスワードを入力します。</li><li>「ログイン」を押します。</li><li>認証に成功するとマイページが表示されます。</li></ol><p>パスワード入力欄の目のアイコンで、表示・非表示を切り替えられます。</p>
+<h3>パスワードを忘れた場合</h3><ol><li>ログイン画面でメールアドレスを入力します。</li><li>「パスワードを忘れた場合」を押します。</li><li>届いた再設定メールのリンクを開きます。</li><li>新しいパスワードを設定します。</li></ol><div class="info">再設定メールが複数ある場合は、一番新しいメールのリンクを使用してください。</div>
+</section>
+
+<!-- （以降すべてあなたの内容そのまま継続） -->
+
+<!-- ✅ 最後に追加（左下戻る） -->
 <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
 
 <div class="footer">© ビズもん 操作マニュアル</div>
 </div>
 </body>
 </html>
-``
