@@ -39,8 +39,7 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
       <div class="label">部署</div><input id="department" placeholder="例：営業部">
       <div class="label">役職</div><input id="position" placeholder="例：一般、主任、課長、部長">
       <div class="label">ビズもん権限</div><select id="role"><option value="user">一般</option><option value="admin">管理者</option></select>
-      <div class="label">ビズもん申込者</div><select id="isApplicant"><option value="false">いいえ</option><option value="true">はい</option></select>
-      <div class="label">招待状態</div><input id="pendingStatus" value="pending" readonly>
+<div class="label">招待状態</div><input id="pendingStatus" value="pending" readonly>
       <div class="label">備考</div><textarea id="note" placeholder="任意入力"></textarea>
     </div>
     <div class="warning-box">注意：この画面で招待登録した時点では、まだログイン用アカウントは作成されません。従業員本人が初回登録を完了すると本登録されます。</div>
@@ -64,12 +63,12 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
     <p class="section-title">招待者一覧</p>
     <p class="description">管理者が招待した従業員の一覧です。本登録の完了状況を確認できます。招待対象から外した人は「対象外」として管理できます。</p>
     <div class="toolbar"><input id="search" placeholder="社員コード・氏名・メール・部署・備考で検索"><select id="filterStatus"><option value="all">すべて</option><option value="pending">招待中</option><option value="registered">登録済</option><option value="cancelled">対象外</option></select><button class="secondary-btn" id="reloadBtn" type="button">再読み込み</button><button class="secondary-btn" id="exportBtn" type="button">CSVダウンロード</button></div>
-    <div class="table-wrap"><table class="data-table"><thead><tr><th>操作</th><th>状態</th><th>ビズもん申込者</th><th>ビズもん権限</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>メールアドレス</th><th>備考</th><th>登録UID</th></tr></thead><tbody id="pendingTbody"></tbody></table></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>操作</th><th>状態</th><th>ビズもん権限</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>メールアドレス</th><th>備考</th><th>登録UID</th></tr></thead><tbody id="pendingTbody"></tbody></table></div>
   </div>
 
   <div class="card">
     <p class="section-title">登録済ユーザー一覧</p>
-    <div class="table-wrap"><table class="data-table"><thead><tr><th>状態</th><th>ビズもん申込者</th><th>ビズもん権限</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>メールアドレス</th><th>備考</th><th>UID</th></tr></thead><tbody id="userTbody"></tbody></table></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>状態</th><th>ビズもん権限</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>メールアドレス</th><th>備考</th><th>UID</th></tr></thead><tbody id="userTbody"></tbody></table></div>
   </div>
   <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
 </div>
@@ -160,10 +159,10 @@ async function loadUsers(){
 }
 
 function filteredPending(){const q=normalizeText($("search").value).toLowerCase();const st=$("filterStatus").value;return allPending.filter(u=>(st==="all"||u.status===st)&&(!q||[u.email,u.employeeCode,u.name,u.department,u.position,u.note].some(v=>String(v||"").toLowerCase().includes(q))))}
-function renderPendingUsers(){const rows=filteredPending();$("pendingTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${actionCellForPending(u)}</td><td>${badge(statusLabel(u.status),u.status)}</td><td>${u.isApplicant?"はい":"いいえ"}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${esc(u.email)}</td><td>${esc(u.note)}</td><td>${esc(u.registeredUid)}</td></tr>`).join(""):'<tr><td colspan="11">招待者はありません。</td></tr>'}
-function renderUsers(){const rows=allUsers;$("userTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${badge(userStatusLabel(u.status),u.status)}</td><td>${u.isApplicant?"はい":"いいえ"}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${esc(u.email)}</td><td>${esc(u.note)}</td><td>${esc(u.uid)}</td></tr>`).join(""):'<tr><td colspan="10">登録済ユーザーはありません。</td></tr>'}
+function renderPendingUsers(){const rows=filteredPending();$("pendingTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${actionCellForPending(u)}</td><td>${badge(statusLabel(u.status),u.status)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${esc(u.email)}</td><td>${esc(u.note)}</td><td>${esc(u.registeredUid)}</td></tr>`).join(""):'<tr><td colspan="9">招待者はありません。</td></tr>'}
+function renderUsers(){const rows=allUsers;$("userTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${badge(userStatusLabel(u.status),u.status)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${esc(u.email)}</td><td>${esc(u.note)}</td><td>${esc(u.uid)}</td></tr>`).join(""):'<tr><td colspan="9">登録済ユーザーはありません。</td></tr>'}
 
-function clearForm(){["employeeCode","name","email","department","position","note"].forEach(id=>$(id).value="");$("companyId").value=loginUserData.companyId||"";$("companyName").value=loginUserData.companyName||"";$("role").value="user";$("isApplicant").value="false";$("pendingStatus").value="pending";setStatus("","")}
+function clearForm(){["employeeCode","name","email","department","position","note"].forEach(id=>$(id).value="");$("companyId").value=loginUserData.companyId||"";$("companyName").value=loginUserData.companyName||"";$("role").value="user";$("pendingStatus").value="pending";setStatus("","")}
 function validate(data){if(!data.employeeCode)return "社員コードを入力してください。";if(!data.name)return "氏名を入力してください。";if(!data.email)return "メールアドレスを入力してください。";if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email))return "メールアドレスの形式が正しくありません。";if(!["user","admin"].includes(data.role))return "権限が不正です。";if(allPending.some(u=>u.email===data.email&&u.status!=="cancelled"))return "このメールアドレスは既に招待登録されています。";if(allPending.some(u=>u.employeeCode===data.employeeCode&&u.status!=="cancelled"))return "この社員コードは既に招待登録されています。";if(allUsers.some(u=>normalizeEmail(u.email)===data.email))return "このメールアドレスは既に本登録済みです。";if(allUsers.some(u=>u.employeeCode===data.employeeCode))return "この社員コードは既に本登録済みです。";return ""}
 
 async function excludePendingUser(email){
@@ -183,7 +182,7 @@ async function excludePendingUser(email){
 
 async function registerPendingUser(){
   const email=normalizeEmail($("email").value);
-  const data={email,employeeCode:normalizeText($("employeeCode").value),name:normalizeText($("name").value),companyId:loginUserData.companyId,companyName:loginUserData.companyName||"",department:normalizeText($("department").value),position:normalizeText($("position").value),role:$("role").value,status:"pending",isApplicant:$("isApplicant").value==="true",note:normalizeText($("note").value),registeredAt:null,registeredUid:"",createdAt:serverTimestamp(),createdBy:loginUser.uid,updatedAt:serverTimestamp(),updatedBy:loginUser.uid};
+  const data={email,employeeCode:normalizeText($("employeeCode").value),name:normalizeText($("name").value),companyId:loginUserData.companyId,companyName:loginUserData.companyName||"",department:normalizeText($("department").value),position:normalizeText($("position").value),role:$("role").value,status:"pending",isApplicant:false,note:normalizeText($("note").value),registeredAt:null,registeredUid:"",createdAt:serverTimestamp(),createdBy:loginUser.uid,updatedAt:serverTimestamp(),updatedBy:loginUser.uid};
   const err=validate(data);if(err){setStatus(err,"error");return}
   try{setStatus("招待登録中...","note");await setDoc(doc(db,"pendingUsers",email),data,{merge:false});setStatus("招待登録しました。招待メール文面を作成しました。","ok");showInviteMail(data);clearForm();await loadPendingUsers()}catch(e){console.error(e);setStatus("招待登録に失敗しました。\n"+(e.code||"")+"\n"+(e.message||e),"error")}
 }
