@@ -34,13 +34,10 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
       <div class="label">社員コード</div><input id="employeeCode" placeholder="例：B0002">
       <div class="label">氏名</div><input id="name" placeholder="例：山田 太郎">
       <div class="label">メールアドレス</div><input id="email" type="email" autocomplete="email" placeholder="例：user@example.com">
-      <div class="label">企業ID</div><input id="companyId" readonly>
-      <div class="label">企業名</div><input id="companyName" readonly>
-      <div class="label">部署</div><input id="department" placeholder="例：営業部">
+<div class="label">部署</div><input id="department" placeholder="例：営業部">
       <div class="label">役職</div><input id="position" placeholder="例：一般、主任、課長、部長">
       <div class="label">ビズもん権限</div><select id="role"><option value="user">一般</option><option value="admin">管理者</option></select>
-<div class="label">招待状態</div><input id="pendingStatus" value="pending" readonly>
-      <div class="label">備考</div><textarea id="note" placeholder="任意入力"></textarea>
+<div class="label">備考</div><textarea id="note" placeholder="任意入力"></textarea>
     </div>
     <div class="warning-box">注意：この画面で招待登録した時点では、まだログイン用アカウントは作成されません。従業員本人が初回登録を完了すると本登録されます。</div>
     <div class="button-row"><button class="secondary-btn" id="clearBtn" type="button">入力をクリア</button><button class="primary-btn" id="registerBtn" type="button">招待登録する</button></div>
@@ -133,7 +130,6 @@ async function checkAdminAccess(user){
   if(data.status!=="active"){redirectToIndex("無効な管理者アカウントです。");return false}
   if(!data.companyId){redirectToIndex("管理者の companyId が未設定です。");return false}
   loginUser=user;loginUserData=data;
-  $("companyId").value=data.companyId||"";$("companyName").value=data.companyName||"";
   showPage("管理者権限を確認しました。\nログイン中："+(user.email||"")+"\n企業："+(data.companyName||data.companyId));
   return true;
 }
@@ -162,7 +158,7 @@ function filteredPending(){const q=normalizeText($("search").value).toLowerCase(
 function renderPendingUsers(){const rows=filteredPending();$("pendingTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${actionCellForPending(u)}</td><td>${badge(statusLabel(u.status),u.status)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${esc(u.email)}</td><td>${esc(u.note)}</td><td>${esc(u.registeredUid)}</td></tr>`).join(""):'<tr><td colspan="9">招待者はありません。</td></tr>'}
 function renderUsers(){const rows=allUsers;$("userTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${badge(userStatusLabel(u.status),u.status)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${esc(u.email)}</td><td>${esc(u.note)}</td><td>${esc(u.uid)}</td></tr>`).join(""):'<tr><td colspan="9">登録済ユーザーはありません。</td></tr>'}
 
-function clearForm(){["employeeCode","name","email","department","position","note"].forEach(id=>$(id).value="");$("companyId").value=loginUserData.companyId||"";$("companyName").value=loginUserData.companyName||"";$("role").value="user";$("pendingStatus").value="pending";setStatus("","")}
+function clearForm(){["employeeCode","name","email","department","position","note"].forEach(id=>$(id).value="");$("role").value="user";setStatus("","")}
 function validate(data){if(!data.employeeCode)return "社員コードを入力してください。";if(!data.name)return "氏名を入力してください。";if(!data.email)return "メールアドレスを入力してください。";if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email))return "メールアドレスの形式が正しくありません。";if(!["user","admin"].includes(data.role))return "権限が不正です。";if(allPending.some(u=>u.email===data.email&&u.status!=="cancelled"))return "このメールアドレスは既に招待登録されています。";if(allPending.some(u=>u.employeeCode===data.employeeCode&&u.status!=="cancelled"))return "この社員コードは既に招待登録されています。";if(allUsers.some(u=>normalizeEmail(u.email)===data.email))return "このメールアドレスは既に本登録済みです。";if(allUsers.some(u=>u.employeeCode===data.employeeCode))return "この社員コードは既に本登録済みです。";return ""}
 
 async function excludePendingUser(email){
