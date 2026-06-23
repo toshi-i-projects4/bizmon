@@ -59,15 +59,10 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
   <div class="card">
     <p class="section-title">招待者一覧</p>
     <p class="description">管理者が招待した従業員の一覧です。本登録の完了状況を確認できます。招待対象から外した人は「対象外」として管理できます。</p>
-    <div class="toolbar"><input id="search" placeholder="社員コード・氏名・メール・部署・備考で検索"><select id="filterStatus"><option value="all">すべて</option><option value="pending">招待中</option><option value="registered">登録済</option><option value="cancelled">対象外</option></select><button class="secondary-btn" id="reloadBtn" type="button">再読み込み</button><button class="secondary-btn" id="exportBtn" type="button">CSVダウンロード</button></div>
+    <div class="toolbar"><input id="search" placeholder="社員コード・氏名・メール・部署・備考で検索"><select id="filterStatus"><option value="all">すべて</option><option value="pending">招待中</option><option value="registered">登録済</option><option value="cancelled">対象外</option></select><button class="secondary-btn" id="reloadBtn" type="button">再読み込み</button></div>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>操作</th><th>状態</th><th>ビズもん権限</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>メールアドレス</th><th>備考</th><th>登録UID</th></tr></thead><tbody id="pendingTbody"></tbody></table></div>
   </div>
-
-  <div class="card">
-    <p class="section-title">登録済ユーザー一覧</p>
-    <div class="table-wrap"><table class="data-table"><thead><tr><th>状態</th><th>ビズもん権限</th><th>社員コード</th><th>氏名</th><th>部署</th><th>役職</th><th>メールアドレス</th><th>備考</th><th>UID</th></tr></thead><tbody id="userTbody"></tbody></table></div>
-  </div>
-  <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
+<a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
 </div>
 
 <script type="module">
@@ -156,7 +151,7 @@ async function loadUsers(){
 
 function filteredPending(){const q=normalizeText($("search").value).toLowerCase();const st=$("filterStatus").value;return allPending.filter(u=>(st==="all"||u.status===st)&&(!q||[u.email,u.employeeCode,u.name,u.department,u.position,u.note].some(v=>String(v||"").toLowerCase().includes(q))))}
 function renderPendingUsers(){const rows=filteredPending();$("pendingTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${actionCellForPending(u)}</td><td>${badge(statusLabel(u.status),u.status)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${esc(u.email)}</td><td>${esc(u.note)}</td><td>${esc(u.registeredUid)}</td></tr>`).join(""):'<tr><td colspan="9">招待者はありません。</td></tr>'}
-function renderUsers(){const rows=allUsers;$("userTbody").innerHTML=rows.length?rows.map(u=>`<tr><td>${badge(userStatusLabel(u.status),u.status)}</td><td>${u.role==="admin"?badge("管理者","admin"):badge("一般","user")}</td><td>${esc(u.employeeCode)}</td><td>${esc(u.name)}</td><td>${esc(u.department)}</td><td>${esc(u.position)}</td><td>${esc(u.email)}</td><td>${esc(u.note)}</td><td>${esc(u.uid)}</td></tr>`).join(""):'<tr><td colspan="9">登録済ユーザーはありません。</td></tr>'}
+function renderUsers(){/* 登録済ユーザー一覧はこの画面では表示しません。allUsers は重複チェック用に保持します。 */}
 
 function clearForm(){["employeeCode","name","email","department","position","note"].forEach(id=>$(id).value="");$("role").value="user";setStatus("","")}
 function validate(data){if(!data.employeeCode)return "社員コードを入力してください。";if(!data.name)return "氏名を入力してください。";if(!data.email)return "メールアドレスを入力してください。";if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email))return "メールアドレスの形式が正しくありません。";if(!["user","admin"].includes(data.role))return "権限が不正です。";if(allPending.some(u=>u.email===data.email&&u.status!=="cancelled"))return "このメールアドレスは既に招待登録されています。";if(allPending.some(u=>u.employeeCode===data.employeeCode&&u.status!=="cancelled"))return "この社員コードは既に招待登録されています。";if(allUsers.some(u=>normalizeEmail(u.email)===data.email))return "このメールアドレスは既に本登録済みです。";if(allUsers.some(u=>u.employeeCode===data.employeeCode))return "この社員コードは既に本登録済みです。";return ""}
@@ -188,7 +183,6 @@ $("clearBtn").addEventListener("click",clearForm);
 $("copyInviteBtn").addEventListener("click",copyInviteBody);
 $("mailtoBtn").addEventListener("click",openMailto);
 $("reloadBtn").addEventListener("click",async()=>{try{await loadPendingUsers();await loadUsers();}catch(e){setStatus("再読み込みに失敗しました。\n"+e.message,"error")}});
-$("exportBtn").addEventListener("click",()=>downloadText("pendingUsers_"+(loginUserData.companyId||"company")+".csv",pendingToCsv(filteredPending()),"text/csv;charset=utf-8"));
 $("search").addEventListener("input",renderPendingUsers);
 $("filterStatus").addEventListener("change",renderPendingUsers);
 $("pendingTbody").addEventListener("click",e=>{const btn=e.target.closest('button[data-action="exclude"]');if(btn)excludePendingUser(btn.dataset.email)});
