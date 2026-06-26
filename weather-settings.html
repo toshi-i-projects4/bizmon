@@ -5,182 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>天気予報表示地域設定</title>
   <style>
-    body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#ffffff;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:920px;margin:0 auto}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}h1{margin:0;font-size:28px;color:#111827}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:20px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}.section-title{font-size:18px;font-weight:bold;margin:0 0 14px;color:#111827}.description{font-size:14px;line-height:1.7;color:#6b7280;margin:0 0 18px}.info-box{display:none}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;color:#92400e;font-size:14px;line-height:1.7;margin-top:16px}.form-grid{display:grid;grid-template-columns:220px 1fr;gap:16px 18px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}select{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;font-size:15px;box-sizing:border-box;background:#fff;color:#111827}select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}select:disabled{background:#f9fafb;color:#9ca3af}.button-row{display:flex;justify-content:flex-end;gap:12px;margin-top:22px}.primary-btn,.secondary-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.primary-btn:hover{background:#1d4ed8}.secondary-btn{background:#f3f4f6;color:#111827}.status{min-height:24px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap}.status.ok{color:#166534}.status.error{color:#dc2626}.status.note{color:#374151}.small-note{font-size:13px;color:#6b7280;line-height:1.6;margin-top:6px}.current-setting{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.7;color:#374151;white-space:pre-wrap}.source-note{font-size:12px;color:#6b7280;line-height:1.6;margin-top:12px}.debug-box{display:none!important}.page-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff;color:#1f2937;font-weight:bold}.page-loading.hidden{display:none!important}.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:24px 28px;box-shadow:0 4px 12px rgba(0,0,0,.08)}.loading-spinner{width:42px;height:42px;border:5px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spin .9s linear infinite}.loading-text{font-size:14px;color:#374151}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:720px){body{padding:18px}.header{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr;gap:8px 0}.button-row{flex-direction:column}.primary-btn,.secondary-btn{width:100%}}
+    body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff;color:#111827;padding:28px;box-sizing:border-box}.page{max-width:920px;margin:0 auto}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}h1{margin:0;font-size:28px}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:20px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;margin-bottom:18px}.section-title{font-size:18px;font-weight:bold;margin:0 0 14px}.description{font-size:14px;line-height:1.7;color:#6b7280;margin:0 0 18px}.warning-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:10px;padding:14px 16px;color:#92400e;font-size:14px;line-height:1.7;margin-top:16px}.form-grid{display:grid;grid-template-columns:220px 1fr;gap:16px 18px;align-items:center}.label{font-size:14px;font-weight:bold;color:#374151}select{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;font-size:15px;box-sizing:border-box;background:#fff;color:#111827}select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}select:disabled{background:#f9fafb;color:#9ca3af}.button-row{display:flex;justify-content:flex-end;gap:12px;margin-top:10px}.primary-btn,.secondary-btn{border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:bold;cursor:pointer}.primary-btn{background:#2563eb;color:#fff}.primary-btn:hover{background:#1d4ed8}.secondary-btn{background:#f3f4f6;color:#111827}.status{display:none;margin:22px 0 0;font-size:14px;line-height:1.6;white-space:pre-wrap;border-radius:12px;padding:12px 14px;border:1px solid transparent;font-weight:bold}.status.ok{display:block;background:#ecfdf5;border-color:#bbf7d0;color:#166534}.status.error{display:block;background:#fef2f2;border-color:#fecaca;color:#dc2626}.status.note{display:none}.small-note{font-size:13px;color:#6b7280;line-height:1.6;margin-top:6px}.current-setting{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.7;color:#374151;white-space:pre-wrap}.source-note{font-size:12px;color:#6b7280;line-height:1.6;margin-top:12px}.debug-box{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.6;white-space:pre-wrap}.debug-box.ok{display:none!important}.debug-box.error{display:block;background:#fef2f2;border:1px solid #fecaca;color:#dc2626}.page-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff;color:#1f2937;font-weight:bold}.page-loading.hidden{display:none!important}.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:24px 28px;box-shadow:0 4px 12px rgba(0,0,0,.08)}.loading-spinner{width:42px;height:42px;border:5px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spin .9s linear infinite}.loading-text{font-size:14px;color:#374151}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:720px){body{padding:18px}.header{flex-direction:column;align-items:flex-start}.form-grid{grid-template-columns:1fr;gap:8px 0}.button-row{flex-direction:column}.primary-btn,.secondary-btn{width:100%}}
   </style>
 </head>
 <body>
   <div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div id="loadingText" class="loading-text">天気予報表示地域設定を読み込み中...</div></div></div>
-  <script>
-    (function(){function h(){var l=document.getElementById('pageLoading');if(l){l.classList.add('hidden');l.style.display='none'}}function s(t){var l=document.getElementById('pageLoading'),x=document.getElementById('loadingText');if(x&&t)x.textContent=t;if(l){l.classList.remove('hidden');l.style.display='flex'}}window.bizmonHideWeatherLoading=h;window.bizmonShowWeatherLoading=s;setTimeout(function(){var l=document.getElementById('pageLoading');if(l&&!l.classList.contains('hidden'))h()},5000);window.addEventListener('error',h);window.addEventListener('unhandledrejection',h)})();
-  </script>
+  <script>(function(){function h(){var l=document.getElementById('pageLoading');if(l){l.classList.add('hidden');l.style.display='none'}}function s(t){var l=document.getElementById('pageLoading'),x=document.getElementById('loadingText');if(x&&t)x.textContent=t;if(l){l.classList.remove('hidden');l.style.display='flex'}}window.bizmonHideWeatherLoading=h;window.bizmonShowWeatherLoading=s;setTimeout(function(){var l=document.getElementById('pageLoading');if(l&&!l.classList.contains('hidden'))h()},5000);window.addEventListener('error',h);window.addEventListener('unhandledrejection',h)})();</script>
   <div class="page">
-    <div class="header">
-      <h1>天気予報表示地域設定</h1>
-      <a class="back-link" href="index.html">← マイページへ戻る</a>
-    </div>
-
+    <div class="header"><h1>天気予報表示地域設定</h1><a class="back-link" href="index.html">← マイページへ戻る</a></div>
     <div class="card">
       <p class="section-title">天気予報。警報・注意報の表示地域</p>
       <p class="description">クイズの結果に表示する天気予報等の地域を設定します。天気予報は気象庁の予報区単位、警報・注意報は市区町村単位で表示します。</p>
-
       <div class="form-grid">
-        <div class="label">都道府県</div>
-        <div>
-          <select id="weatherOfficeSelect"><option value="">地域データを読み込み中...</option></select>
-          <div class="small-note">天気予報を取得する都道府県を選択してください。</div>
-        </div>
-
-        <div class="label">地域</div>
-        <div>
-          <select id="weatherAreaSelect"><option value="">先に都道府県を選択してください</option></select>
-          <div class="small-note">北西部・南部など、気象庁の予報地域を選択してください。</div>
-        </div>
-
-        <div class="label">市区町村</div>
-        <div>
-          <select id="weatherCitySelect"><option value="">先に地域を選択してください</option></select>
-          <div class="small-note">警報・注意報を市区町村単位で表示するための地域です。</div>
-        </div>
+        <div class="label">都道府県</div><div><select id="weatherOfficeSelect"><option value="">地域データを読み込み中...</option></select><div class="small-note">天気予報を取得する都道府県を選択してください。</div></div>
+        <div class="label">地域</div><div><select id="weatherAreaSelect"><option value="">先に都道府県を選択してください</option></select><div class="small-note">北西部・南部など、気象庁の予報地域を選択してください。</div></div>
+        <div class="label">市区町村</div><div><select id="weatherCitySelect"><option value="">先に地域を選択してください</option></select><div class="small-note">警報・注意報を市区町村単位で表示するための地域です。</div></div>
       </div>
-
-      <div class="warning-box">
-        ※気象庁の通常の天気予報は「地域」単位です。市区町村は主に警報・注意報の絞り込みに使用します。
-      </div>
-
-      <div class="button-row">
-        <button type="button" class="secondary-btn" id="reloadAreaBtn">地域データを再読み込み</button>
-        <button type="button" class="primary-btn" id="saveWeatherAreaBtn">設定を保存</button>
-      </div>
-      <div id="weatherStatus" class="status note">地域データを読み込み中です。</div>
+      <div class="warning-box">※気象庁の通常の天気予報は「地域」単位です。市区町村は主に警報・注意報の絞り込みに使用します。</div>
+      <div id="weatherStatus" class="status note"></div>
+      <div class="button-row"><button type="button" class="secondary-btn" id="reloadAreaBtn">地域データを再読み込み</button><button type="button" class="primary-btn" id="saveWeatherAreaBtn">設定を保存</button></div>
     </div>
-
-    <div class="card">
-      <p class="section-title">現在保存されている設定</p>
-      <div id="currentSetting" class="current-setting">保存済みの設定を確認中です。</div>
-      <div id="weatherSaveDebugV31" class="debug-box" style="display:none"></div>
-      <div class="source-note">※気象庁のデータを利用しています。気象庁の地域データを取得できない場合は、暫定的な候補を表示します。</div>
-    </div>
-
+    <div class="card"><p class="section-title">現在保存されている設定</p><div id="currentSetting" class="current-setting">保存済みの設定を確認中です。</div><div id="weatherSaveDebugV31" class="debug-box" style="display:none"></div><div class="source-note">※気象庁のデータを利用しています。気象庁の地域データを取得できない場合は、暫定的な候補を表示します。</div></div>
     <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
   </div>
-
-  <script type="module" onerror="window.bizmonHideWeatherLoading&&window.bizmonHideWeatherLoading()">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, getDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",
-      authDomain: "bizmon-31ffc.firebaseapp.com",
-      databaseURL: "https://bizmon-31ffc-default-rtdb.firebaseio.com",
-      projectId: "bizmon-31ffc",
-      storageBucket: "bizmon-31ffc.firebasestorage.app",
-      messagingSenderId: "535364592474",
-      appId: "1:535364592474:web:1f60b1eb2ad804b1a28963",
-      measurementId: "G-CE1ZDBSVM6"
-    };
-
-    const JMA_AREA_JSON_URL = "https://www.jma.go.jp/bosai/common/const/area.json";
-    const DEFAULT_WEATHER_OFFICE_CODE = "130000", DEFAULT_WEATHER_OFFICE_NAME = "東京都", DEFAULT_WEATHER_AREA_CODE = "130010", DEFAULT_WEATHER_AREA_NAME = "東京地方", DEFAULT_WEATHER_CLASS20_CODE = "1310100", DEFAULT_WEATHER_CLASS20_NAME = "千代田区";
-    const PREFECTURE_OFFICE_GROUPS = [
-      { name: "北海道", officeCodes: ["011000", "012000", "013000", "014030", "014100", "015000", "016000", "017000"] },
-      { name: "青森県", officeCodes: ["020000"] }, { name: "岩手県", officeCodes: ["030000"] }, { name: "宮城県", officeCodes: ["040000"] }, { name: "秋田県", officeCodes: ["050000"] }, { name: "山形県", officeCodes: ["060000"] }, { name: "福島県", officeCodes: ["070000"] },
-      { name: "茨城県", officeCodes: ["080000"] }, { name: "栃木県", officeCodes: ["090000"] }, { name: "群馬県", officeCodes: ["100000"] }, { name: "埼玉県", officeCodes: ["110000"] }, { name: "千葉県", officeCodes: ["120000"] }, { name: "東京都", officeCodes: ["130000"] }, { name: "神奈川県", officeCodes: ["140000"] },
-      { name: "新潟県", officeCodes: ["150000"] }, { name: "富山県", officeCodes: ["160000"] }, { name: "石川県", officeCodes: ["170000"] }, { name: "福井県", officeCodes: ["180000"] }, { name: "山梨県", officeCodes: ["190000"] }, { name: "長野県", officeCodes: ["200000"] }, { name: "岐阜県", officeCodes: ["210000"] }, { name: "静岡県", officeCodes: ["220000"] }, { name: "愛知県", officeCodes: ["230000"] },
-      { name: "三重県", officeCodes: ["240000"] }, { name: "滋賀県", officeCodes: ["250000"] }, { name: "京都府", officeCodes: ["260000"] }, { name: "大阪府", officeCodes: ["270000"] }, { name: "兵庫県", officeCodes: ["280000"] }, { name: "奈良県", officeCodes: ["290000"] }, { name: "和歌山県", officeCodes: ["300000"] },
-      { name: "鳥取県", officeCodes: ["310000"] }, { name: "島根県", officeCodes: ["320000"] }, { name: "岡山県", officeCodes: ["330000"] }, { name: "広島県", officeCodes: ["340000"] }, { name: "山口県", officeCodes: ["350000"] },
-      { name: "徳島県", officeCodes: ["360000"] }, { name: "香川県", officeCodes: ["370000"] }, { name: "愛媛県", officeCodes: ["380000"] }, { name: "高知県", officeCodes: ["390000"] },
-      { name: "福岡県", officeCodes: ["400000"] }, { name: "佐賀県", officeCodes: ["410000"] }, { name: "長崎県", officeCodes: ["420000"] }, { name: "熊本県", officeCodes: ["430000"] }, { name: "大分県", officeCodes: ["440000"] }, { name: "宮崎県", officeCodes: ["450000"] }, { name: "鹿児島県", officeCodes: ["460100", "460040"] }, { name: "沖縄県", officeCodes: ["471000", "472000", "473000", "474000"] }
-    ];
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    let currentUser = null, jmaAreaData = null, loading = false;
-
-    const weatherOfficeSelect = document.getElementById("weatherOfficeSelect"), weatherAreaSelect = document.getElementById("weatherAreaSelect"), weatherCitySelect = document.getElementById("weatherCitySelect"), saveWeatherAreaBtn = document.getElementById("saveWeatherAreaBtn"), reloadAreaBtn = document.getElementById("reloadAreaBtn"), weatherStatusEl = document.getElementById("weatherStatus"), currentSettingEl = document.getElementById("currentSetting"), debugEl = document.getElementById("weatherSaveDebugV31");
-    function hideLoading(){ if(window.bizmonHideWeatherLoading) window.bizmonHideWeatherLoading(); }
-    function showLoading(text){ if(window.bizmonShowWeatherLoading) window.bizmonShowWeatherLoading(text||"天気予報表示地域設定を読み込み中..."); }
-    function setStatus(message, type) { weatherStatusEl.textContent = message; weatherStatusEl.className = "status " + (type || "note"); if(type === "ok" || type === "error" || type === "note") hideLoading(); }
-
-    // 画面上に詳細な保存デバッグ情報を表示しないため、成功時はこの関数を呼び出しません。
-    // エラー時のみ必要最低限の詳細表示に使用します。
-    function showWeatherSaveDebug(message,type){
-      if(!debugEl) return;
-      debugEl.style.display = "block";
-      debugEl.className = "debug-box " + (type || "note");
-      debugEl.textContent = message;
-    }
-    function hideWeatherSaveDebug(){
-      if(!debugEl) return;
-      debugEl.style.display = "none";
-      debugEl.textContent = "";
-    }
-
-    function makeOption(value, text) { const option = document.createElement("option"); option.value = value; option.textContent = text; return option; }
-    function clearSelect(selectEl) { while (selectEl.firstChild) selectEl.removeChild(selectEl.firstChild); }
-    function getPrefectureGroupByName(name){return PREFECTURE_OFFICE_GROUPS.find(g=>g.name===name)||null;}
-    function getPrefectureGroupByOfficeCode(code){return PREFECTURE_OFFICE_GROUPS.find(g=>g.officeCodes.indexOf(String(code||""))>=0)||null;}
-
-    function getSavedWeatherSetting() { try { if (currentUser && currentUser.uid) return JSON.parse(localStorage.getItem("bizmonWeatherSettings_" + currentUser.uid) || "null"); return JSON.parse(localStorage.getItem("bizmonWeatherSettings") || "null"); } catch (error) { return null; } }
-    async function syncWeatherSettingFromUsers(){ try{ if(!currentUser || !currentUser.uid) return null; const snap = await getDoc(doc(db,"users",currentUser.uid)); if(snap.exists()){ const data = snap.data() || {}; const setting = data.weatherSettings || null; if(setting && setting.weatherOfficeCode && setting.weatherAreaCode){ localStorage.setItem("bizmonWeatherSettings_" + currentUser.uid, JSON.stringify(setting)); localStorage.setItem("bizmonCurrentWeatherUserUid", currentUser.uid); localStorage.removeItem("bizmonWeatherSettings"); return setting; } } }catch(e){ console.warn("users.weatherSettings read failed", e); } return null; }
-    function renderCurrentSetting() { try { const saved = getSavedWeatherSetting() || {}; const officeName = saved.weatherOfficeName || DEFAULT_WEATHER_OFFICE_NAME, areaName = saved.weatherAreaName || DEFAULT_WEATHER_AREA_NAME, cityName = saved.weatherClass20Name || saved.weatherCityName || DEFAULT_WEATHER_CLASS20_NAME, officeCode = saved.weatherOfficeCode || DEFAULT_WEATHER_OFFICE_CODE, areaCode = saved.weatherAreaCode || DEFAULT_WEATHER_AREA_CODE, cityCode = saved.weatherClass20Code || saved.weatherCityCode || DEFAULT_WEATHER_CLASS20_CODE; currentSettingEl.textContent = "都道府県：" + officeName + "（" + officeCode + "）\n地域：" + areaName + "（" + areaCode + "）\n市区町村：" + cityName + "（" + cityCode + "）"; } catch (error) { currentSettingEl.textContent = DEFAULT_WEATHER_OFFICE_NAME + " " + DEFAULT_WEATHER_AREA_NAME + " " + DEFAULT_WEATHER_CLASS20_NAME; } }
-    function officeHasChildren(code){ const office = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[code] : null; return office && Array.isArray(office.children) && office.children.length > 0; }
-    function getAreaName(areaCode){ const a = jmaAreaData && jmaAreaData.class10s ? jmaAreaData.class10s[areaCode] : null; return a && a.name ? a.name : areaCode; }
-    function getCityName(cityCode){ const c = jmaAreaData && jmaAreaData.class20s ? jmaAreaData.class20s[cityCode] : null; return c && c.name ? c.name : cityCode; }
-    function collectClass20CodesFromArea(areaCode){ const out = [], seen = {}; function add(code){ if(code && !seen[code]){ seen[code] = true; out.push(code); } } function walk(code){ if(!code) return; if(jmaAreaData.class20s && jmaAreaData.class20s[code]){ add(code); return; } const obj = (jmaAreaData.class15s && jmaAreaData.class15s[code]) || (jmaAreaData.class10s && jmaAreaData.class10s[code]); const children = obj && Array.isArray(obj.children) ? obj.children : []; children.forEach(walk); } walk(String(areaCode || "")); return out; }
-
-    function populateWeatherOffices(savedOfficeCode) { clearSelect(weatherOfficeSelect); PREFECTURE_OFFICE_GROUPS.forEach(function(group){ if(!group.officeCodes.some(officeHasChildren)) return; const option = makeOption(group.name, group.name); option.setAttribute("data-prefecture-name", group.name); option.setAttribute("data-default-office-code", group.officeCodes[0]); weatherOfficeSelect.appendChild(option); }); const savedGroup = getPrefectureGroupByOfficeCode(savedOfficeCode); weatherOfficeSelect.value = savedGroup ? savedGroup.name : DEFAULT_WEATHER_OFFICE_NAME; if(!weatherOfficeSelect.value && weatherOfficeSelect.options.length > 0) weatherOfficeSelect.selectedIndex = 0; }
-    function populateWeatherAreas(savedAreaCode) { clearSelect(weatherAreaSelect); clearSelect(weatherCitySelect); weatherCitySelect.appendChild(makeOption("", "先に地域を選択してください")); const prefName = weatherOfficeSelect.value || DEFAULT_WEATHER_OFFICE_NAME; const group = getPrefectureGroupByName(prefName) || getPrefectureGroupByName(DEFAULT_WEATHER_OFFICE_NAME) || PREFECTURE_OFFICE_GROUPS[0]; const usedAreaCodes = {}; group.officeCodes.forEach(function(officeCode){ const office = jmaAreaData && jmaAreaData.offices ? jmaAreaData.offices[officeCode] : null; const areaCodes = office && Array.isArray(office.children) ? office.children : []; areaCodes.forEach(function(areaCode){ if(usedAreaCodes[areaCode]) return; usedAreaCodes[areaCode] = true; const option = makeOption(areaCode, getAreaName(areaCode)); option.setAttribute("data-office-code", officeCode); option.setAttribute("data-prefecture-name", group.name); if(office && office.name) option.setAttribute("data-jma-office-name", office.name); weatherAreaSelect.appendChild(option); }); }); if(savedAreaCode) weatherAreaSelect.value = savedAreaCode; if(!weatherAreaSelect.value && weatherAreaSelect.options.length > 0) weatherAreaSelect.selectedIndex = 0; }
-    function populateWeatherCities(savedCityCode) { clearSelect(weatherCitySelect); const areaCode = weatherAreaSelect.value || DEFAULT_WEATHER_AREA_CODE; const cityCodes = collectClass20CodesFromArea(areaCode); if(!cityCodes.length){ weatherCitySelect.appendChild(makeOption("", "市区町村データがありません")); weatherCitySelect.disabled = true; return; } weatherCitySelect.disabled = false; cityCodes.forEach(function(cityCode){ weatherCitySelect.appendChild(makeOption(cityCode, getCityName(cityCode))); }); if(savedCityCode) weatherCitySelect.value = savedCityCode; if(!weatherCitySelect.value && weatherCitySelect.options.length > 0) weatherCitySelect.selectedIndex = 0; }
-
-    function applyFallbackAreaData() { jmaAreaData = { offices: { "120000": { name: "千葉県", children: ["120010","120020","120030"] }, "130000": { name: "東京都", children: ["130010"] } }, class10s: { "120010": { name: "北西部", children: ["1221700"] }, "120020": { name: "北東部", children: ["1221300"] }, "120030": { name: "南部", children: ["1220200"] }, "130010": { name: "東京地方", children: ["1310100"] } }, class20s: { "1221700": { name: "柏市" }, "1221300": { name: "東金市" }, "1220200": { name: "銚子市" }, "1310100": { name: "千代田区" } } }; const saved = getSavedWeatherSetting() || {}; populateWeatherOffices(saved.weatherOfficeCode || DEFAULT_WEATHER_OFFICE_CODE); populateWeatherAreas(saved.weatherAreaCode || DEFAULT_WEATHER_AREA_CODE); populateWeatherCities(saved.weatherClass20Code || saved.weatherCityCode || DEFAULT_WEATHER_CLASS20_CODE); renderCurrentSetting(); setStatus("地域データの取得に失敗したため、最低限の地域データで表示しています。", "note"); }
-
-    async function loadWeatherAreaMaster() { if (loading) return; loading = true; hideWeatherSaveDebug(); showLoading("天気予報表示地域設定を読み込み中..."); setStatus("地域データを読み込み中です。", "note"); try { renderCurrentSetting(); let saved = getSavedWeatherSetting(); try { const cloudSetting = await Promise.race([syncWeatherSettingFromUsers(), new Promise(resolve => setTimeout(()=>resolve(null), 1200))]); if (cloudSetting && cloudSetting.weatherOfficeCode && cloudSetting.weatherAreaCode) { saved = cloudSetting; renderCurrentSetting(); } } catch (cloudError) { console.warn("cloud weather setting load skipped", cloudError); } const controller = new AbortController(); const timeoutId = setTimeout(function(){ controller.abort(); }, 8000); const response = await fetch(JMA_AREA_JSON_URL + "?t=" + Date.now(), { signal: controller.signal, cache: "no-store" }); clearTimeout(timeoutId); if (!response.ok) throw new Error("地域データの取得に失敗しました。HTTP " + response.status); jmaAreaData = await response.json(); saved = saved || {}; populateWeatherOffices(saved.weatherOfficeCode || DEFAULT_WEATHER_OFFICE_CODE); populateWeatherAreas(saved.weatherAreaCode || DEFAULT_WEATHER_AREA_CODE); populateWeatherCities(saved.weatherClass20Code || saved.weatherCityCode || DEFAULT_WEATHER_CLASS20_CODE); renderCurrentSetting(); setStatus("地域データを読み込みました。都道府県・地域・市区町村を選択して保存してください。", "ok"); } catch (error) { console.error(error); try { applyFallbackAreaData(); } catch (fallbackError) { console.error(fallbackError); setStatus("地域データの読み込みに失敗しました。時間をおいて再度お試しください。", "error"); } } finally { loading = false; hideLoading(); } }
-
-    function getSelectedWeatherSetting() { const selectedAreaOption = weatherAreaSelect.options[weatherAreaSelect.selectedIndex]; const selectedCityOption = weatherCitySelect.options[weatherCitySelect.selectedIndex]; const officeCode = selectedAreaOption ? (selectedAreaOption.getAttribute("data-office-code") || DEFAULT_WEATHER_OFFICE_CODE) : DEFAULT_WEATHER_OFFICE_CODE; const areaCode = weatherAreaSelect.value || DEFAULT_WEATHER_AREA_CODE; const cityCode = weatherCitySelect.value || DEFAULT_WEATHER_CLASS20_CODE; const prefectureName = selectedAreaOption ? (selectedAreaOption.getAttribute("data-prefecture-name") || weatherOfficeSelect.value || DEFAULT_WEATHER_OFFICE_NAME) : (weatherOfficeSelect.value || DEFAULT_WEATHER_OFFICE_NAME); const areaName = getAreaName(areaCode) || DEFAULT_WEATHER_AREA_NAME; const cityName = selectedCityOption && selectedCityOption.value ? selectedCityOption.textContent : (getCityName(cityCode) || DEFAULT_WEATHER_CLASS20_NAME); return { weatherOfficeCode: officeCode, weatherOfficeName: prefectureName, weatherPrefectureName: prefectureName, weatherAreaCode: areaCode, weatherAreaName: areaName, weatherClass20Code: cityCode, weatherClass20Name: cityName, weatherCityCode: cityCode, weatherCityName: cityName }; }
-
-    async function saveWeatherSetting() {
-      if (!currentUser || !currentUser.uid) {
-        const msg = "ログイン情報を確認できないため保存できません。再ログインしてください。";
-        setStatus(msg, "error");
-        showWeatherSaveDebug(msg, "error");
-        return;
-      }
-      const uid = currentUser.uid;
-      const setting = getSelectedWeatherSetting();
-      try {
-        hideWeatherSaveDebug();
-        showLoading("天気予報表示地域設定を保存中...");
-        localStorage.setItem("bizmonWeatherSettings_" + uid, JSON.stringify(setting));
-        localStorage.removeItem("bizmonWeatherSettings");
-        localStorage.setItem("bizmonCurrentWeatherUserUid", uid);
-        const cloudSetting = Object.assign({}, setting, { updatedAt: serverTimestamp() });
-        await setDoc(doc(db, "users", uid), { weatherSettings: cloudSetting }, { merge: true });
-
-        // 修正点：保存成功時の詳細デバッグ表示を廃止
-        // 以前表示されていた保存先パスや設定JSONの詳細は画面に出しません。
-        setStatus("天気予報・警報注意報の表示地域を保存しました。", "ok");
-        hideWeatherSaveDebug();
-        renderCurrentSetting();
-      } catch (error) {
-        console.error("weatherSettings cloud save failed", error);
-        const detail = "クラウド保存失敗\n保存先：users/" + uid + ".weatherSettings\nエラーコード：" + (error && error.code ? error.code : "なし") + "\nエラーメッセージ：" + (error && error.message ? error.message : String(error)) + "\n\n端末内には保存済みです。";
-        setStatus("端末内には保存しましたが、クラウド保存に失敗しました。詳細を確認してください。", "error");
-        showWeatherSaveDebug(detail, "error");
-        renderCurrentSetting();
-      } finally {
-        hideLoading();
-      }
-    }
-
-    weatherOfficeSelect.addEventListener("change", function () { populateWeatherAreas(null); populateWeatherCities(null); });
-    weatherAreaSelect.addEventListener("change", function () { populateWeatherCities(null); });
-    saveWeatherAreaBtn.addEventListener("click", saveWeatherSetting);
-    reloadAreaBtn.addEventListener("click", loadWeatherAreaMaster);
-
-    onAuthStateChanged(auth, function (user) { if (!user) { location.href = "login.html"; return; } currentUser = user; renderCurrentSetting(); loadWeatherAreaMaster(); });
-    setTimeout(function(){try{if(loading){loading=false;} if(weatherOfficeSelect && weatherOfficeSelect.options.length===0){loadWeatherAreaMaster();}}catch(e){console.warn(e);}},3000);
-  </script>
+<script type="module" onerror="window.bizmonHideWeatherLoading&&window.bizmonHideWeatherLoading()">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, getDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
+const JMA_AREA_JSON_URL="https://www.jma.go.jp/bosai/common/const/area.json";
+const DEFAULT_WEATHER_OFFICE_CODE="130000",DEFAULT_WEATHER_OFFICE_NAME="東京都",DEFAULT_WEATHER_AREA_CODE="130010",DEFAULT_WEATHER_AREA_NAME="東京地方",DEFAULT_WEATHER_CLASS20_CODE="1310100",DEFAULT_WEATHER_CLASS20_NAME="千代田区";
+const PREFECTURE_OFFICE_GROUPS=[{name:"北海道",officeCodes:["011000","012000","013000","014030","014100","015000","016000","017000"]},{name:"青森県",officeCodes:["020000"]},{name:"岩手県",officeCodes:["030000"]},{name:"宮城県",officeCodes:["040000"]},{name:"秋田県",officeCodes:["050000"]},{name:"山形県",officeCodes:["060000"]},{name:"福島県",officeCodes:["070000"]},{name:"茨城県",officeCodes:["080000"]},{name:"栃木県",officeCodes:["090000"]},{name:"群馬県",officeCodes:["100000"]},{name:"埼玉県",officeCodes:["110000"]},{name:"千葉県",officeCodes:["120000"]},{name:"東京都",officeCodes:["130000"]},{name:"神奈川県",officeCodes:["140000"]},{name:"新潟県",officeCodes:["150000"]},{name:"富山県",officeCodes:["160000"]},{name:"石川県",officeCodes:["170000"]},{name:"福井県",officeCodes:["180000"]},{name:"山梨県",officeCodes:["190000"]},{name:"長野県",officeCodes:["200000"]},{name:"岐阜県",officeCodes:["210000"]},{name:"静岡県",officeCodes:["220000"]},{name:"愛知県",officeCodes:["230000"]},{name:"三重県",officeCodes:["240000"]},{name:"滋賀県",officeCodes:["250000"]},{name:"京都府",officeCodes:["260000"]},{name:"大阪府",officeCodes:["270000"]},{name:"兵庫県",officeCodes:["280000"]},{name:"奈良県",officeCodes:["290000"]},{name:"和歌山県",officeCodes:["300000"]},{name:"鳥取県",officeCodes:["310000"]},{name:"島根県",officeCodes:["320000"]},{name:"岡山県",officeCodes:["330000"]},{name:"広島県",officeCodes:["340000"]},{name:"山口県",officeCodes:["350000"]},{name:"徳島県",officeCodes:["360000"]},{name:"香川県",officeCodes:["370000"]},{name:"愛媛県",officeCodes:["380000"]},{name:"高知県",officeCodes:["390000"]},{name:"福岡県",officeCodes:["400000"]},{name:"佐賀県",officeCodes:["410000"]},{name:"長崎県",officeCodes:["420000"]},{name:"熊本県",officeCodes:["430000"]},{name:"大分県",officeCodes:["440000"]},{name:"宮崎県",officeCodes:["450000"]},{name:"鹿児島県",officeCodes:["460100","460040"]},{name:"沖縄県",officeCodes:["471000","472000","473000","474000"]}];
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);let currentUser=null,jmaAreaData=null,loading=false;
+const weatherOfficeSelect=document.getElementById("weatherOfficeSelect"),weatherAreaSelect=document.getElementById("weatherAreaSelect"),weatherCitySelect=document.getElementById("weatherCitySelect"),saveWeatherAreaBtn=document.getElementById("saveWeatherAreaBtn"),reloadAreaBtn=document.getElementById("reloadAreaBtn"),weatherStatusEl=document.getElementById("weatherStatus"),currentSettingEl=document.getElementById("currentSetting"),debugEl=document.getElementById("weatherSaveDebugV31");
+function hideLoading(){if(window.bizmonHideWeatherLoading)window.bizmonHideWeatherLoading()}function showLoading(t){if(window.bizmonShowWeatherLoading)window.bizmonShowWeatherLoading(t||"天気予報表示地域設定を読み込み中...")}
+function setStatus(message,type){const statusType=type||"note";weatherStatusEl.textContent=message||"";weatherStatusEl.className="status "+statusType;weatherStatusEl.style.display=(message&&(statusType==="ok"||statusType==="error"))?"block":"none";if(statusType==="ok"||statusType==="error"||statusType==="note")hideLoading()}
+function showWeatherSaveDebug(message,type){if(!debugEl)return;debugEl.style.display="block";debugEl.className="debug-box "+(type||"error");debugEl.textContent=message}function hideWeatherSaveDebug(){if(!debugEl)return;debugEl.style.display="none";debugEl.textContent=""}
+function makeOption(v,t){const o=document.createElement("option");o.value=v;o.textContent=t;return o}function clearSelect(s){while(s.firstChild)s.removeChild(s.firstChild)}function getPrefectureGroupByName(n){return PREFECTURE_OFFICE_GROUPS.find(g=>g.name===n)||null}function getPrefectureGroupByOfficeCode(c){return PREFECTURE_OFFICE_GROUPS.find(g=>g.officeCodes.indexOf(String(c||""))>=0)||null}
+function getSavedWeatherSetting(){try{if(currentUser&&currentUser.uid)return JSON.parse(localStorage.getItem("bizmonWeatherSettings_"+currentUser.uid)||"null");return JSON.parse(localStorage.getItem("bizmonWeatherSettings")||"null")}catch(e){return null}}
+async function syncWeatherSettingFromUsers(){try{if(!currentUser||!currentUser.uid)return null;const snap=await getDoc(doc(db,"users",currentUser.uid));if(snap.exists()){const setting=(snap.data()||{}).weatherSettings||null;if(setting&&setting.weatherOfficeCode&&setting.weatherAreaCode){localStorage.setItem("bizmonWeatherSettings_"+currentUser.uid,JSON.stringify(setting));localStorage.setItem("bizmonCurrentWeatherUserUid",currentUser.uid);localStorage.removeItem("bizmonWeatherSettings");return setting}}}catch(e){console.warn("users.weatherSettings read failed",e)}return null}
+function renderCurrentSetting(){try{const s=getSavedWeatherSetting()||{},officeName=s.weatherOfficeName||DEFAULT_WEATHER_OFFICE_NAME,areaName=s.weatherAreaName||DEFAULT_WEATHER_AREA_NAME,cityName=s.weatherClass20Name||s.weatherCityName||DEFAULT_WEATHER_CLASS20_NAME,officeCode=s.weatherOfficeCode||DEFAULT_WEATHER_OFFICE_CODE,areaCode=s.weatherAreaCode||DEFAULT_WEATHER_AREA_CODE,cityCode=s.weatherClass20Code||s.weatherCityCode||DEFAULT_WEATHER_CLASS20_CODE;currentSettingEl.textContent="都道府県："+officeName+"（"+officeCode+"）\n地域："+areaName+"（"+areaCode+"）\n市区町村："+cityName+"（"+cityCode+"）"}catch(e){currentSettingEl.textContent=DEFAULT_WEATHER_OFFICE_NAME+" "+DEFAULT_WEATHER_AREA_NAME+" "+DEFAULT_WEATHER_CLASS20_NAME}}
+function officeHasChildren(code){const o=jmaAreaData&&jmaAreaData.offices?jmaAreaData.offices[code]:null;return o&&Array.isArray(o.children)&&o.children.length>0}function getAreaName(c){const a=jmaAreaData&&jmaAreaData.class10s?jmaAreaData.class10s[c]:null;return a&&a.name?a.name:c}function getCityName(c){const x=jmaAreaData&&jmaAreaData.class20s?jmaAreaData.class20s[c]:null;return x&&x.name?x.name:c}
+function collectClass20CodesFromArea(areaCode){const out=[],seen={};function add(c){if(c&&!seen[c]){seen[c]=true;out.push(c)}}function walk(c){if(!c)return;if(jmaAreaData.class20s&&jmaAreaData.class20s[c]){add(c);return}const obj=(jmaAreaData.class15s&&jmaAreaData.class15s[c])||(jmaAreaData.class10s&&jmaAreaData.class10s[c]);const children=obj&&Array.isArray(obj.children)?obj.children:[];children.forEach(walk)}walk(String(areaCode||""));return out}
+function populateWeatherOffices(savedOfficeCode){clearSelect(weatherOfficeSelect);PREFECTURE_OFFICE_GROUPS.forEach(g=>{if(!g.officeCodes.some(officeHasChildren))return;const o=makeOption(g.name,g.name);o.setAttribute("data-prefecture-name",g.name);o.setAttribute("data-default-office-code",g.officeCodes[0]);weatherOfficeSelect.appendChild(o)});const sg=getPrefectureGroupByOfficeCode(savedOfficeCode);weatherOfficeSelect.value=sg?sg.name:DEFAULT_WEATHER_OFFICE_NAME;if(!weatherOfficeSelect.value&&weatherOfficeSelect.options.length>0)weatherOfficeSelect.selectedIndex=0}
+function populateWeatherAreas(savedAreaCode){clearSelect(weatherAreaSelect);clearSelect(weatherCitySelect);weatherCitySelect.appendChild(makeOption("","先に地域を選択してください"));const prefName=weatherOfficeSelect.value||DEFAULT_WEATHER_OFFICE_NAME,group=getPrefectureGroupByName(prefName)||getPrefectureGroupByName(DEFAULT_WEATHER_OFFICE_NAME)||PREFECTURE_OFFICE_GROUPS[0],used={};group.officeCodes.forEach(officeCode=>{const office=jmaAreaData&&jmaAreaData.offices?jmaAreaData.offices[officeCode]:null,areaCodes=office&&Array.isArray(office.children)?office.children:[];areaCodes.forEach(areaCode=>{if(used[areaCode])return;used[areaCode]=true;const o=makeOption(areaCode,getAreaName(areaCode));o.setAttribute("data-office-code",officeCode);o.setAttribute("data-prefecture-name",group.name);weatherAreaSelect.appendChild(o)})});if(savedAreaCode)weatherAreaSelect.value=savedAreaCode;if(!weatherAreaSelect.value&&weatherAreaSelect.options.length>0)weatherAreaSelect.selectedIndex=0}
+function populateWeatherCities(savedCityCode){clearSelect(weatherCitySelect);const areaCode=weatherAreaSelect.value||DEFAULT_WEATHER_AREA_CODE,codes=collectClass20CodesFromArea(areaCode);if(!codes.length){weatherCitySelect.appendChild(makeOption("","市区町村データがありません"));weatherCitySelect.disabled=true;return}weatherCitySelect.disabled=false;codes.forEach(c=>weatherCitySelect.appendChild(makeOption(c,getCityName(c))));if(savedCityCode)weatherCitySelect.value=savedCityCode;if(!weatherCitySelect.value&&weatherCitySelect.options.length>0)weatherCitySelect.selectedIndex=0}
+function applyFallbackAreaData(){jmaAreaData={offices:{"120000":{name:"千葉県",children:["120010","120020","120030"]},"130000":{name:"東京都",children:["130010"]}},class10s:{"120010":{name:"北西部",children:["1221700"]},"120020":{name:"北東部",children:["1221300"]},"120030":{name:"南部",children:["1220200"]},"130010":{name:"東京地方",children:["1310100"]}},class20s:{"1221700":{name:"柏市"},"1221300":{name:"東金市"},"1220200":{name:"銚子市"},"1310100":{name:"千代田区"}}};const s=getSavedWeatherSetting()||{};populateWeatherOffices(s.weatherOfficeCode||DEFAULT_WEATHER_OFFICE_CODE);populateWeatherAreas(s.weatherAreaCode||DEFAULT_WEATHER_AREA_CODE);populateWeatherCities(s.weatherClass20Code||s.weatherCityCode||DEFAULT_WEATHER_CLASS20_CODE);renderCurrentSetting();setStatus("地域データの取得に失敗したため、最低限の地域データで表示しています。","error")}
+async function loadWeatherAreaMaster(){if(loading)return;loading=true;hideWeatherSaveDebug();setStatus("","note");showLoading("天気予報表示地域設定を読み込み中...");try{renderCurrentSetting();let saved=getSavedWeatherSetting();try{const cloudSetting=await Promise.race([syncWeatherSettingFromUsers(),new Promise(r=>setTimeout(()=>r(null),1200))]);if(cloudSetting&&cloudSetting.weatherOfficeCode&&cloudSetting.weatherAreaCode){saved=cloudSetting;renderCurrentSetting()}}catch(e){console.warn("cloud weather setting load skipped",e)}const controller=new AbortController(),timeoutId=setTimeout(()=>controller.abort(),8000),response=await fetch(JMA_AREA_JSON_URL+"?t="+Date.now(),{signal:controller.signal,cache:"no-store"});clearTimeout(timeoutId);if(!response.ok)throw new Error("地域データの取得に失敗しました。HTTP "+response.status);jmaAreaData=await response.json();saved=saved||{};populateWeatherOffices(saved.weatherOfficeCode||DEFAULT_WEATHER_OFFICE_CODE);populateWeatherAreas(saved.weatherAreaCode||DEFAULT_WEATHER_AREA_CODE);populateWeatherCities(saved.weatherClass20Code||saved.weatherCityCode||DEFAULT_WEATHER_CLASS20_CODE);renderCurrentSetting();setStatus("","note")}catch(e){console.error(e);try{applyFallbackAreaData()}catch(f){console.error(f);setStatus("地域データの読み込みに失敗しました。時間をおいて再度お試しください。","error")}}finally{loading=false;hideLoading()}}
+function getSelectedWeatherSetting(){const areaOpt=weatherAreaSelect.options[weatherAreaSelect.selectedIndex],cityOpt=weatherCitySelect.options[weatherCitySelect.selectedIndex],officeCode=areaOpt?(areaOpt.getAttribute("data-office-code")||DEFAULT_WEATHER_OFFICE_CODE):DEFAULT_WEATHER_OFFICE_CODE,areaCode=weatherAreaSelect.value||DEFAULT_WEATHER_AREA_CODE,cityCode=weatherCitySelect.value||DEFAULT_WEATHER_CLASS20_CODE,prefectureName=areaOpt?(areaOpt.getAttribute("data-prefecture-name")||weatherOfficeSelect.value||DEFAULT_WEATHER_OFFICE_NAME):(weatherOfficeSelect.value||DEFAULT_WEATHER_OFFICE_NAME),areaName=getAreaName(areaCode)||DEFAULT_WEATHER_AREA_NAME,cityName=cityOpt&&cityOpt.value?cityOpt.textContent:(getCityName(cityCode)||DEFAULT_WEATHER_CLASS20_NAME);return{weatherOfficeCode:officeCode,weatherOfficeName:prefectureName,weatherPrefectureName:prefectureName,weatherAreaCode:areaCode,weatherAreaName:areaName,weatherClass20Code:cityCode,weatherClass20Name:cityName,weatherCityCode:cityCode,weatherCityName:cityName}}
+async function saveWeatherSetting(){if(!currentUser||!currentUser.uid){const msg="ログイン情報を確認できないため保存できません。再ログインしてください。";setStatus(msg,"error");showWeatherSaveDebug(msg,"error");return}const uid=currentUser.uid,setting=getSelectedWeatherSetting();try{hideWeatherSaveDebug();setStatus("","note");showLoading("天気予報表示地域設定を保存中...");localStorage.setItem("bizmonWeatherSettings_"+uid,JSON.stringify(setting));localStorage.removeItem("bizmonWeatherSettings");localStorage.setItem("bizmonCurrentWeatherUserUid",uid);await setDoc(doc(db,"users",uid),{weatherSettings:Object.assign({},setting,{updatedAt:serverTimestamp()})},{merge:true});setStatus("天気予報・警報注意報の表示地域を保存しました。","ok");hideWeatherSaveDebug();renderCurrentSetting()}catch(error){console.error("weatherSettings cloud save failed",error);const detail="クラウド保存失敗\n保存先：users/"+uid+".weatherSettings\nエラーコード："+(error&&error.code?error.code:"なし")+"\nエラーメッセージ："+(error&&error.message?error.message:String(error))+"\n\n端末内には保存済みです。";setStatus("端末内には保存しましたが、クラウド保存に失敗しました。詳細を確認してください。","error");showWeatherSaveDebug(detail,"error");renderCurrentSetting()}finally{hideLoading()}}
+weatherOfficeSelect.addEventListener("change",()=>{setStatus("","note");populateWeatherAreas(null);populateWeatherCities(null)});weatherAreaSelect.addEventListener("change",()=>{setStatus("","note");populateWeatherCities(null)});saveWeatherAreaBtn.addEventListener("click",saveWeatherSetting);reloadAreaBtn.addEventListener("click",loadWeatherAreaMaster);
+onAuthStateChanged(auth,user=>{if(!user){location.href="login.html";return}currentUser=user;renderCurrentSetting();loadWeatherAreaMaster()});setTimeout(()=>{try{if(loading)loading=false;if(weatherOfficeSelect&&weatherOfficeSelect.options.length===0)loadWeatherAreaMaster()}catch(e){console.warn(e)}},3000);
+</script>
 </body>
 </html>
