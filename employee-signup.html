@@ -13,12 +13,7 @@ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:c
     <h1>初回登録</h1>
     <p class="lead">会社から案内されたメールアドレスで、ビズもんの利用を開始します。</p>
 
-    <div class="policy-box">パスワードは15文字以上で設定してください。
-単語をつなげた「パスフレーズ」を推奨しています。
-例）todayIwillfinishmyworkearly
-
-※英大文字・小文字・数字・記号の組み合わせは必須ではありません
-※最大128文字まで設定可能です</div>
+    <div id="passwordPolicy" class="policy-box"></div>
 
     <label class="field-label" for="email">メールアドレス</label>
     <input id="email" class="text-input" type="email" autocomplete="email" placeholder="会社に登録されたメールアドレスを入力">
@@ -53,10 +48,9 @@ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:c
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,sendEmailVerification,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,getDoc,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{PASSWORD_POLICY_TEXT,validateBizmonPassword,getPasswordLengthMessage,getPasswordLengthStatus,applyPasswordCountStyle}from"./password-policy.js";
 
 const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
-const PASSWORD_MIN_LENGTH=15;
-const PASSWORD_MAX_LENGTH=128;
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
@@ -69,40 +63,17 @@ const confirmPasswordEl=$("confirmPassword");
 const passwordCountEl=$("passwordCount");
 const signupBtn=$("signupBtn");
 const statusMessage=$("statusMessage");
+$("passwordPolicy").textContent=PASSWORD_POLICY_TEXT;
 
 function setStatus(message,type){statusMessage.textContent=message;statusMessage.className="status-message "+(type||"")}
 function normalizeEmail(v){return String(v||"").trim().toLowerCase()}
-function validatePassword(password){if(!password)return"パスワードを入力してください。";if(password.length<PASSWORD_MIN_LENGTH)return"パスワードは15文字以上で設定してください。";if(password.length>PASSWORD_MAX_LENGTH)return"パスワードは128文字以内で設定してください。";return""}
-function updatePasswordCount(){const len=passwordEl.value.length;passwordCountEl.textContent=`${len} / ${PASSWORD_MAX_LENGTH}文字`;if(len===0)passwordCountEl.style.color="#6b7280";else if(len<PASSWORD_MIN_LENGTH)passwordCountEl.style.color="#dc2626";else passwordCountEl.style.color="#166534"}
+function updatePasswordCount(){const password=passwordEl.value;const status=getPasswordLengthStatus(password);passwordCountEl.textContent=getPasswordLengthMessage(password);applyPasswordCountStyle(passwordCountEl,status)}
 async function getPendingUser(email){const ref=doc(db,"pendingUsers",email);const snap=await getDoc(ref);if(!snap.exists())return null;return snap.data()||null}
 
 async function createUserFromPending(user,pending,email){
-  const userData={
-    uid:user.uid,
-    employeeCode:pending.employeeCode||"",
-    name:pending.name||"",
-    email:email,
-    companyId:pending.companyId||"",
-    companyName:pending.companyName||"",
-    department:pending.department||"",
-    position:pending.position||"",
-    role:pending.role||"user",
-    status:"active",
-    isApplicant:pending.isApplicant===true,
-    note:pending.note||"",
-    createdAt:serverTimestamp(),
-    createdBy:user.uid,
-    updatedAt:serverTimestamp(),
-    updatedBy:user.uid
-  };
+  const userData={uid:user.uid,employeeCode:pending.employeeCode||"",name:pending.name||"",email:email,companyId:pending.companyId||"",companyName:pending.companyName||"",department:pending.department||"",position:pending.position||"",role:pending.role||"user",status:"active",isApplicant:pending.isApplicant===true,note:pending.note||"",createdAt:serverTimestamp(),createdBy:user.uid,updatedAt:serverTimestamp(),updatedBy:user.uid};
   await setDoc(doc(db,"users",user.uid),userData,{merge:false});
-  await updateDoc(doc(db,"pendingUsers",email),{
-    status:"registered",
-    registeredAt:serverTimestamp(),
-    registeredUid:user.uid,
-    updatedAt:serverTimestamp(),
-    updatedBy:user.uid
-  });
+  await updateDoc(doc(db,"pendingUsers",email),{status:"registered",registeredAt:serverTimestamp(),registeredUid:user.uid,updatedAt:serverTimestamp(),updatedBy:user.uid});
 }
 
 async function signup(){
@@ -113,7 +84,7 @@ async function signup(){
 
   if(!email){setStatus("メールアドレスを入力してください。","error");emailEl.focus();return}
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){setStatus("メールアドレスの形式が正しくありません。","error");emailEl.focus();return}
-  const passwordError=validatePassword(password);
+  const passwordError=validateBizmonPassword(password,"パスワード");
   if(passwordError){setStatus(passwordError,"error");passwordEl.focus();return}
   if(password!==confirmPassword){setStatus("パスワードと確認用パスワードが一致していません。","error");confirmPasswordEl.focus();return}
 
@@ -121,7 +92,6 @@ async function signup(){
     signupBtn.disabled=true;
     signupBtn.textContent="確認中...";
 
-    // 先にログイン状態を整理します。既に別ユーザーでログインしている場合の誤登録を防ぎます。
     if(auth.currentUser){await signOut(auth)}
 
     signupBtn.textContent="アカウント作成中...";
@@ -130,18 +100,9 @@ async function signup(){
 
     signupBtn.textContent="招待情報確認中...";
     const pending=await getPendingUser(email);
-    if(!pending){
-      setStatus("このメールアドレスは初回登録対象として登録されていません。会社の管理者に確認してください。\n\n※Firebase Authentication のアカウントは作成済みです。管理者に連絡してください。","error");
-      return;
-    }
-    if(pending.status!=="pending"){
-      setStatus("このメールアドレスは初回登録待ちの状態ではありません。状態："+(pending.status||"未設定")+"\n既に登録済みの場合はログイン画面からログインしてください。","error");
-      return;
-    }
-    if((pending.email||"").toLowerCase()!==email){
-      setStatus("招待情報のメールアドレスが一致しません。会社の管理者に確認してください。","error");
-      return;
-    }
+    if(!pending){setStatus("このメールアドレスは初回登録対象として登録されていません。会社の管理者に確認してください。\n\n※Firebase Authentication のアカウントは作成済みです。管理者に連絡してください。","error");return}
+    if(pending.status!=="pending"){setStatus("このメールアドレスは初回登録待ちの状態ではありません。状態："+(pending.status||"未設定")+"\n既に登録済みの場合はログイン画面からログインしてください。","error");return}
+    if((pending.email||"").toLowerCase()!==email){setStatus("招待情報のメールアドレスが一致しません。会社の管理者に確認してください。","error");return}
 
     signupBtn.textContent="ユーザー情報登録中...";
     await createUserFromPending(user,pending,email);
@@ -149,10 +110,7 @@ async function signup(){
     try{await sendEmailVerification(user)}catch(e){console.warn("email verification skipped",e)}
 
     setStatus("初回登録が完了しました。\nログイン画面から、登録したメールアドレスとパスワードでログインしてください。\n確認メールが届いている場合は、メール内のリンクから確認を完了してください。","ok");
-    emailEl.value="";
-    passwordEl.value="";
-    confirmPasswordEl.value="";
-    updatePasswordCount();
+    emailEl.value="";passwordEl.value="";confirmPasswordEl.value="";updatePasswordCount();
   }catch(error){
     console.error(error);
     const code=error&&error.code?error.code:"unknown";
@@ -162,18 +120,15 @@ async function signup(){
     if(code==="auth/weak-password")message="パスワードが弱すぎます。15文字以上のパスフレーズを設定してください。";
     if(code==="permission-denied")message="登録情報の保存権限がありません。管理者に連絡してください。";
     setStatus(message+"\n\nエラーコード："+code+"\n詳細："+(error.message||""),"error");
-  }finally{
-    signupBtn.disabled=false;
-    signupBtn.textContent="初回登録する";
-  }
+  }finally{signupBtn.disabled=false;signupBtn.textContent="初回登録する"}
 }
 
 passwordEl.addEventListener("input",updatePasswordCount);
 signupBtn.addEventListener("click",signup);
 [emailEl,passwordEl,confirmPasswordEl].forEach(el=>el.addEventListener("keydown",e=>{if(e.key==="Enter")signup()}));
 document.querySelectorAll(".password-toggle").forEach(btn=>btn.addEventListener("click",()=>{const input=$(btn.dataset.target);if(!input)return;const hidden=input.type==="password";input.type=hidden?"text":"password";btn.setAttribute("aria-label",hidden?"パスワードを非表示":"パスワードを表示");btn.setAttribute("title",hidden?"パスワードを非表示":"パスワードを表示");input.focus()}));
-
 onAuthStateChanged(auth,user=>{if(user){setStatus("既にログイン中です。初回登録を行う場合は、処理時に一度ログアウトして登録します。","note")}});
+updatePasswordCount();
 </script>
 </body>
 </html>
