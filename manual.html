@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ビズもん 操作マニュアル</title>
 <style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box;line-height:1.8}*{box-sizing:border-box}.page{max-width:980px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{margin:0;font-size:28px}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:22px}.hero{background:#2563eb;color:#fff;border-radius:16px;padding:24px;margin-bottom:20px}.hero h1{font-size:28px;margin:0 0 6px}.hero p{margin:4px 0}.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:18px 0;box-shadow:none}.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.toc a{display:block;text-decoration:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:bold;color:#1d4ed8;transition:.2s}.toc a:hover{background:#dbeafe;transform:translateY(-2px)}h2{font-size:22px;margin:6px 0 14px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;color:#1e3a8a}h3{font-size:17px;margin:20px 0 6px;color:#111827}.note,.info,.ok{border-radius:10px;padding:12px 14px;margin-top:10px;font-size:14px;line-height:1.7}.note{background:#fffbeb;border:1px solid #fde68a;color:#92400e}.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.mini{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:12px}.mini b{display:block;color:#111827;margin-bottom:4px}.table-wrap{overflow:auto;margin-top:14px;border:none;border-radius:0}table{width:100%;border-collapse:collapse;background:#fff;min-width:760px}th,td{border:1px solid #e5e7eb;padding:8px 10px;font-size:14px;text-align:left;vertical-align:top}th{background:#f3f4f6;color:#374151}.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:bold}.admin{background:#dbeafe;color:#1e40af}.user{background:#f3f4f6;color:#374151}.warn{background:#fef3c7;color:#92400e}.small{font-size:13px;color:#6b7280}.footer{text-align:center;margin-top:30px;color:#6b7280;font-size:12px}.function-order{counter-reset:item;margin:10px 0 0;padding-left:0;list-style:none}.function-order li{counter-increment:item;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;margin:8px 0;padding:9px 12px}.function-order li:before{content:counter(item) ". ";font-weight:bold;color:#2563eb}@media(max-width:640px){body{padding:16px}.header{flex-direction:column;align-items:flex-start}.page{padding:24px}.toc{grid-template-columns:1fr}}@media print{body{background:#fff;padding:0}.page{max-width:none;margin:0;box-shadow:none;border-radius:0}.card{break-inside:avoid}.toc{display:none}}
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:24px;box-sizing:border-box;line-height:1.8}*{box-sizing:border-box}.page{max-width:980px;margin:30px auto;background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{margin:0;font-size:28px}.back-link,.bottom-back-link{color:#2563eb;text-decoration:none;font-weight:bold;font-size:14px}.bottom-back-link{display:inline-block;margin-top:22px}.hero{background:#2563eb;color:#fff;border-radius:16px;padding:24px;margin-bottom:20px}.hero h1{font-size:28px;margin:0 0 6px}.hero p{margin:4px 0}.part-title{background:#1e3a8a;color:#fff;border-radius:14px;padding:14px 20px;margin:30px 0 14px;font-size:19px;font-weight:bold}.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:20px;margin:18px 0;box-shadow:none}.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.toc a{display:block;text-decoration:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:bold;color:#1d4ed8;transition:.2s}.toc a:hover{background:#dbeafe;transform:translateY(-2px)}.toc.toc-admin a{background:#eef2ff;border-color:#c7d2fe;color:#3730a3}h2{font-size:22px;margin:6px 0 14px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;color:#1e3a8a}h3{font-size:17px;margin:20px 0 6px;color:#111827}h4{font-size:15px;margin:14px 0 4px;color:#1f2937}.note,.info,.ok{border-radius:10px;padding:12px 14px;margin-top:10px;font-size:14px;line-height:1.7}.note{background:#fffbeb;border:1px solid #fde68a;color:#92400e}.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.mini{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:12px}.mini b{display:block;color:#111827;margin-bottom:4px}.table-wrap{overflow:auto;margin-top:14px;border:none;border-radius:0}table{width:100%;border-collapse:collapse;background:#fff;min-width:640px}th,td{border:1px solid #e5e7eb;padding:8px 10px;font-size:14px;text-align:left;vertical-align:top}th{background:#f3f4f6;color:#374151}.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:bold}.admin{background:#dbeafe;color:#1e40af}.user{background:#f3f4f6;color:#374151}.warn{background:#fef3c7;color:#92400e}.small{font-size:13px;color:#6b7280}.footer{text-align:center;margin-top:30px;color:#6b7280;font-size:12px}@media(max-width:640px){body{padding:16px}.header{flex-direction:column;align-items:flex-start}.page{padding:24px}.toc{grid-template-columns:1fr}}@media print{body{background:#fff;padding:0}.page{max-width:none;margin:0;box-shadow:none;border-radius:0}.card{break-inside:avoid}.toc{display:none}}
 </style>
 </head>
 <body>
@@ -15,71 +15,113 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
   <a class="back-link" href="index.html">← マイページへ戻る</a>
 </div>
 
-<section class="hero"><h1>ビズもん 操作マニュアル</h1><p>利用者向け操作手順と管理者向け運用ポイントをまとめた完全版マニュアルです。</p><p class="small" style="color:#eaf2ff">更新日：2026年6月26日 / 対象：ビズもん各HTML画面</p></section>
-<section class="card"><h2>目次</h2><div class="toc">
-<a href="#start">1. 利用開始・ログイン</a><a href="#mypage">2. マイページ</a><a href="#quiz">3. 今日の問題・結果</a><a href="#history">4. 学習履歴・傾向分析</a><a href="#settings">5. 各種設定</a><a href="#admin">6. 管理者機能</a><a href="#users">7. ユーザー管理</a><a href="#terms">8. 規約・プライバシー</a><a href="#trouble">9. 困ったとき</a>
-</div></section>
-<section class="card"><h2>画面・機能の並び順</h2><p>本マニュアルでは、マイページや管理メニューの内容を以下の順番で説明します。</p><ol class="function-order"><li>お知らせ</li><li>学習履歴・傾向分析</li><li>設定</li><li>アカウント設定</li><li>リマインド設定</li><li>天気予報表示地域設定</li><li>プライバシーポリシー</li><li>マニュアル</li><li>ダッシュボード</li><li>レポート</li><li>企業設定</li><li>出題カテゴリー設定</li><li>ユーザー招待（個別）</li><li>ユーザー招待（一括）</li><li>ユーザー編集（個別）</li><li>利用規約</li></ol></section>
+<section class="hero">
+  <h1>ビズもん 操作マニュアル</h1>
+  <p>第1部は全ての利用者（一般ユーザー・管理者）向け、第2部は企業管理者専用の操作をまとめています。</p>
+  <p class="small" style="color:#eaf2ff">更新日：2026年7月2日 / 対象：ビズもん各画面</p>
+</section>
+
+<section class="card"><h2>目次</h2>
+<p class="small" style="margin:0 0 8px"><span class="badge user">全員</span> 第1部：利用開始からクイズ回答、各種設定まで</p>
+<div class="toc">
+<a href="#start">1. 利用開始・ログイン</a><a href="#mypage">2. マイページ</a><a href="#quiz">3. 今日の問題・結果</a><a href="#calendar">4. 回答結果（日別詳細）</a><a href="#history">5. 学習履歴・傾向分析</a><a href="#news">6. お知らせ</a><a href="#settings">7. 各種設定</a><a href="#terms-privacy">8. 規約・プライバシー</a>
+</div>
+<p class="small" style="margin:18px 0 8px"><span class="badge admin">管理者専用</span> 第2部：企業管理者の操作</p>
+<div class="toc toc-admin">
+<a href="#agree">9. 利用規約への同意</a><a href="#admin">10. ダッシュボード・レポート</a><a href="#category">11. 出題カテゴリー設定</a><a href="#users">12. ユーザー管理</a><a href="#company">13. 企業設定</a>
+</div>
+<p class="small" style="margin:18px 0 0"><a href="#trouble">→ 9. 困ったとき（共通）</a>を末尾に掲載しています。</p>
+</section>
+
+<div class="part-title">第1部：利用者向け操作（一般ユーザー・管理者共通）</div>
 
 <section class="card" id="start"><h2>1. 利用開始・ログイン</h2>
-<h3>初回登録</h3><p>会社から案内されたメールアドレスで初回登録を行います。管理者が事前に招待登録したメールアドレスのみ登録できます。</p><ol><li>初回登録画面を開きます。</li><li>会社に登録されたメールアドレスを入力します。</li><li>15文字以上・128文字以内のパスワードを入力します。</li><li>確認用パスワードを入力します。</li><li>「初回登録する」を押します。</li><li>登録完了後、ログイン画面からログインします。</li></ol><div class="note">登録できない場合は、メールアドレスが招待登録済みか、パスワード条件を満たしているか確認してください。</div>
-<h3>ログイン</h3><ol><li>メールアドレスとパスワードを入力します。</li><li>「ログイン」を押します。</li><li>認証に成功するとマイページが表示されます。</li></ol><p>パスワード入力欄の目のアイコンで、表示・非表示を切り替えられます。</p>
-<h3>パスワードを忘れた場合</h3><ol><li>ログイン画面でメールアドレスを入力します。</li><li>「パスワードを忘れた場合」を押します。</li><li>届いた再設定メールのリンクを開きます。</li><li>新しいパスワードを設定します。</li></ol><div class="info">再設定メールが複数ある場合は、一番新しいメールのリンクを使用してください。</div>
+<h3>初回登録</h3><p>会社の管理者から案内されたメールアドレスで初回登録を行います。管理者が事前に招待登録（招待中の状態）にしたメールアドレスでのみ登録できます。</p>
+<ol><li>案内された初回登録画面（employee-signup.html）を開きます。</li><li>会社に登録されたメールアドレスを入力します。</li><li>15文字以上・128文字以内のパスワードを入力します（英大文字・数字・記号を必ず混ぜる必要はありません。単語をつなげたパスフレーズがおすすめです）。</li><li>確認用パスワードをもう一度入力します。</li><li>「初回登録する」を押します。</li><li>登録完了メッセージを確認し、届いた確認メールがあれば内容を確認します。</li><li>「ログイン画面へ戻る」からlogin.htmlへ移動し、設定したパスワードでログインします。</li></ol>
+<div class="note">登録できない場合は、そのメールアドレスが会社側で招待登録済みか、パスワードの条件（15〜128文字）を満たしているかを確認してください。それでも解決しない場合は管理者にお問い合わせください。</div>
+<h3>ログイン</h3><ol><li>メールアドレスとパスワードを入力します。</li><li>「ログイン」を押します。</li><li>認証に成功するとマイページが自動的に表示されます。</li></ol><p>パスワード入力欄の目のアイコンで、表示・非表示を切り替えられます。</p>
+<h3>パスワードを忘れた場合</h3><ol><li>ログイン画面でメールアドレスを入力します。</li><li>「パスワードを忘れた場合」を押します。</li><li>届いた再設定メールのリンクを開きます（リンクには有効期限があります）。</li><li>新しいパスワード（15〜128文字）を2回入力し「パスワードを再設定する」を押します。</li><li>完了後、ログイン画面から新しいパスワードでログインします。</li></ol>
+<div class="info">再設定メールのリンクが期限切れ、または無効と表示された場合は、もう一度「パスワードを忘れた場合」から送信し直してください。</div>
 </section>
 
-<section class="card" id="mypage"><h2>2. マイページ</h2><p>マイページはログイン後のトップ画面です。以下の順番で、利用者向けメニューと管理者向けメニューを確認できます。</p>
-<h3>お知らせ</h3><p>会社や管理者からのお知らせを確認します。重要な案内、運用ルール、メンテナンス情報などが掲載される場合があります。</p>
-<h3>学習履歴・傾向分析</h3><p>自分の回答履歴、正答率、カテゴリー別の傾向を確認できます。</p>
-<h3>設定</h3><p>アカウント設定、リマインド設定、天気予報表示地域設定など、個人利用に関する設定画面へ移動できます。</p>
-<h3>プライバシーポリシー</h3><p>個人情報、回答履歴、レポート情報などの取扱いを確認できます。</p>
-<h3>マニュアル</h3><p>本操作マニュアルを開き、利用者向け・管理者向けの操作方法を確認できます。</p>
-<h3>管理者向けメニュー</h3><p>管理者には、ダッシュボード、レポート、企業設定、出題カテゴリー設定、ユーザー招待、ユーザー編集、利用規約などの管理メニューが表示されます。</p><div class="note">表示されるメニューは、ログイン中ユーザーの権限や企業の利用状態によって異なる場合があります。</div></section>
-
-<section class="card" id="quiz"><h2>3. 今日の問題・結果</h2><h3>今日の問題に回答する</h3><ol><li>マイページのクイズボタンを押します。</li><li>問題文とA・B・Cの選択肢を確認します。</li><li>正しいと思う選択肢を押します。</li><li>回答結果が保存され、結果画面へ移動します。</li></ol><div class="note">今日の問題は原則1日1回です。回答済みの場合は再回答できず、「結果を確認する」から結果を確認します。</div><h3>結果画面</h3><p>結果画面では、問題、選択肢、判定、あなたの回答、正解、カテゴリー、解説を確認できます。正解の場合は○、不正解の場合は×が表示されます。</p><h3>回答結果（日別詳細）</h3><p>マイページのカレンダーの○×を押すと、その日の回答結果を確認できます。詳細表示期間外の場合は、○×履歴のみ確認できます。</p></section>
-
-<section class="card" id="history"><h2>4. 学習履歴・傾向分析</h2><p>自分の回答数、正解数、不正解数、正答率、大項目ごとの傾向、日別履歴を確認できます。</p><div class="table-wrap"><table><thead><tr><th>機能</th><th>内容</th></tr></thead><tbody><tr><td>期間</td><td>今月、前月、今年、全期間から選択できます。</td></tr><tr><td>大項目</td><td>特定カテゴリーに絞り込めます。</td></tr><tr><td>日別履歴</td><td>日付、正誤、大項目、問題、選択肢、回答、解答、解説、問題IDを確認できます。</td></tr></tbody></table></div><p>「回答」は自分が選択した答え、「解答」は正しい答えです。未回答日の正誤は「-」で表示されます。</p></section>
-
-<section class="card" id="settings"><h2>5. 各種設定</h2>
-<h3>設定</h3><p>設定メニューでは、アカウント設定、リマインド設定、天気予報表示地域設定を確認・変更できます。</p>
-<h3>アカウント設定</h3><p>現在のメールアドレス、メール確認状態を確認できます。メールアドレス変更、パスワード変更も可能です。変更には現在のパスワードによる本人確認が必要です。</p><h3>パスワード条件</h3><ul><li>15文字以上</li><li>128文字以内</li><li>単語をつなげたパスフレーズ推奨</li><li>英大文字・小文字・数字・記号の組み合わせは必須ではありません</li></ul>
-<h3>リマインド設定</h3><p>通常リマインドと、未回答時の追加リマインドを設定できます。未回答リマインドは、リマインドが有効で、通知対象日で、指定時刻時点で未回答の場合のみ送信対象です。</p>
-<h3>天気予報表示地域設定</h3><p>結果画面に表示する天気予報・警報注意報の地域を設定します。天気予報は地域単位、警報・注意報は市区町村単位です。</p>
+<section class="card" id="mypage"><h2>2. マイページ</h2><p>マイページはログイン後のトップ画面です。あいさつ表示の下に「本日のクイズへ」ボタンとビジネス豆知識が表示され、その下に回答状況を示すカレンダーが並びます。</p>
+<h3>本日のクイズへ</h3><p>クイズにまだ回答していない場合はボタンを押すと「今日の問題」画面に進みます。会社の利用状態が停止中の場合はボタンが無効化され、案内メッセージが表示されます。</p>
+<h3>カレンダー</h3><p>「前月」「次月」ボタンで表示月を切り替えられます。○（正解）／×（不正解）が付いている日付はクリックでき、その日の回答結果（詳細）を確認できます。ただし詳細を確認できるのは「前月1日〜本日」の範囲のみです。範囲外の日付をクリックすると、詳細表示期間が終了している旨のメッセージが表示され、画面は遷移しません（それより前の日の○×自体はカレンダー上で確認できます）。</p>
+<h3>左メニュー</h3><p>「お知らせ」「学習履歴・傾向分析」「設定（アカウント設定／リマインド設定／天気予報表示地域設定）」「プライバシーポリシー」「マニュアル」に移動できます。管理者アカウントの場合のみ、「ダッシュボード」「レポート」「企業設定」「出題カテゴリー設定」「ユーザー招待」「ユーザー編集」「利用規約」などの管理メニューが追加で表示されます。</p>
+<div class="note">表示されるメニューは、ログイン中ユーザーの権限（管理者／一般ユーザー）や会社の利用状態によって異なります。</div>
 </section>
 
-<section class="card" id="admin"><h2>6. 管理者機能</h2><p><span class="badge admin">管理者専用</span> 管理者は企業全体の学習状況や企業設定を管理できます。</p>
-<h3>ダッシュボード</h3><p>今月または前月の対象登録人数、回答者数、回答率、正解率、日別推移、カテゴリー別正解率、未実施者一覧、回答一覧を確認できます。</p>
-<h3>レポート</h3><p>企業全体の回答データを一覧で確認し、CSV出力できます。ダッシュボードは集計、レポートは個票データ確認に使います。</p>
-<h3>企業設定</h3><p>企業情報や今後拡張予定の企業単位設定を確認・管理するための画面です。</p>
-<h3>出題カテゴリー設定</h3><p>出題対象カテゴリーをcategory1単位で設定します。変更内容は翌日のクイズから反映されます。変更履歴では、誰が、いつ、何を変更したかを確認できます。</p>
-<h3>企業別クイズCSV</h3><p>問題データは、原則として全社共通の questions.csv を使用します。特定の企業に専用の問題を出題したい場合は、questions_（企業ID）.csv という名前のファイル（例：companyId が acme なら questions_acme.csv）を questions.csv と同じ場所に追加してください。該当ファイルが存在する場合はその企業専用の問題のみが出題対象になり、存在しない場合は自動的に共通の questions.csv にフォールバックします。列構成（id, category1, category2, question, a, b, c, answer, explanation, active）は共通の questions.csv と同一にしてください。</p><div class="note">企業IDにはファイル名として使える文字（半角英数字・ハイフン・アンダースコアなど）を使用してください。企業設定画面（company-settings.html）は現状仮ページのため、企業IDの確認は管理者に別途お問い合わせください。</div>
+<section class="card" id="quiz"><h2>3. 今日の問題・結果</h2>
+<h3>今日の問題に回答する</h3><ol><li>マイページの「本日のクイズへ」ボタンを押します。</li><li>カテゴリーと問題文、A・B・Cの選択肢を確認します。</li><li>正しいと思う選択肢を押します。</li><li>回答結果が保存され、結果画面へ自動的に移動します。</li></ol>
+<div class="note">今日の問題は1日1回のみです。回答済みの場合は「今日の問題」画面を開いても再回答できず、「本日は回答済みです」と表示され、「結果を確認する」ボタンから結果画面に進めます。</div>
+<h3>結果画面</h3><p>回答直後は正解「○」または不正解「×」の大きなマークがアニメーションで表示された後、問題文・選択肢・あなたの回答・正解・カテゴリー・解説が表示されます。</p>
+<p>その下の「今日の情報」欄では、以下の3つが自動的に表示されます。</p>
+<ul>
+<li><b>今日の日付</b>：和暦（令和）付きで表示されます。</li>
+<li><b>今日の天気</b>：あなたが「天気予報表示地域設定」で選んだ地域の天気予報（気象庁提供）と、発表中の警報・注意報が表示されます。18時までは当日の天気、18時以降は翌日の天気に自動的に切り替わります。</li>
+<li><b>今日はこんな日</b>：祝日・六曜・二十四節気などの暦（こよみ）情報が表示されます。</li>
+</ul>
+<div class="info">結果画面で表示された天気・暦の情報は、その日の記録として保存されます。後日カレンダーからその日を開いたとき（4. 回答結果）は、地域設定を変更していても回答した当時の内容がそのまま表示されます。</div>
 </section>
 
-<section class="card" id="users"><h2>7. ユーザー管理</h2>
-<h3>ユーザー招待（個別）</h3>
-<p>管理者が従業員を個別に招待登録します。この時点ではFirebase Authenticationのアカウントは作成されません。従業員本人が初回登録を行うと、usersに本登録されます。</p>
-<p>招待登録では、社員コード、氏名、メールアドレス、部署、役職、ビズもん権限、備考などを登録します。初回登録前の情報はpendingUsersとして管理されます。</p>
-<h3>ユーザー招待（一括）</h3>
-<p>CSVファイルを直接アップロードして、複数名を一括で招待登録します。CSVの内容を読み込んで確認し、エラーがない場合のみ取り込みできます。</p>
-<p>テンプレートCSVには、employeeCode、name、email、department、position、role、noteを入力します。role列は一般ユーザーならuser、管理者ならadminを入力します。note列は備考欄で、空欄でも構いません。</p>
-<p>一括招待登録した時点では、まだログイン用アカウントは作成されません。従業員本人が初回登録を完了すると、本登録済みユーザーとしてusersに登録されます。</p>
-<p>一括招待後は、初回登録案内メールを作成できます。人数が多い場合は、BCCをコピーして複数回に分けて送信してください。</p>
-<h3>ユーザー編集（個別）</h3>
-<p>登録済みユーザー（users）の情報を個別に編集します。招待中・初回登録待ちのユーザーはこの画面には表示しません。</p>
-<p>編集できる項目は、社員コード、氏名、部署、役職、ビズもん権限、状態、ビズもん申込者、備考です。メールアドレス、企業ID、企業名、UIDは原則として画面上で変更しません。</p>
-<p>登録済みユーザー一覧では、状態、ビズもん権限、社員コード、氏名、部署、役職、メールアドレス、備考、UID、ビズもん申込者を確認できます。また、CSVダウンロードで一覧を出力できます。</p>
-<p>ユーザー情報を変更すると、変更履歴に、対象社員コード、対象氏名、変更内容、変更者社員コード、変更者氏名、変更日時が記録されます。</p>
-<div class="note">ユーザーは完全削除ではなく、原則としてinactiveによる無効化で管理します。回答履歴やレポート整合性を保持するためです。</div>
+<section class="card" id="calendar"><h2>4. 回答結果（日別詳細）</h2><p>マイページのカレンダーで○×が付いた日付をクリックすると開きます。その日の問題・選択肢・あなたの回答・正解・カテゴリー・解説に加えて、「回答時点の情報」として当日保存された天気・暦情報を確認できます（情報が保存されていない場合は「保存されていません」と表示されます）。</p>
+<div class="note">確認できるのは「前月1日〜本日」の範囲のみです。それより前の日は、カレンダー上の○×だけが確認でき、詳細な問題内容が必要な場合は管理者にお問い合わせください。</div>
 </section>
 
-<section class="card" id="terms"><h2>8. 規約・プライバシー</h2>
-<h3>プライバシーポリシー</h3><p>個人情報、回答履歴、操作ログ、端末情報などの取扱いを確認できます。管理者は所属ユーザーの回答履歴や正解率などを閲覧できます。</p>
-<h3>マニュアル</h3><p>操作手順や運用上の注意点を確認できます。利用者向け操作と管理者向け操作の両方を掲載しています。</p>
-<h3>利用規約</h3><p>ビズもんを利用するには、企業単位で利用規約への同意が必要です。管理者かつ申込者のみ同意操作ができます。同意するとcompanies/{companyId}に同意情報が保存され、serviceEnabledがtrueになります。</p>
+<section class="card" id="history"><h2>5. 学習履歴・傾向分析</h2><p>自分の回答数、正解数、不正解数、正答率、大項目（カテゴリー）ごとの傾向、日別の履歴を確認できます。</p><div class="table-wrap"><table><thead><tr><th>機能</th><th>内容</th></tr></thead><tbody><tr><td>期間</td><td>今月、前月、今年、全期間から選択できます。</td></tr><tr><td>大項目</td><td>特定カテゴリーに絞り込めます。</td></tr><tr><td>日別履歴</td><td>日付、正誤、大項目、問題、選択肢、あなたの回答、正解、解説、問題IDを確認できます。</td></tr></tbody></table></div><p>「回答」は自分が選択した答え、「解答」は正しい答えです。未回答日の正誤は「-」で表示されます。「再読み込み」ボタンで最新のデータに更新できます。</p></section>
+
+<section class="card" id="news"><h2>6. お知らせ</h2><p>会社や運営からのお知らせ（重要・通常・学習・メンテナンス・更新など）を確認できます。検索欄にキーワードを入力するか、種別で絞り込むことができます。固定表示（ピン留め）されたお知らせは上部に表示されます。</p></section>
+
+<section class="card" id="settings"><h2>7. 各種設定</h2>
+<h3>アカウント設定</h3><p>現在のメールアドレス・確認状態を確認できます。メールアドレスやパスワードを変更する場合は、いずれも「現在のパスワード」の入力による本人確認が必要です。</p>
+<h4>パスワードの条件</h4><ul><li>15文字以上、128文字以内</li><li>単語をつなげたパスフレーズを推奨</li><li>英大文字・小文字・数字・記号の組み合わせは必須ではありません</li></ul>
+<div class="note">メールアドレスを変更すると確認メールが届きます。変更後にエラーが出た場合は、一度ログインし直してから再度お試しください。</div>
+<h3>リマインド設定</h3><p>クイズ回答忘れを防ぐ通知を設定できます。「有効にする」をオンにし、通知タイミング（毎日／平日／曜日を指定）と時刻を選び、必要なメッセージを入力して保存します。</p>
+<div class="note">「未回答リマインド」は、①リマインドが有効であること、②通知対象の曜日であること、③指定した時刻の時点で本日まだ回答していないこと、の3条件がすべて揃った場合のみ送信されます。</div>
+<h3>天気予報表示地域設定</h3><p>結果画面・回答結果画面に表示する天気予報・警報注意報の地域を設定します。</p><ol><li>「都道府県」を選びます。</li><li>選択に応じて表示される「地域」（気象庁の予報区）を選びます。</li><li>選択に応じて表示される「市区町村」（警報・注意報用）を選びます。</li><li>「設定を保存」を押します。</li></ol><div class="note">天気予報は「地域」単位、警報・注意報は「市区町村」単位で提供される点にご注意ください。地域データがうまく表示されない場合は「地域データを再読み込み」を押してください。</div>
 </section>
 
-<section class="card" id="trouble"><h2>9. 困ったとき</h2><div class="table-wrap"><table><thead><tr><th>状況</th><th>確認すること</th></tr></thead><tbody><tr><td>ログインできない</td><td>メールアドレス、パスワード、再設定後の最新パスワード、アカウント無効化の有無を確認します。</td></tr><tr><td>クイズが表示されない</td><td>ログイン状態、会社ID、出題カテゴリー設定、questions.csv（企業別CSVがある場合はquestions_企業ID.csv）、権限を確認します。</td></tr><tr><td>結果が表示されない</td><td>本日の問題に回答済みか、詳細表示期間内か確認します。</td></tr><tr><td>管理画面が開けない</td><td>role=admin、status=active、companyIdが設定されているか確認します。</td></tr><tr><td>Firestoreエラー</td><td>セキュリティルール、複合インデックス、通信環境を確認します。</td></tr></tbody></table></div></section>
+<section class="card" id="terms-privacy"><h2>8. 規約・プライバシー</h2>
+<h3>プライバシーポリシー</h3><p>個人情報、回答履歴、操作ログなどの取扱いを確認できます。管理者は所属する社員の回答履歴や正解率などを閲覧できる旨も記載されています。</p>
+<h3>マニュアル</h3><p>この操作マニュアルを開きます。一般ユーザー向け操作（第1部）と管理者向け操作（第2部）の両方を掲載しています。</p>
+</section>
+
+<div class="part-title">第2部：企業管理者向け操作 <span class="badge admin" style="margin-left:8px">管理者専用</span></div>
+
+<section class="card" id="agree"><h2>9. 利用規約への同意</h2><p>ビズもんの利用を開始するには、企業単位で利用規約への同意が必要です。<b>この操作は「申込者」権限を持つ管理者のみ</b>行えます（一般の管理者アカウントでは操作できません）。</p><ol><li>マイページから「利用規約」画面を開きます。</li><li>会社名と現在の同意状況を確認します。</li><li>規約全文をスクロールして確認します。</li><li>画面下部のチェックボックスにチェックを入れます。</li><li>「同意して利用を開始する」ボタンを押します。</li><li>「同意済み」の表示に変わったことを確認します。</li></ol><div class="warn" style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;color:#92400e">この同意操作によって会社全体のサービス利用が有効化されます。同意前は他の利用者がクイズ等を利用できない場合があります。</div></section>
+
+<section class="card" id="admin"><h2>10. ダッシュボード・レポート</h2>
+<h3>ダッシュボード</h3><p>自社の登録人数、回答者数、回答率、正解率、日別の推移、カテゴリー別正解率、未実施者一覧、回答一覧を確認できます。「期間」で今月または前月を選び、必要に応じて部署・役職で絞り込みます。</p>
+<h3>レポート</h3><p>期間内の回答明細（問題・選択肢・回答・正誤・解説を含む）を一覧表示し、「CSV出力」でファイルとしてダウンロードできます。ダッシュボードは集計確認、レポートは個票データの確認・出力に使用します。</p>
+<div class="note">両画面とも参照できる期間は「今月」「前月」に限られます。それより前のデータが必要な場合は運営にお問い合わせください。</div>
+</section>
+
+<section class="card" id="category"><h2>11. 出題カテゴリー設定</h2><p>自社に出題する問題のカテゴリー（大項目）を選択します。</p><ol><li>「出題カテゴリー設定」画面を開きます。</li><li>出題したいカテゴリーにチェックを入れます（「すべて選択」「すべて解除」も利用できます）。</li><li>「設定を保存」を押します。</li></ol><div class="note">変更内容は<b>翌日</b>のクイズから反映されます。画面下部の「変更履歴」で、誰が・いつ・何を変更したかを確認できます。</div>
+<div class="info">出題される問題そのものの追加・修正（問題文や選択肢の変更）は、ビズもん運営側でのみ行う作業です。問題内容の追加・修正をご希望の場合は、運営（システム管理者）へご相談ください。</div>
+</section>
+
+<section class="card" id="users"><h2>12. ユーザー管理</h2>
+<h3>ユーザー招待（個別）</h3><p>従業員を1人ずつ招待登録します。この時点ではログイン用アカウントは作成されません。従業員本人が初回登録を完了すると、正式なユーザーとして登録されます。</p><ol><li>社員コード、氏名、メールアドレス、部署、役職、ビズもん権限（一般／管理者）、備考（任意）を入力します。</li><li>「招待登録する」を押します（同じメールアドレスや社員コードが既に登録済みの場合はエラーになります）。</li><li>表示された招待メール文面を「本文をコピー」するか、「メールを作成」でメールソフトを起動して送信します。</li><li>下部の一覧で招待状況（招待中／登録済／対象外）を確認できます。不要になった招待は「招待対象から外す」を押します。</li></ol>
+<h3>ユーザー招待（一括）</h3><p>CSVファイルで複数名をまとめて招待登録します（既存ユーザーを一括で編集する機能ではありません）。</p><ol><li>「テンプレートCSVをダウンロード」で雛形を取得します。</li><li>Excel等でemployeeCode（社員コード）、name（氏名）、email（メールアドレス）、department（部署）、position（役職）、role（一般はuser、管理者はadmin）、note（備考、空欄可）を入力します。</li><li>「CSVファイルを選択」でファイルを指定し「CSVを読み込んで確認」を押します。</li><li>確認テーブルでエラーがないか確認します（エラーがある行は修正して再アップロードします）。</li><li>問題なければ「取り込む」を2回押します（1回目は確認、2回目で実行されます）。</li><li>完了後に表示されるBCC付きの招待メール文面を確認し、メールを送信します。</li></ol>
+<h3>ユーザー編集（個別）</h3><p>登録済みの従業員情報を編集、または利用停止（無効化）します。</p><ol><li>検索・状態／権限フィルタで対象者を絞り込み、一覧から「選択」します。</li><li>社員コード・氏名・部署・役職・ビズもん権限・状態・ビズもん申込者・備考を編集します（メールアドレスはこの画面では変更できません）。</li><li>「変更を保存」を押します（変更がない場合は保存できません）。</li></ol>
+<div class="note">退職者などは削除ではなく「無効化する」（2回押下で確定）を使用します。回答履歴やレポートの整合性を保つため、完全削除は行いません。画面下部の「変更履歴」で変更内容を確認でき、「CSVダウンロード」で一覧を出力できます。</div>
+</section>
+
+<section class="card" id="company"><h2>13. 企業設定</h2><p>現在は準備中のページです。項目が追加され次第、本マニュアルも更新します。</p></section>
+
+<section class="card" id="trouble"><h2>14. 困ったとき（共通）</h2><div class="table-wrap"><table><thead><tr><th>状況</th><th>確認すること</th></tr></thead><tbody>
+<tr><td>ログインできない</td><td>メールアドレス・パスワードが正しいか、パスワードを再設定した場合は最新のものを使っているか、アカウントが無効化されていないかを確認してください。</td></tr>
+<tr><td>初回登録できない</td><td>会社側で招待登録（招待中の状態）されているメールアドレスかどうか、パスワードが15〜128文字の条件を満たしているかを確認してください。</td></tr>
+<tr><td>今日の問題が表示されない</td><td>ログイン状態、会社の利用が有効になっているか（管理者の利用規約同意が済んでいるか）、出題カテゴリーが1つ以上選択されているかを確認してください。</td></tr>
+<tr><td>結果や回答結果の詳細が見られない</td><td>本日の問題に回答済みか、確認したい日が「前月1日〜本日」の範囲内かを確認してください。範囲外の場合は詳細は表示されません。</td></tr>
+<tr><td>天気予報・警報注意報が表示されない</td><td>「天気予報表示地域設定」で地域が正しく設定されているか確認してください。気象庁側の通信状況により一時的に取得できないこともあります。</td></tr>
+<tr><td>管理画面が開けない</td><td>管理者権限（role=admin）が付与されているか、利用状態が有効（active）か、会社の利用規約同意が済んでいるかを管理者にご確認ください。</td></tr>
+<tr><td>ダッシュボード・レポートに古いデータが出てこない</td><td>仕様上、参照できる期間は「今月」「前月」のみです。それ以前のデータが必要な場合は運営にお問い合わせください。</td></tr>
+<tr><td>上記で解決しない</td><td>システム管理者（運営）にお問い合わせください。</td></tr>
+</tbody></table></div></section>
+
 <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
-  <div class="footer">© ビズもん 操作マニュアル</div>
+<div class="footer">© ビズもん 操作マニュアル</div>
 </div>
 </body>
 </html>
