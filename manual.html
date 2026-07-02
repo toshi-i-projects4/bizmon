@@ -51,6 +51,7 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 <h3>レポート</h3><p>企業全体の回答データを一覧で確認し、CSV出力できます。ダッシュボードは集計、レポートは個票データ確認に使います。</p>
 <h3>企業設定</h3><p>企業情報や今後拡張予定の企業単位設定を確認・管理するための画面です。</p>
 <h3>出題カテゴリー設定</h3><p>出題対象カテゴリーをcategory1単位で設定します。変更内容は翌日のクイズから反映されます。変更履歴では、誰が、いつ、何を変更したかを確認できます。</p>
+<h3>企業別クイズCSV</h3><p>問題データは、原則として全社共通の questions.csv を使用します。特定の企業に専用の問題を出題したい場合は、questions_（企業ID）.csv という名前のファイル（例：companyId が acme なら questions_acme.csv）を questions.csv と同じ場所に追加してください。該当ファイルが存在する場合はその企業専用の問題のみが出題対象になり、存在しない場合は自動的に共通の questions.csv にフォールバックします。列構成（id, category1, category2, question, a, b, c, answer, explanation, active）は共通の questions.csv と同一にしてください。</p><div class="note">企業IDにはファイル名として使える文字（半角英数字・ハイフン・アンダースコアなど）を使用してください。企業設定画面（company-settings.html）は現状仮ページのため、企業IDの確認は管理者に別途お問い合わせください。</div>
 </section>
 
 <section class="card" id="users"><h2>7. ユーザー管理</h2>
@@ -76,7 +77,7 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 <h3>利用規約</h3><p>ビズもんを利用するには、企業単位で利用規約への同意が必要です。管理者かつ申込者のみ同意操作ができます。同意するとcompanies/{companyId}に同意情報が保存され、serviceEnabledがtrueになります。</p>
 </section>
 
-<section class="card" id="trouble"><h2>9. 困ったとき</h2><div class="table-wrap"><table><thead><tr><th>状況</th><th>確認すること</th></tr></thead><tbody><tr><td>ログインできない</td><td>メールアドレス、パスワード、再設定後の最新パスワード、アカウント無効化の有無を確認します。</td></tr><tr><td>クイズが表示されない</td><td>ログイン状態、会社ID、出題カテゴリー設定、questions.csv、権限を確認します。</td></tr><tr><td>結果が表示されない</td><td>本日の問題に回答済みか、詳細表示期間内か確認します。</td></tr><tr><td>管理画面が開けない</td><td>role=admin、status=active、companyIdが設定されているか確認します。</td></tr><tr><td>Firestoreエラー</td><td>セキュリティルール、複合インデックス、通信環境を確認します。</td></tr></tbody></table></div></section>
+<section class="card" id="trouble"><h2>9. 困ったとき</h2><div class="table-wrap"><table><thead><tr><th>状況</th><th>確認すること</th></tr></thead><tbody><tr><td>ログインできない</td><td>メールアドレス、パスワード、再設定後の最新パスワード、アカウント無効化の有無を確認します。</td></tr><tr><td>クイズが表示されない</td><td>ログイン状態、会社ID、出題カテゴリー設定、questions.csv（企業別CSVがある場合はquestions_企業ID.csv）、権限を確認します。</td></tr><tr><td>結果が表示されない</td><td>本日の問題に回答済みか、詳細表示期間内か確認します。</td></tr><tr><td>管理画面が開けない</td><td>role=admin、status=active、companyIdが設定されているか確認します。</td></tr><tr><td>Firestoreエラー</td><td>セキュリティルール、複合インデックス、通信環境を確認します。</td></tr></tbody></table></div></section>
 <a class="bottom-back-link" href="index.html">← マイページへ戻る</a>
   <div class="footer">© ビズもん 操作マニュアル</div>
 </div>
