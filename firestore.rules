@@ -1,0 +1,792 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    /************************************************************
+     * 共通関数
+     ************************************************************/
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function hasUserDoc() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    function myUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isAdmin() {
+      return hasUserDoc()
+        && myUser().role == "admin";
+    }
+    function isUser() {
+      return hasUserDoc()
+        && myUser().role == "user";
+    }
+    function isActiveUser() {
+      return hasUserDoc()
+        && myUser().status == "active";
+    }
+    function isApplicant() {
+      return hasUserDoc()
+        && myUser().isApplicant == true;
+    }
+    function myCompanyId() {
+      return myUser().companyId;
+    }
+    function sameCompany(companyId) {
+      return hasUserDoc()
+        && myCompanyId() == companyId;
+    }
+    function validRole(role) {
+      return role in ["admin", "user"];
+    }
+    function validUserStatus(status) {
+      return status in ["active", "inactive"];
+    }
+    function validPendingStatus(status) {
+      return status in ["pending", "registered", "cancelled"];
+    }
+    /************************************************************
+     * account-settings.html
+     * 本人によるメールアドレス更新
+     ************************************************************/
+    function canUpdateOwnAccountEmail(userId) {
+      return isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "email",
+          "updatedAt",
+          "updatedBy",
+          "emailSyncPending",
+          "pendingAuthEmail",
+          "emailSyncError",
+          "emailSyncFailedAt"
+        ])
+        && request.resource.data.email is string
+        && request.resource.data.updatedBy == request.auth.uid
+        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
+        && (!("emailSyncPending" in request.resource.data) || request.resource.data.emailSyncPending is bool)
+        && (!("pendingAuthEmail" in request.resource.data) || request.resource.data.pendingAuthEmail is string)
+        && (!("emailSyncError" in request.resource.data) || request.resource.data.emailSyncError is string)
+        && (!("emailSyncFailedAt" in request.resource.data) || request.resource.data.emailSyncFailedAt is timestamp);
+    }
+    /************************************************************
+     * user-edit-single.html
+     * 管理者による自社ユーザー編集
+     ************************************************************/
+    function canAdminUpdateCompanyUser() {
+      return isAdmin()
+        && isActiveUser()
+        && resource.data.companyId == myCompanyId()
+        && request.resource.data.companyId == myCompanyId()
+        && validRole(request.resource.data.role)
+        && validUserStatus(request.resource.data.status)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "employeeCode",
+          "name",
+          "department",
+          "position",
+          "role",
+          "status",
+          "isApplicant",
+          "note",
+          "updatedAt",
+          "updatedBy"
+        ])
+        && (!("employeeCode" in request.resource.data) || request.resource.data.employeeCode is string)
+        && (!("name" in request.resource.data) || request.resource.data.name is string)
+        && (!("department" in request.resource.data) || request.resource.data.department is string)
+        && (!("position" in request.resource.data) || request.resource.data.position is string)
+        && (!("note" in request.resource.data) || request.resource.data.note is string)
+        && (!("isApplicant" in request.resource.data) || request.resource.data.isApplicant is bool)
+        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
+        && (!("updatedBy" in request.resource.data) || request.resource.data.updatedBy is string);
+    }
+    /************************************************************
+     * weatherSettings 形式チェック
+     *
+     * weather-settings.html で保存する天気予報・警報注意報の
+     * 表示地域設定。
+     *
+     * users/{uid}.weatherSettings に保存される。
+     ************************************************************/
+    function validWeatherSettings(setting) {
+      return setting is map
+        && setting.keys().hasAll([
+          "weatherOfficeCode",
+          "weatherOfficeName",
+          "weatherAreaCode",
+          "weatherAreaName"
+        ])
+        && setting.keys().hasOnly([
+          "weatherOfficeCode",
+          "weatherOfficeName",
+          "weatherAreaCode",
+          "weatherAreaName",
+          "weatherPrefectureName",
+          "weatherClass20Code",
+          "weatherClass20Name",
+          "weatherCityCode",
+          "weatherCityName",
+          "updatedAt",
+          "uid"
+        ])
+        && setting.weatherOfficeCode is string
+        && setting.weatherOfficeName is string
+        && setting.weatherAreaCode is string
+        && setting.weatherAreaName is string
+        && (!("weatherPrefectureName" in setting) || setting.weatherPrefectureName is string)
+        && (!("weatherClass20Code" in setting) || setting.weatherClass20Code is string)
+        && (!("weatherClass20Name" in setting) || setting.weatherClass20Name is string)
+        && (!("weatherCityCode" in setting) || setting.weatherCityCode is string)
+        && (!("weatherCityName" in setting) || setting.weatherCityName is string)
+        && (!("uid" in setting) || setting.uid is string)
+        && (!("updatedAt" in setting) || setting.updatedAt is timestamp);
+    }
+    function canUpdateOwnWeatherSettings(userId) {
+      return isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "weatherSettings"
+        ])
+        && validWeatherSettings(request.resource.data.weatherSettings);
+    }
+    /************************************************************
+     * companyQuizSettings 形式チェック
+     ************************************************************/
+    function validCompanyQuizSettings(companyId) {
+      return request.resource.data.keys().hasOnly([
+          "companyId",
+          "activeCategories",
+          "categoryMode",
+          "updatedAt",
+          "updatedBy",
+          "updatedByEmail",
+          "updatedByName",
+          "updatedByEmployeeCode",
+          "nextApplyDate",
+          "nextCategories"
+        ])
+        && request.resource.data.companyId == companyId
+        && request.resource.data.activeCategories is list
+        && request.resource.data.categoryMode == "category1"
+        && request.resource.data.updatedBy == request.auth.uid
+        && (!("updatedByEmail" in request.resource.data) || request.resource.data.updatedByEmail is string)
+        && (!("updatedByName" in request.resource.data) || request.resource.data.updatedByName is string)
+        && (!("updatedByEmployeeCode" in request.resource.data) || request.resource.data.updatedByEmployeeCode is string)
+        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
+        && (!("nextApplyDate" in request.resource.data) || request.resource.data.nextApplyDate is string)
+        && (!("nextCategories" in request.resource.data) || request.resource.data.nextCategories is list);
+    }
+    /************************************************************
+     * companyQuizSettings/changeLogs
+     * カテゴリー設定履歴 形式チェック
+     ************************************************************/
+    function validCompanyQuizSettingChangeLog(companyId) {
+      return request.resource.data.keys().hasOnly([
+          "companyId",
+          "action",
+          "beforeCategories",
+          "afterCategories",
+          "addedCategories",
+          "removedCategories",
+          "nextApplyDate",
+          "categoryMode",
+          "updatedAt",
+          "updatedBy",
+          "updatedByEmail",
+          "updatedByName",
+          "updatedByEmployeeCode",
+          "page"
+        ])
+        && request.resource.data.companyId == companyId
+        && request.resource.data.companyId == myCompanyId()
+        && request.resource.data.action == "updateCategorySettings"
+        && request.resource.data.beforeCategories is list
+        && request.resource.data.afterCategories is list
+        && request.resource.data.addedCategories is list
+        && request.resource.data.removedCategories is list
+        && request.resource.data.categoryMode == "category1"
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.page == "category-settings.html"
+        && (!("updatedByEmail" in request.resource.data) || request.resource.data.updatedByEmail is string)
+        && (!("updatedByName" in request.resource.data) || request.resource.data.updatedByName is string)
+        && (!("updatedByEmployeeCode" in request.resource.data) || request.resource.data.updatedByEmployeeCode is string)
+        && (!("nextApplyDate" in request.resource.data) || request.resource.data.nextApplyDate is string)
+        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp);
+    }
+    /************************************************************
+     * companyQuizSettings/changeLogs
+     * ユーザー編集履歴 形式チェック
+     ************************************************************/
+    function validUserEditChangeLog(companyId) {
+      return request.resource.data.keys().hasOnly([
+          "companyId",
+          "logType",
+          "targetUid",
+          "targetEmployeeCode",
+          "targetName",
+          "action",
+          "before",
+          "after",
+          "changes",
+          "updatedAt",
+          "updatedBy",
+          "updatedByEmail",
+          "updatedByName",
+          "updatedByEmployeeCode",
+          "page"
+        ])
+        && request.resource.data.companyId == companyId
+        && request.resource.data.companyId == myCompanyId()
+        && request.resource.data.logType == "userEdit"
+        && request.resource.data.page == "user-edit-single.html"
+        && request.resource.data.action in [
+          "updateUser",
+          "disableUser"
+        ]
+        && request.resource.data.targetUid is string
+        && request.resource.data.targetEmployeeCode is string
+        && request.resource.data.targetName is string
+        && request.resource.data.before is map
+        && request.resource.data.after is map
+        && request.resource.data.changes is list
+        && request.resource.data.updatedBy == request.auth.uid
+        && (!("updatedByEmail" in request.resource.data) || request.resource.data.updatedByEmail is string)
+        && (!("updatedByName" in request.resource.data) || request.resource.data.updatedByName is string)
+        && (!("updatedByEmployeeCode" in request.resource.data) || request.resource.data.updatedByEmployeeCode is string)
+        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp);
+    }
+    /************************************************************
+     * dailyQuizAssignments 形式チェック
+     ************************************************************/
+    function validDailyQuizAssignmentCreate() {
+      return request.resource.data.keys().hasOnly([
+          "companyId",
+          "companyName",
+          "dateKey",
+          "status",
+          "questionId",
+          "category1",
+          "category2",
+          "question",
+          "choiceA",
+          "choiceB",
+          "choiceC",
+          "correctAnswer",
+          "explanation",
+          "appliedQuizSettings",
+          "questionSelection",
+          "createdBy",
+          "createdAt",
+          "updatedAt",
+          "updatedBy"
+        ])
+        && request.resource.data.companyId is string
+        && request.resource.data.companyId == myCompanyId()
+        && request.resource.data.dateKey is string
+        && request.resource.data.status == "fixed"
+        && request.resource.data.questionId is string
+        && request.resource.data.category1 is string
+        && request.resource.data.category2 is string
+        && request.resource.data.question is string
+        && request.resource.data.choiceA is string
+        && request.resource.data.choiceB is string
+        && request.resource.data.choiceC is string
+        && request.resource.data.correctAnswer is string
+        && request.resource.data.explanation is string
+        && (!("companyName" in request.resource.data) || request.resource.data.companyName is string)
+        && (!("createdBy" in request.resource.data) || request.resource.data.createdBy is string)
+        && (!("createdAt" in request.resource.data) || request.resource.data.createdAt is timestamp)
+        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
+        && (!("updatedBy" in request.resource.data) || request.resource.data.updatedBy is string)
+        && (!("appliedQuizSettings" in request.resource.data) || request.resource.data.appliedQuizSettings is map)
+        && (!("questionSelection" in request.resource.data) || request.resource.data.questionSelection is map);
+    }
+    function validDailyQuizAssignmentUpdate() {
+      return request.resource.data.keys().hasOnly([
+          "companyId",
+          "companyName",
+          "dateKey",
+          "status",
+          "questionId",
+          "category1",
+          "category2",
+          "question",
+          "choiceA",
+          "choiceB",
+          "choiceC",
+          "correctAnswer",
+          "explanation",
+          "appliedQuizSettings",
+          "questionSelection",
+          "createdBy",
+          "createdAt",
+          "updatedAt",
+          "updatedBy"
+        ])
+        && request.resource.data.companyId == resource.data.companyId
+        && request.resource.data.dateKey == resource.data.dateKey
+        && request.resource.data.status == resource.data.status
+        && request.resource.data.companyId == myCompanyId()
+        && request.resource.data.questionId is string
+        && request.resource.data.category1 is string
+        && request.resource.data.category2 is string
+        && request.resource.data.question is string
+        && request.resource.data.choiceA is string
+        && request.resource.data.choiceB is string
+        && request.resource.data.choiceC is string
+        && request.resource.data.correctAnswer is string
+        && request.resource.data.explanation is string
+        && (!("companyName" in request.resource.data) || request.resource.data.companyName is string)
+        && (!("createdBy" in request.resource.data) || request.resource.data.createdBy is string)
+        && (!("createdAt" in request.resource.data) || request.resource.data.createdAt is timestamp)
+        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
+        && (!("updatedBy" in request.resource.data) || request.resource.data.updatedBy is string)
+        && (!("appliedQuizSettings" in request.resource.data) || request.resource.data.appliedQuizSettings is map)
+        && (!("questionSelection" in request.resource.data) || request.resource.data.questionSelection is map);
+    }
+    /************************************************************
+     * companyQuizProgress 形式チェック
+     ************************************************************/
+    function validCompanyQuizProgressCreate(companyId) {
+      return request.resource.data.keys().hasOnly([
+          "companyId",
+          "lastAssignedDate",
+          "lastQuestionId",
+          "lastCategory1",
+          "remainingQuestionIds",
+          "cycleQuestionIds",
+          "ruleVersion",
+          "updatedAt",
+          "updatedBy"
+        ])
+        && request.resource.data.companyId == companyId
+        && request.resource.data.companyId == myCompanyId()
+        && request.resource.data.lastAssignedDate is string
+        && request.resource.data.lastQuestionId is string
+        && request.resource.data.lastCategory1 is string
+        && request.resource.data.remainingQuestionIds is list
+        && request.resource.data.cycleQuestionIds is list
+        && request.resource.data.ruleVersion == "BIZMON_COMPANY_FULL_CYCLE_MERGE_NO_SAME_CATEGORY1_V2"
+        && request.resource.data.updatedBy == request.auth.uid
+        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp);
+    }
+    function validCompanyQuizProgressUpdate(companyId) {
+      return request.resource.data.keys().hasOnly([
+          "companyId",
+          "lastAssignedDate",
+          "lastQuestionId",
+          "lastCategory1",
+          "remainingQuestionIds",
+          "cycleQuestionIds",
+          "ruleVersion",
+          "updatedAt",
+          "updatedBy"
+        ])
+        && resource.data.companyId == companyId
+        && request.resource.data.companyId == resource.data.companyId
+        && request.resource.data.companyId == myCompanyId()
+        && request.resource.data.lastAssignedDate is string
+        && request.resource.data.lastQuestionId is string
+        && request.resource.data.lastCategory1 is string
+        && request.resource.data.remainingQuestionIds is list
+        && request.resource.data.cycleQuestionIds is list
+        && request.resource.data.ruleVersion == "BIZMON_COMPANY_FULL_CYCLE_MERGE_NO_SAME_CATEGORY1_V2"
+        && request.resource.data.updatedBy == request.auth.uid
+        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp);
+    }
+    /************************************************************
+     * 企業利用規約・初回登録関連
+     ************************************************************/
+    function canAcceptCompanyTerms(companyId) {
+      return isSignedIn()
+        && hasUserDoc()
+        && isAdmin()
+        && isApplicant()
+        && isActiveUser()
+        && sameCompany(companyId);
+    }
+    function pendingUser(email) {
+      return get(/databases/$(database)/documents/pendingUsers/$(email)).data;
+    }
+    function pendingUserExists(email) {
+      return exists(/databases/$(database)/documents/pendingUsers/$(email));
+    }
+    function isOwnPendingUser(pendingEmail) {
+      return isSignedIn()
+        && request.auth.token.email == pendingEmail;
+    }
+    function canCreateOwnUserFromPending(userId) {
+      return isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && pendingUserExists(request.resource.data.email)
+        && pendingUser(request.resource.data.email).email == request.auth.token.email
+        && pendingUser(request.resource.data.email).status == "pending"
+        && request.resource.data.employeeCode == pendingUser(request.resource.data.email).employeeCode
+        && request.resource.data.name == pendingUser(request.resource.data.email).name
+        && request.resource.data.companyId == pendingUser(request.resource.data.email).companyId
+        && request.resource.data.companyName == pendingUser(request.resource.data.email).companyName
+        && request.resource.data.department == pendingUser(request.resource.data.email).department
+        && request.resource.data.position == pendingUser(request.resource.data.email).position
+        && request.resource.data.role == pendingUser(request.resource.data.email).role
+        && request.resource.data.isApplicant == pendingUser(request.resource.data.email).isApplicant
+        && request.resource.data.status == "active"
+        && validRole(request.resource.data.role)
+        && request.resource.data.keys().hasOnly([
+          "uid",
+          "employeeCode",
+          "name",
+          "email",
+          "companyId",
+          "companyName",
+          "department",
+          "position",
+          "role",
+          "status",
+          "isApplicant",
+          "note",
+          "createdAt",
+          "createdBy",
+          "updatedAt",
+          "updatedBy"
+        ]);
+    }
+    /************************************************************
+     * users
+     ************************************************************/
+    match /users/{userId} {
+      allow read: if isSignedIn()
+        && (
+          request.auth.uid == userId
+          || (
+            isAdmin()
+            && resource.data.companyId == myCompanyId()
+          )
+        );
+      allow create: if
+        (
+          isAdmin()
+          && request.resource.data.companyId == myCompanyId()
+          && validRole(request.resource.data.role)
+          && request.resource.data.status == "active"
+        )
+        ||
+        (
+          canCreateOwnUserFromPending(userId)
+        );
+      allow update: if isSignedIn()
+        && (
+          canUpdateOwnWeatherSettings(userId)
+          ||
+          canUpdateOwnAccountEmail(userId)
+          ||
+          canAdminUpdateCompanyUser()
+        );
+      allow delete: if false;
+    }
+    /************************************************************
+     * pendingUsers
+     ************************************************************/
+    match /pendingUsers/{pendingEmail} {
+      allow read: if isSignedIn()
+        && (
+          (
+            isAdmin()
+            && resource.data.companyId == myCompanyId()
+          )
+          ||
+          (
+            isOwnPendingUser(pendingEmail)
+            && resource.data.email == request.auth.token.email
+          )
+        );
+      allow create: if isAdmin()
+        && isActiveUser()
+        && request.resource.data.companyId == myCompanyId()
+        && request.resource.data.email == pendingEmail
+        && request.resource.data.status == "pending"
+        && validRole(request.resource.data.role)
+        && request.resource.data.keys().hasOnly([
+          "email",
+          "employeeCode",
+          "name",
+          "companyId",
+          "companyName",
+          "department",
+          "position",
+          "role",
+          "status",
+          "isApplicant",
+          "note",
+          "createdAt",
+          "createdBy",
+          "updatedAt",
+          "updatedBy",
+          "registeredAt",
+          "registeredUid"
+        ]);
+      allow update: if
+        (
+          isAdmin()
+          && isActiveUser()
+          && resource.data.companyId == myCompanyId()
+          && request.resource.data.companyId == myCompanyId()
+          && request.resource.data.email == resource.data.email
+          && validRole(request.resource.data.role)
+          && validPendingStatus(request.resource.data.status)
+        )
+        ||
+        (
+          isOwnPendingUser(pendingEmail)
+          && resource.data.email == request.auth.token.email
+          && resource.data.status == "pending"
+          && request.resource.data.email == resource.data.email
+          && request.resource.data.companyId == resource.data.companyId
+          && request.resource.data.employeeCode == resource.data.employeeCode
+          && request.resource.data.name == resource.data.name
+          && request.resource.data.companyName == resource.data.companyName
+          && request.resource.data.department == resource.data.department
+          && request.resource.data.position == resource.data.position
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.isApplicant == resource.data.isApplicant
+          && request.resource.data.status == "registered"
+          && request.resource.data.registeredUid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            "status",
+            "registeredAt",
+            "registeredUid",
+            "updatedAt",
+            "updatedBy"
+          ])
+        );
+      allow delete: if false;
+    }
+    /************************************************************
+     * companies
+     ************************************************************/
+    match /companies/{companyId} {
+      allow read: if isSignedIn()
+        && sameCompany(companyId);
+      allow create: if false;
+      allow update: if canAcceptCompanyTerms(companyId)
+        && request.resource.data.companyId == resource.data.companyId
+        && request.resource.data.companyName == resource.data.companyName
+        && request.resource.data.status == resource.data.status
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "termsAccepted",
+          "termsAcceptedAt",
+          "termsAcceptedBy",
+          "termsAcceptedByName",
+          "termsAcceptedSource",
+          "termsAcceptedNote",
+          "termsVersion",
+          "serviceEnabled",
+          "updatedAt"
+        ])
+        && request.resource.data.termsAccepted == true
+        && request.resource.data.serviceEnabled == true
+        && request.resource.data.termsAcceptedBy == request.auth.uid
+        && request.resource.data.termsAcceptedSource == "applicant_web_agreement"
+        && request.resource.data.termsVersion == "2026-06-11";
+      allow delete: if false;
+    }
+    /************************************************************
+     * companySettings
+     * 旧カテゴリー設定・既存互換用
+     ************************************************************/
+    match /companySettings/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    /************************************************************
+     * companyQuizSettings
+     * 会社別カテゴリー設定
+     ************************************************************/
+    match /companyQuizSettings/{companyId} {
+      allow read: if isSignedIn()
+        && isActiveUser()
+        && sameCompany(companyId);
+      allow create: if isSignedIn()
+        && isAdmin()
+        && isActiveUser()
+        && sameCompany(companyId)
+        && validCompanyQuizSettings(companyId);
+      allow update: if isSignedIn()
+        && isAdmin()
+        && isActiveUser()
+        && sameCompany(companyId)
+        && resource.data.companyId == companyId
+        && request.resource.data.companyId == companyId
+        && validCompanyQuizSettings(companyId);
+      allow delete: if false;
+      match /changeLogs/{logId} {
+        allow read: if isSignedIn()
+          && isAdmin()
+          && isActiveUser()
+          && sameCompany(companyId);
+        allow create: if isSignedIn()
+          && isAdmin()
+          && isActiveUser()
+          && sameCompany(companyId)
+          && (
+            validCompanyQuizSettingChangeLog(companyId)
+            || validUserEditChangeLog(companyId)
+          );
+        allow update, delete: if false;
+      }
+    }
+    /************************************************************
+     * dailyQuizAssignments
+     ************************************************************/
+    match /dailyQuizAssignments/{assignmentId} {
+      allow get: if isSignedIn()
+        && isActiveUser()
+        && assignmentId.matches(myCompanyId() + "_.*");
+      allow list: if isSignedIn()
+        && isActiveUser()
+        && resource.data.companyId == myCompanyId();
+      allow create: if isSignedIn()
+        && isActiveUser()
+        && validDailyQuizAssignmentCreate()
+        && assignmentId == request.resource.data.companyId + "_" + request.resource.data.dateKey;
+      allow update: if isSignedIn()
+        && isAdmin()
+        && isActiveUser()
+        && resource.data.companyId == myCompanyId()
+        && validDailyQuizAssignmentUpdate()
+        && assignmentId == resource.data.companyId + "_" + resource.data.dateKey;
+      allow delete: if false;
+    }
+    /************************************************************
+     * companyQuizProgress
+     ************************************************************/
+    match /companyQuizProgress/{companyId} {
+      allow get: if isSignedIn()
+        && isActiveUser()
+        && sameCompany(companyId);
+      allow list: if false;
+      allow create: if isSignedIn()
+        && isActiveUser()
+        && sameCompany(companyId)
+        && validCompanyQuizProgressCreate(companyId);
+      allow update: if isSignedIn()
+        && isActiveUser()
+        && sameCompany(companyId)
+        && validCompanyQuizProgressUpdate(companyId);
+      allow delete: if false;
+    }
+    /************************************************************
+     * quizzes
+     ************************************************************/
+    match /quizzes/{quizId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+    /************************************************************
+     * quizResults
+     ************************************************************/
+    match /quizResults/{docId} {
+      allow get: if isSignedIn()
+        && hasUserDoc()
+        && (
+          docId.matches(request.auth.uid + "_.*")
+          ||
+          (
+            isAdmin()
+            && resource.data.companyId == myCompanyId()
+          )
+        );
+      allow list: if isSignedIn()
+        && hasUserDoc()
+        && (
+          resource.data.uid == request.auth.uid
+          ||
+          (
+            isAdmin()
+            && resource.data.companyId == myCompanyId()
+          )
+        );
+      allow create: if isSignedIn()
+        && hasUserDoc()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.companyId == myCompanyId()
+        && docId == request.auth.uid + "_" + request.resource.data.dateKey;
+      allow update: if isSignedIn()
+        && hasUserDoc()
+        && (
+          (
+            resource.data.uid == request.auth.uid
+            && request.resource.data.uid == request.auth.uid
+            && request.resource.data.companyId == myCompanyId()
+          )
+          ||
+          (
+            isAdmin()
+            && resource.data.companyId == myCompanyId()
+            && request.resource.data.companyId == myCompanyId()
+          )
+        );
+      allow delete: if false;
+    }
+    /************************************************************
+     * userConsents
+     ************************************************************/
+    match /userConsents/{userId} {
+      allow read: if isSignedIn()
+        && request.auth.uid == userId;
+      allow create, update: if isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if false;
+    }
+    /************************************************************
+     * reminderSettings
+     ************************************************************/
+    match /reminderSettings/{userId} {
+      allow read: if isSignedIn()
+        && (
+          request.auth.uid == userId
+          ||
+          (
+            isAdmin()
+            && resource.data.companyId == myCompanyId()
+          )
+        );
+      allow create, update: if isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.companyId == myCompanyId();
+      allow delete: if false;
+    }
+    /************************************************************
+     * importJobs
+     ************************************************************/
+    match /importJobs/{jobId} {
+      allow read: if isAdmin()
+        && resource.data.companyId == myCompanyId();
+      allow write: if false;
+    }
+    /************************************************************
+     * notifications
+     ************************************************************/
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn()
+        && (
+          resource.data.companyId == null
+          || resource.data.companyId == myCompanyId()
+        );
+      allow create, update: if isAdmin()
+        && request.resource.data.companyId == myCompanyId();
+      allow delete: if false;
+    }
+    /************************************************************
+     * その他はすべて拒否
+     ************************************************************/
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
