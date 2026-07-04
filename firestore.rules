@@ -240,10 +240,14 @@ service cloud.firestore {
         && request.resource.data.companyId == companyId
         && request.resource.data.companyId == myCompanyId()
         && request.resource.data.logType == "userEdit"
-        && request.resource.data.page == "user-edit-single.html"
+        && request.resource.data.page in [
+          "user-edit-single.html",
+          "user-edit-bulk.html"
+        ]
         && request.resource.data.action in [
           "updateUser",
-          "disableUser"
+          "disableUser",
+          "bulkEditUser"
         ]
         && request.resource.data.targetUid is string
         && request.resource.data.targetEmployeeCode is string
@@ -485,7 +489,11 @@ service cloud.firestore {
           ||
           canAdminUpdateCompanyUser()
         );
-      allow delete: if false;
+      allow delete: if isSignedIn()
+        && isAdmin()
+        && isActiveUser()
+        && resource.data.companyId == myCompanyId()
+        && request.auth.uid != userId;
     }
     /************************************************************
      * pendingUsers
@@ -679,13 +687,6 @@ service cloud.firestore {
       allow delete: if false;
     }
     /************************************************************
-     * quizzes
-     ************************************************************/
-    match /quizzes/{quizId} {
-      allow read: if isSignedIn();
-      allow write: if false;
-    }
-    /************************************************************
      * quizResults
      ************************************************************/
     match /quizResults/{docId} {
@@ -729,18 +730,10 @@ service cloud.firestore {
             && request.resource.data.companyId == myCompanyId()
           )
         );
-      allow delete: if false;
-    }
-    /************************************************************
-     * userConsents
-     ************************************************************/
-    match /userConsents/{userId} {
-      allow read: if isSignedIn()
-        && request.auth.uid == userId;
-      allow create, update: if isSignedIn()
-        && request.auth.uid == userId
-        && request.resource.data.uid == request.auth.uid;
-      allow delete: if false;
+      allow delete: if isSignedIn()
+        && isAdmin()
+        && isActiveUser()
+        && resource.data.companyId == myCompanyId();
     }
     /************************************************************
      * reminderSettings
@@ -759,25 +752,19 @@ service cloud.firestore {
         && request.auth.uid == userId
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.companyId == myCompanyId();
-      allow delete: if false;
-    }
-    /************************************************************
-     * importJobs
-     ************************************************************/
-    match /importJobs/{jobId} {
-      allow read: if isAdmin()
+      allow delete: if isSignedIn()
+        && isAdmin()
+        && isActiveUser()
         && resource.data.companyId == myCompanyId();
-      allow write: if false;
     }
     /************************************************************
-     * notifications
+     * news
+     * news.html：お知らせ（企業ごと）
      ************************************************************/
-    match /notifications/{notificationId} {
+    match /news/{newsId} {
       allow read: if isSignedIn()
-        && (
-          resource.data.companyId == null
-          || resource.data.companyId == myCompanyId()
-        );
+        && hasUserDoc()
+        && resource.data.companyId == myCompanyId();
       allow create, update: if isAdmin()
         && request.resource.data.companyId == myCompanyId();
       allow delete: if false;
