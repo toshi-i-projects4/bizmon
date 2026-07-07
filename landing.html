@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ビズもん｜1日1問が、気付きを与え、会社を強くする。</title>
+<meta name="description" content="ビズもんは、1日1問のマイクロラーニングで、社員の知識・思考力・業務姿勢を育て、学習状況を可視化する企業向け社員教育サービスです。">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<style>
+:root{
+  --blue:#2563eb;--blue-dark:#1d4ed8;--navy:#0f172a;--slate:#475569;--muted:#64748b;
+  --bg:#f5f7fb;--card:#ffffff;--line:#e5e7eb;--green:#16a34a;--orange:#f97316;
+  --shadow:0 10px 30px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:var(--bg);color:#111827;line-height:1.8}
+a{color:inherit}
+.container{max-width:1120px;margin:0 auto;padding:0 20px}
+.section{padding:72px 0}
+.section.compact{padding:52px 0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:#dbeafe;color:#1e40af;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;margin-bottom:14px}
+.eyebrow.white{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.24)}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:40px;line-height:1.4;letter-spacing:.02em;margin-bottom:18px}
+h2{font-size:28px;line-height:1.45;margin-bottom:16px;color:var(--navy)}
+h3{font-size:17px;line-height:1.5;margin-bottom:8px;color:var(--navy)}
+.lead{font-size:16px;color:#334155}
+.muted{color:var(--muted)}
+.center{text-align:center}
+
+/* ヘッダー */
+header.site{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);border-bottom:1px solid var(--line);z-index:30}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.logo{font-size:19px;font-weight:900;color:var(--blue-dark);display:flex;align-items:center}
+.logo img{height:30px;width:auto;display:block}
+.footer-logo{height:26px;width:auto;display:block;margin-bottom:8px}
+.nav-links{display:flex;gap:20px;font-size:13px;font-weight:800}
+.nav-links a{text-decoration:none;color:var(--slate)}
+.nav-links a:hover{color:var(--blue-dark)}
+.nav-cta{background:var(--blue);color:#fff;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap}
+.nav-cta:hover{background:var(--blue-dark)}
+@media(max-width:780px){.nav-links{display:none}}
+
+/* ヒーロー */
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 48%,#38bdf8 100%);color:#fff}
+.hero:before{content:"";position:absolute;inset:-120px -120px auto auto;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,.16)}
+.hero:after{content:"";position:absolute;left:-120px;bottom:-160px;width:420px;height:420px;border-radius:50%;background:rgba(255,255,255,.10)}
+.hero-inner{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:64px 20px 70px;display:grid;grid-template-columns:1.1fr .9fr;gap:34px;align-items:center}
+.hero p{font-size:17px;opacity:.95;margin-bottom:0}
+.hero-copy{max-width:680px}
+.hero-card{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:26px;padding:24px;box-shadow:0 24px 60px rgba(15,23,42,.18);backdrop-filter:blur(10px)}
+.mock-screen{background:#fff;color:#111827;border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.mock-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px}
+.mock-title{font-weight:900;color:var(--navy)}
+.mock-badge{font-size:12px;background:#dcfce7;color:#166534;border-radius:999px;padding:4px 9px;font-weight:800}
+.mock-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.mock-kpi{border:1px solid var(--line);border-radius:14px;padding:12px;background:#f8fafc}
+.mock-kpi span{display:block;font-size:12px;color:#64748b;font-weight:800}
+.mock-kpi strong{font-size:22px;color:#0f172a}
+.mock-bar{height:9px;border-radius:999px;background:#e5e7eb;overflow:hidden;margin-top:11px}
+.mock-bar i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#2563eb);border-radius:999px}
+.mock-note{font-size:11px;color:#94a3b8;margin-top:12px;text-align:right}
+.mock-category{font-size:12px;color:#64748b;font-weight:800;margin-bottom:10px}
+.mock-question{background:#eff6ff;border-left:4px solid var(--blue);border-radius:12px;padding:14px 16px;font-size:14px;font-weight:800;color:#0f172a;margin-bottom:14px;line-height:1.6;transition:opacity .18s ease}
+.mock-choices{display:grid;gap:9px}
+.mock-choice{background:#fff;border:1.5px solid #bfdbfe;color:#1d4ed8;border-radius:10px;padding:12px 14px;font-size:13px;font-weight:800;cursor:pointer;transition:.15s}
+.mock-choice:hover{background:#eff6ff}
+.mock-choice.correct{background:#16a34a;border-color:#16a34a;color:#fff}
+.mock-choice.wrong{background:#dc2626;border-color:#dc2626;color:#fff}
+.mock-choice.disabled{opacity:.4;cursor:default}
+.mock-choice.disabled:hover{background:#fff}
+.mock-explain{display:none;margin-top:12px;background:#f8fafc;border-left:4px solid var(--blue);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.75;color:#334155}
+.mock-explain.show{display:block}
+.mock-explain .result-badge{display:inline-block;font-weight:900;margin-bottom:6px;padding:3px 11px;border-radius:999px;font-size:11px}
+.mock-explain .result-badge.correct{background:#dcfce7;color:#166534}
+.mock-explain .result-badge.wrong{background:#fee2e2;color:#b91c1c}
+.mock-next{display:none;width:100%;margin-top:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:900;cursor:pointer;font-family:inherit}
+.mock-next.show{display:block}
+.mock-next:hover{background:var(--blue-dark)}
+.button-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:999px;text-decoration:none;font-weight:900;border:1px solid transparent;transition:.2s;min-height:48px;cursor:pointer;font-size:15px}
+.button.primary{background:#fff;color:var(--blue)}
+.button.primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(15,23,42,.16)}
+.button.secondary{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35);color:#fff}
+.button.blue{background:var(--blue);color:#fff}
+.button.blue:hover{background:var(--blue-dark)}
+.button.ghost{background:#fff;color:var(--blue);border-color:#bfdbfe}
+.note-small{font-size:12px;opacity:.86;margin-top:10px}
+
+/* カード群 */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 4px 14px rgba(15,23,42,.04)}
+.card.problem{border-left:5px solid var(--orange)}
+.card.solution{border-left:5px solid var(--blue)}
+.card.change{border-left:5px solid var(--green)}
+.icon{width:38px;height:38px;border-radius:13px;background:#eff6ff;color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:900;margin-bottom:12px}
+
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
+.flow-item{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center;box-shadow:0 4px 14px rgba(15,23,42,.04)}
+.flow-item strong{display:block;color:var(--blue);font-size:17px}
+.flow-item p{font-size:13px;color:var(--slate);margin:6px 0 0}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.quote{background:#0f172a;color:#fff;border-radius:26px;padding:34px;box-shadow:var(--shadow)}
+.quote h2{color:#fff}
+.quote p{color:#dbeafe}
+
+.domains{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:24px}
+.domain{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px 16px}
+.domain strong{display:block;color:#0f172a;font-size:14px}
+.domain span{font-size:12px;color:#64748b}
+.domain-detail{margin-top:2px}
+.domain-detail summary{font-size:12px;color:var(--blue-dark);font-weight:800;cursor:pointer;list-style:revert}
+.domain-detail summary:hover{text-decoration:underline}
+.domain-detail[open] summary{margin-bottom:8px}
+.domain-tags{display:flex;flex-wrap:wrap;gap:6px}
+.domain-tag{background:#eff6ff;color:#1d4ed8;border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.domain-note{font-size:12px;color:var(--muted);margin-top:16px}
+.custom-highlight{margin-top:26px;display:flex;gap:18px;align-items:flex-start;background:linear-gradient(135deg,#fff7ed,#fffbeb);border:2px solid var(--orange);border-radius:22px;padding:26px 28px;box-shadow:0 14px 34px rgba(249,115,22,.14)}
+.custom-highlight .icon{background:var(--orange);color:#fff;width:44px;height:44px;border-radius:14px;font-size:20px;flex-shrink:0}
+.custom-highlight .badge{display:inline-block;background:var(--orange);color:#fff;font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px;margin-bottom:10px}
+.custom-highlight h3{color:#9a3412;font-size:19px;margin-bottom:8px}
+.custom-highlight p{color:#7c2d12;font-size:14.5px;margin:0}
+.custom-highlight strong{color:#9a3412}
+@media(max-width:560px){.custom-highlight{flex-direction:column}}
+
+.feature-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:24px}
+.feature{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;font-weight:800;font-size:14px}
+.feature p{font-weight:normal;font-size:12.5px;color:var(--slate);margin-top:6px}
+
+/* 料金 */
+.price{background:#0f172a;color:#fff}
+.price h2{color:#fff}
+.pricing-note{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e5e7eb;border-radius:12px;padding:14px 18px;font-size:13px;margin:20px 0 26px;text-align:left}
+.plan{background:#fff;color:#111827;border-radius:18px;padding:22px;text-align:center;display:flex;flex-direction:column;box-shadow:0 12px 32px rgba(0,0,0,.14)}
+.plan.featured{outline:2px solid #60a5fa;position:relative}
+.plan.featured::before{content:"おすすめ";position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;font-size:11px;font-weight:800;padding:4px 12px;border-radius:999px}
+.plan-name{font-weight:900;font-size:15px;margin-bottom:6px}
+.plan-scale{font-size:12px;color:var(--muted);margin-bottom:14px}
+.plan-price{font-size:19px;font-weight:900;color:var(--blue-dark);margin-bottom:4px}
+.plan-price span{font-size:11px;font-weight:800;color:var(--muted);margin-left:2px}
+.plan ul{text-align:left;font-size:12.5px;color:var(--slate);padding-left:18px;margin:14px 0;flex:1}
+.plan ul li{margin-bottom:6px}
+.plans-grid{grid-template-columns:repeat(4,1fr);max-width:980px;margin-left:auto;margin-right:auto}
+.plan .plan-scale{font-size:16px;font-weight:900;color:var(--navy);margin-bottom:12px}
+.plan .button{margin-top:20px}
+
+.price-table{background:#fff;color:#111827;border-radius:20px;box-shadow:0 12px 32px rgba(0,0,0,.14);max-width:640px;margin:0 auto;overflow:hidden;text-align:left}
+.price-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 28px;border-bottom:1px solid var(--line)}
+.price-row:last-child{border-bottom:none}
+.price-row .scale{font-weight:900;color:var(--navy);font-size:15px}
+.price-row .amount{font-weight:900;color:var(--blue-dark);font-size:17px;white-space:nowrap}
+.price-row .amount small{font-size:11px;font-weight:800;color:var(--muted);margin-left:4px}
+@media(max-width:560px){
+  .price-row{padding:16px 18px}
+  .price-row .amount{font-size:15px}
+}
+
+/* オプション */
+.card.option{border-left:5px solid var(--blue-dark);display:flex;flex-direction:column}
+.card.option .icon{background:#eef2ff;color:var(--blue-dark);width:auto;min-width:44px;padding:0 12px;font-size:13px;letter-spacing:1px}
+.card.option p{font-size:13.5px;color:var(--slate);flex:1}
+.option-price{margin-top:14px;font-weight:900;color:var(--blue-dark);font-size:17px}
+.option-price span{font-size:12px;font-weight:800;color:var(--muted);margin-left:4px}
+
+/* お問い合わせ */
+.contact-wrap{background:#fff;border:1px solid var(--line);border-radius:22px;padding:32px;max-width:720px;margin:0 auto;box-shadow:0 4px 14px rgba(15,23,42,.04)}
+.form-row{margin-bottom:16px}
+.form-row label{display:block;font-size:13px;font-weight:800;margin-bottom:6px;color:var(--navy)}
+.form-row .req{color:#dc2626;font-size:11px;margin-left:4px}
+.form-row input,.form-row select,.form-row textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;background:#f9fafb}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:2px solid #bfdbfe;background:#fff}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-note{font-size:12px;color:var(--muted);margin-top:10px}
+.form-status{font-size:13px;border-radius:10px;padding:10px 12px;margin-bottom:16px;display:none}
+.form-status.show{display:block}
+.form-status.error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+
+.cta{background:linear-gradient(135deg,#eff6ff,#ffffff);border-top:1px solid #dbeafe;border-bottom:1px solid #dbeafe}
+
+footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
+.footer-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;font-size:13px;color:var(--slate)}
+.footer-links a{text-decoration:none;color:var(--slate);margin-right:16px}
+.footer-links a:hover{color:var(--blue-dark)}
+.footer-copy{margin-top:18px;font-size:12px;color:#9ca3af}
+
+@media(max-width:860px){
+  h1{font-size:32px}
+  .hero-inner{grid-template-columns:1fr;padding-top:56px}
+  .split{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr 1fr}
+  .grid.cols-4{grid-template-columns:repeat(2,1fr)}
+  .grid.cols-3{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .plans-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  .section{padding:52px 0}
+  h1{font-size:27px}
+  h2{font-size:22px}
+  .hero-inner{padding:48px 18px}
+  .button-row{display:grid}
+  .button{width:100%}
+  .flow{grid-template-columns:1fr}
+  .mock-grid{grid-template-columns:1fr}
+  .plans-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container nav">
+    <a class="logo" href="#"><img src="logo.png" alt="ビズもん"></a>
+    <nav class="nav-links">
+      <a href="#mission">想い</a>
+      <a href="#problem">課題</a>
+      <a href="#features">機能</a>
+      <a href="#domains">学習領域</a>
+      <a href="#pricing">料金</a>
+      <a href="#options">オプション</a>
+      <a href="#flow">導入の流れ</a>
+    </nav>
+    <a class="nav-cta" href="#contact">資料請求・お問い合わせ</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <div class="eyebrow white">企業向け 1日1問の社員教育サービス『ビズもん』</div>
+      <h1>1日1問が、<br>気付きを与え、会社を強くする。</h1>
+      <p>『ビズもん』は、社会人としての知識・思考力・業務姿勢を毎日少しずつ育て、学習状況と組織の変化を見える化するマイクロラーニングサービスです。</p>
+      <div class="button-row">
+        <a class="button primary" href="#contact">資料請求・お問い合わせ</a>
+        <a class="button secondary" href="#features">サービス内容を見る</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="mock-screen" id="quizDemo">
+        <div class="mock-top"><span class="mock-title">今日の問題</span><span class="mock-badge" id="quizBadge">サンプル 1 / 21</span></div>
+        <div class="mock-category" id="quizCategory">情報管理・セキュリティ ＞ 標的型攻撃・フィッシング対策</div>
+        <div class="mock-question" id="quizQuestion">Q. フィッシングの説明として最も適切なものはどれか</div>
+        <div class="mock-choices" id="quizChoices">
+          <div class="mock-choice" data-key="A">A：偽のメールやWebサイトなどでIDやパスワードや認証情報を盗み取ろうとする手口</div>
+          <div class="mock-choice" data-key="B">B：パスワードを安全に保管する方法</div>
+          <div class="mock-choice" data-key="C">C：迷惑メールを自動削除する仕組み</div>
+        </div>
+        <div class="mock-explain" id="quizExplain"></div>
+        <button type="button" class="mock-next" id="quizNext">次の問題を見る →</button>
+        <div class="mock-note">※実際の出題形式に基づくサンプル問題です（全21カテゴリーより1問ずつ）</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container section compact" id="mission">
+  <div class="quote center" style="max-width:840px;margin:0 auto">
+    <div class="eyebrow white">Our Mission</div>
+    <h2>1日1問の学びで、組織の“判断の質”を底上げする。</h2>
+    <p>すべての企業に“気付きの文化”が根づき、社員一人ひとりが自律的に判断し、行動できる社会をつくる――それが私たちの目指すビジョンです。知識・思考力・姿勢の差によって生まれる“判断の格差”をなくし、誰もが正しく気付き、正しく動ける社会を実現すること。それが『ビズもん』のパーパスです。</p>
+  </div>
+  <div class="feature-list">
+    <div class="feature">継続できる小ささ<p>1日1問という、誰にとっても負担にならない設計。</p></div>
+    <div class="feature">第三者だから届く言葉<p>社内の人間関係を介さないからこそ、素直に受け止められる伝え方。</p></div>
+    <div class="feature">現場で使える実践知<p>抽象論ではなく、日々の行動につながる具体的な学び。</p></div>
+  </div>
+</section>
+
+<section class="container section" id="concept">
+  <div class="center">
+    <div class="eyebrow">Concept</div>
+    <h2>社員教育を「やりっぱなし」にしない。</h2>
+    <p class="lead">知識がなければ理解の限界に気付けない。思考力がなければ情報を整理できない。姿勢がなければ正しい判断を行動に移せない。『ビズもん』は、その土台を毎日の1問で育てます。</p>
+  </div>
+  <div class="flow">
+    <div class="flow-item"><strong>知識</strong><p>知らないと危険な基礎を標準化</p></div>
+    <div class="flow-item"><strong>自覚</strong><p>自分の理解不足に気付く</p></div>
+    <div class="flow-item"><strong>考慮範囲</strong><p>判断前に考える幅が広がる</p></div>
+    <div class="flow-item"><strong>行動改善</strong><p>日々の仕事の質が変わる</p></div>
+  </div>
+</section>
+
+<section class="container section compact" id="problem">
+  <h2>こんな課題ありませんか？</h2>
+  <div class="cards">
+    <div class="card problem"><h3>研修が定着しない</h3><p>一度学んでも、日々の判断や行動に結びついているか分からない。</p></div>
+    <div class="card problem"><h3>現場で大事なことが伝わらない</h3><p>忙しさや関係性の難しさから、上司が本当に伝えるべき基礎を伝えづらい。</p></div>
+    <div class="card problem"><h3>判断基準が揃わない</h3><p>社員ごとに知識・考え方・業務姿勢が異なり、認識のズレや判断ミスが起きる。</p></div>
+  </div>
+</section>
+
+<section class="container section compact">
+  <div class="split">
+    <div>
+      <div class="eyebrow">Why Biz Mon</div>
+      <h2>第三者の言葉だから、素直に届く。</h2>
+      <p>職務専念義務、企業秩序、報連相、情報管理、ハラスメント、逆境耐性など、会社からは伝えづらいけれど本当は知っておいてほしいことがあります。</p>
+      <p>『ビズもん』は、それらを"世間相場としての学び"として毎日届けます。だから社員は受け止めやすく、自然な気付きが生まれます。</p>
+    </div>
+    <div class="quote">
+      <h2>負の連鎖を断ち切る</h2>
+      <p>無知 → 無自覚 → 考慮不足 → 判断ミス</p>
+      <p>この静かな連鎖を、毎日の1問で「気付き → 自覚 → 行動改善」へ変えていきます。</p>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="section compact" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="center">
+      <div class="eyebrow">Functions</div>
+      <h2>主な機能</h2>
+      <p class="lead">導入・運用に必要な機能を、ひとつのサービスにまとめています。</p>
+    </div>
+    <div class="cards">
+      <div class="card solution"><div class="icon">1</div><h3>毎日1問の日次クイズ</h3><p>ビジネス知識をテーマにした問題に、従業員が毎日1問だけ回答。負担が少なく続けやすい設計です。管理者は出題カテゴリーを設定できます。</p></div>
+      <div class="card solution"><div class="icon">2</div><h3>ダッシュボード・レポート</h3><p>部署別・役職別・カテゴリー別の正答率や回答状況をレポートで確認。今月・前月の学習状況を可視化し、CSVで出力できます。</p></div>
+      <div class="card solution"><div class="icon">3</div><h3>かんたんユーザー管理</h3><p>個別招待・CSVによる一括招待に対応。権限管理や、退職者・利用停止者のアカウント無効化、完全削除まで管理画面から行えます。</p></div>
+      <div class="card solution"><div class="icon">4</div><h3>リマインド・お知らせ</h3><p>未回答者へのリマインド設定に加え、天気予報の表示や社内向けお知らせ機能など、毎日開きたくなる工夫を備えています。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="domains" class="container section compact">
+  <div class="center">
+    <div class="eyebrow">Quiz Domains</div>
+    <h2>社会人の全基礎力を網羅する学習領域</h2>
+    <p class="lead">どの職種にも共通する「社会人としての土台」を扱い、全社員が同じ基準・同じ言語で会話できる組織をつくります。</p>
+  </div>
+  <div class="domains">
+    <div class="domain"><strong>コミュニケーション・ビジネススキル</strong><details class="domain-detail"><summary>中項目：10件</summary><div class="domain-tags"><span class="domain-tag">報連相</span><span class="domain-tag">傾聴</span><span class="domain-tag">質問力</span><span class="domain-tag">説明力</span><span class="domain-tag">ビジネス文書・メール</span><span class="domain-tag">会議運営</span><span class="domain-tag">ファシリテーション</span><span class="domain-tag">プレゼンテーション</span><span class="domain-tag">交渉力</span><span class="domain-tag">非言語コミュニケーション</span></div></details></div>
+    <div class="domain"><strong>読解力・思考力</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">文章理解・要約力</span><span class="domain-tag">情報の読み取り</span><span class="domain-tag">ロジカルシンキング</span><span class="domain-tag">クリティカルシンキング</span><span class="domain-tag">仮説思考</span><span class="domain-tag">課題分解</span><span class="domain-tag">問題発見力</span><span class="domain-tag">意思決定</span><span class="domain-tag">リーディングスキル</span></div></details></div>
+    <div class="domain"><strong>キャリア・自己管理</strong><details class="domain-detail"><summary>中項目：8件</summary><div class="domain-tags"><span class="domain-tag">セルフマネジメント</span><span class="domain-tag">タイムマネジメント</span><span class="domain-tag">目標設定</span><span class="domain-tag">自己啓発・学習習慣</span><span class="domain-tag">キャリア</span><span class="domain-tag">ストレスマネジメント</span><span class="domain-tag">メンタルヘルス</span><span class="domain-tag">健康管理</span></div></details></div>
+    <div class="domain"><strong>IT・デジタル</strong><details class="domain-detail"><summary>中項目：7件</summary><div class="domain-tags"><span class="domain-tag">IT用語</span><span class="domain-tag">OS・ソフトウェア</span><span class="domain-tag">デジタルツール</span><span class="domain-tag">クラウド</span><span class="domain-tag">ネットワーク</span><span class="domain-tag">業務システム</span><span class="domain-tag">生成AI</span></div></details></div>
+    <div class="domain"><strong>情報管理・セキュリティ</strong><details class="domain-detail"><summary>中項目：8件</summary><div class="domain-tags"><span class="domain-tag">情報セキュリティ基礎</span><span class="domain-tag">パスワード・認証管理</span><span class="domain-tag">標的型攻撃・フィッシング対策</span><span class="domain-tag">情報漏えい防止</span><span class="domain-tag">個人情報保護</span><span class="domain-tag">SNS利用</span><span class="domain-tag">データガバナンス</span><span class="domain-tag">内部不正防止</span></div></details></div>
+    <div class="domain"><strong>データ分析・活用</strong><details class="domain-detail"><summary>中項目：6件</summary><div class="domain-tags"><span class="domain-tag">データリテラシー</span><span class="domain-tag">統計</span><span class="domain-tag">データ可視化</span><span class="domain-tag">BIツール</span><span class="domain-tag">KPI・指標</span><span class="domain-tag">データに基づく意思決定</span></div></details></div>
+    <div class="domain"><strong>プロジェクト管理</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">プロジェクト管理</span><span class="domain-tag">タスク管理</span><span class="domain-tag">WBS</span><span class="domain-tag">スケジュール管理</span><span class="domain-tag">進捗管理</span><span class="domain-tag">課題管理</span><span class="domain-tag">リスク管理</span><span class="domain-tag">工数管理</span><span class="domain-tag">ステークホルダーマネジメント</span></div></details></div>
+    <div class="domain"><strong>業務改善・品質管理</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">5S</span><span class="domain-tag">業務標準化</span><span class="domain-tag">マニュアル整備</span><span class="domain-tag">業務プロセス設計</span><span class="domain-tag">ムダ削減</span><span class="domain-tag">PDCA</span><span class="domain-tag">QC基礎</span><span class="domain-tag">品質保証</span><span class="domain-tag">再発防止</span></div></details></div>
+    <div class="domain"><strong>経営・戦略</strong><details class="domain-detail"><summary>中項目：8件</summary><div class="domain-tags"><span class="domain-tag">経営理念</span><span class="domain-tag">経営戦略基礎</span><span class="domain-tag">SWOT分析</span><span class="domain-tag">競争戦略</span><span class="domain-tag">事業ポートフォリオ</span><span class="domain-tag">中期経営計画</span><span class="domain-tag">経営指標</span><span class="domain-tag">企業価値</span></div></details></div>
+    <div class="domain"><strong>顧客理解・マーケティング</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">顧客ニーズ分析</span><span class="domain-tag">市場調査</span><span class="domain-tag">STP分析</span><span class="domain-tag">マーケティングミックス</span><span class="domain-tag">カスタマージャーニー</span><span class="domain-tag">CRM・顧客管理</span><span class="domain-tag">顧客満足</span><span class="domain-tag">ブランド</span><span class="domain-tag">広告・販促基礎</span></div></details></div>
+    <div class="domain"><strong>会計・財務・税務</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">財務諸表</span><span class="domain-tag">キャッシュフロー</span><span class="domain-tag">収益性・安全性分析</span><span class="domain-tag">原価・コスト</span><span class="domain-tag">管理会計</span><span class="domain-tag">損益分岐点</span><span class="domain-tag">予算管理</span><span class="domain-tag">投資判断</span><span class="domain-tag">税務基礎</span></div></details></div>
+    <div class="domain"><strong>税金・年末調整</strong><details class="domain-detail"><summary>中項目：15件</summary><div class="domain-tags"><span class="domain-tag">所得税の基本</span><span class="domain-tag">住民税の基本</span><span class="domain-tag">給与明細と税金</span><span class="domain-tag">源泉徴収</span><span class="domain-tag">源泉徴収票の見方</span><span class="domain-tag">年末調整の基本</span><span class="domain-tag">扶養控除等申告書</span><span class="domain-tag">扶養控除</span><span class="domain-tag">基礎控除・配偶者控除</span><span class="domain-tag">保険料控除</span><span class="domain-tag">住宅ローン控除</span><span class="domain-tag">年末調整の申告ミス防止</span><span class="domain-tag">医療費控除と確定申告</span><span class="domain-tag">ふるさと納税と寄附金控除</span><span class="domain-tag">副業と確定申告</span></div></details></div>
+    <div class="domain"><strong>社会保険</strong><details class="domain-detail"><summary>中項目：15件</summary><div class="domain-tags"><span class="domain-tag">社会保険の基本</span><span class="domain-tag">社会保険の加入要件</span><span class="domain-tag">入社時の手続き</span><span class="domain-tag">退職時の手続き</span><span class="domain-tag">健康保険</span><span class="domain-tag">厚生年金保険</span><span class="domain-tag">雇用保険</span><span class="domain-tag">労災保険</span><span class="domain-tag">介護保険</span><span class="domain-tag">扶養と社会保険</span><span class="domain-tag">保険料の給与控除</span><span class="domain-tag">パート・アルバイトの社会保険</span><span class="domain-tag">傷病手当金</span><span class="domain-tag">出産・育児に関する給付</span><span class="domain-tag">介護休業に関する給付</span></div></details></div>
+    <div class="domain"><strong>勤怠管理</strong><details class="domain-detail"><summary>中項目：15件</summary><div class="domain-tags"><span class="domain-tag">労働時間の基本</span><span class="domain-tag">始業・終業時刻の記録</span><span class="domain-tag">休憩時間の管理</span><span class="domain-tag">時間外労働・残業管理</span><span class="domain-tag">36協定と残業上限</span><span class="domain-tag">休日労働・深夜労働</span><span class="domain-tag">長時間労働と健康管理</span><span class="domain-tag">勤怠データの確認・修正</span><span class="domain-tag">勤怠不正・打刻漏れ防止</span><span class="domain-tag">遅刻・早退・欠勤</span><span class="domain-tag">有給休暇の管理</span><span class="domain-tag">シフト勤務・変形労働時間制</span><span class="domain-tag">フレックスタイム制</span><span class="domain-tag">テレワーク時の勤怠管理</span><span class="domain-tag">管理職の勤怠確認責任</span></div></details></div>
+    <div class="domain"><strong>労務・雇用</strong><details class="domain-detail"><summary>中項目：6件</summary><div class="domain-tags"><span class="domain-tag">労働契約</span><span class="domain-tag">就業規則</span><span class="domain-tag">多様な働き方</span><span class="domain-tag">休職・復職対応</span><span class="domain-tag">安全衛生</span><span class="domain-tag">ハラスメント</span></div></details></div>
+    <div class="domain"><strong>法務・コンプライアンス</strong><details class="domain-detail"><summary>中項目：12件</summary><div class="domain-tags"><span class="domain-tag">コンプライアンス総論</span><span class="domain-tag">契約基礎</span><span class="domain-tag">会社法</span><span class="domain-tag">電子契約</span><span class="domain-tag">知的財産権</span><span class="domain-tag">著作権</span><span class="domain-tag">景品表示・広告規制</span><span class="domain-tag">下請・取引適正化</span><span class="domain-tag">独占禁止法</span><span class="domain-tag">贈収賄・接待交際</span><span class="domain-tag">内部通報制度</span><span class="domain-tag">国際取引</span></div></details></div>
+    <div class="domain"><strong>組織・マネジメント</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">管理職の役割</span><span class="domain-tag">リーダーシップ</span><span class="domain-tag">1on1</span><span class="domain-tag">評価・フィードバック</span><span class="domain-tag">目標管理</span><span class="domain-tag">人材育成</span><span class="domain-tag">権限委譲</span><span class="domain-tag">チームビルディング</span><span class="domain-tag">組織風土</span></div></details></div>
+    <div class="domain"><strong>リスク管理・危機対応</strong><details class="domain-detail"><summary>中項目：10件</summary><div class="domain-tags"><span class="domain-tag">リスク管理</span><span class="domain-tag">事故・トラブル対応</span><span class="domain-tag">クレーム対応</span><span class="domain-tag">不当要求対応</span><span class="domain-tag">情報漏えい対応</span><span class="domain-tag">BCP</span><span class="domain-tag">災害対応</span><span class="domain-tag">レピュテーションリスク</span><span class="domain-tag">反社会的勢力対応</span><span class="domain-tag">内部統制</span></div></details></div>
+    <div class="domain"><strong>サステナビリティ・ESG</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">SDGs</span><span class="domain-tag">CSR</span><span class="domain-tag">ESG経営</span><span class="domain-tag">ガバナンス</span><span class="domain-tag">環境対応</span><span class="domain-tag">脱炭素</span><span class="domain-tag">人権</span><span class="domain-tag">サプライチェーン</span><span class="domain-tag">非財務情報開示</span></div></details></div>
+    <div class="domain"><strong>グローバル・ダイバーシティ</strong><details class="domain-detail"><summary>中項目：5件</summary><div class="domain-tags"><span class="domain-tag">ダイバーシティ</span><span class="domain-tag">多様性と公平性</span><span class="domain-tag">インクルージョン</span><span class="domain-tag">アンコンシャス・バイアス</span><span class="domain-tag">外国人雇用</span></div></details></div>
+    <div class="domain"><strong>心理・行動</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">モチベーション</span><span class="domain-tag">認知バイアス</span><span class="domain-tag">意思決定のクセ</span><span class="domain-tag">行動経済学</span><span class="domain-tag">ナッジ</span><span class="domain-tag">習慣化</span><span class="domain-tag">感情コントロール</span><span class="domain-tag">心理的安全性</span><span class="domain-tag">組織心理</span></div></details></div>
+  </div>
+  <div class="custom-highlight">
+    <div class="icon">★</div>
+    <div>
+      <span class="badge">『ビズもん』だけのカスタムカテゴリー</span>
+      <h3>「自社理解」問題で、自社専用の学びも届けられる</h3>
+      <p>上記の標準カテゴリーに加え、<strong>「自社理解」</strong>というカスタムカテゴリーもご用意しています。就業規則や企業理念、商品・サービス知識、過去のヒヤリハット事例など、自社専用の問題を追加できるため、<strong>"世間相場"としての基礎力</strong>と<strong>"自社ならでは"の理解</strong>の両方を、日々の学習でカバーできます。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section compact" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="center">
+      <div class="eyebrow">Changes</div>
+      <h2>『ビズもん』がもたらす変化</h2>
+    </div>
+    <div class="cards">
+      <div class="card change"><h3>社員に起きる変化</h3><p>「なるほど」「意識していなかった」という気付きが生まれ、自律的に動く力が育ちます。</p></div>
+      <div class="card change"><h3>チームに起きる変化</h3><p>報連相や認識合わせがしやすくなり、コミュニケーションロスが減ります。</p></div>
+      <div class="card change"><h3>組織に起きる変化</h3><p>判断基準が揃い、内部統制やリスクの未然防止につながります。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="container section compact">
+  <div class="center">
+    <div class="eyebrow">Why Easy</div>
+    <h2>導入・運用のしやすさ</h2>
+    <p class="lead">「続けられる学習」と「管理のしやすさ」を両立します。</p>
+  </div>
+  <div class="cards">
+    <div class="card solution"><h3>管理者の運用負担を軽減</h3><p>ユーザー招待・出題設定・進捗確認をすべてブラウザ上で完結。CSVでの一括招待や一括出力にも対応し、紙やExcelでの管理から解放されます。</p></div>
+    <div class="card solution"><h3>学習状況が「見える化」される</h3><p>部署別・役職別のレポートにより、どこに学習のばらつきがあるかを把握でき、次の研修企画やフォローアップの材料として活用できます。</p></div>
+    <div class="card solution"><h3>クラウド型で導入がスピーディー</h3><p>サーバーの構築や専用アプリのインストールは不要。ブラウザとインターネット環境があれば、企業単位ですぐに利用を開始できます。</p></div>
+  </div>
+</section>
+
+<section class="section compact" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="center">
+      <div class="eyebrow">For HR / L&amp;D</div>
+      <h2>教育・人事のご担当者様へ</h2>
+      <p class="lead">もし、次のようなお悩みをお持ちでしたら、『ビズもん』はきっとお役に立てます。</p>
+    </div>
+    <div class="cards">
+      <div class="card problem"><h3>新入社員・若手への基本指導</h3><p>社会人としての基本をどう教えればよいか分からず、体系立てて伝える時間も仕組みもない。</p></div>
+      <div class="card problem"><h3>研修の定着感が持てない</h3><p>研修は実施しているが、日々の業務に定着している実感が持てない。</p></div>
+      <div class="card problem"><h3>指導・助言の機会の減少</h3><p>上司から部下へのちょっとした指導・助言の機会が、年々減っている。</p></div>
+      <div class="card problem"><h3>コンプライアンスリスクへの不安</h3><p>ハラスメントや情報漏えいといった重大リスクを、もっと手前の段階で防ぎたい。</p></div>
+    </div>
+    <p class="center lead" style="margin-top:24px">まずは自社に必要なカテゴリーを選んで、スモールスタートで始めていただくことも可能です。「気付きの文化」を、貴社にも根づかせてみませんか。</p>
+  </div>
+</section>
+
+<section id="pricing" class="price section">
+  <div class="container center">
+    <div class="eyebrow white">Price</div>
+    <h2>料金プラン</h2>
+    <p style="color:#e2e8f0">ご利用人数に応じたシンプルな料金体系です。基本機能はすべての規模で共通してご利用いただけます。</p>
+    <div class="pricing-note">日次クイズ・回答履歴、ダッシュボード・レポート（部署別・役職別・カテゴリー別）、ユーザー招待・管理、リマインド設定、「自社理解」カスタムカテゴリー対応など、基本機能はすべてのプランで共通です。301名以上のご利用や、特別な運用要件がある場合は、お問い合わせフォームより個別にご相談ください。</div>
+    <div class="price-table">
+      <div class="price-row">
+        <span class="scale">〜100名</span>
+        <span class="amount">月額 20,000円<small>（税別）</small></span>
+      </div>
+      <div class="price-row">
+        <span class="scale">101〜200名</span>
+        <span class="amount">月額 40,000円<small>（税別）</small></span>
+      </div>
+      <div class="price-row">
+        <span class="scale">201〜300名</span>
+        <span class="amount">月額 60,000円<small>（税別）</small></span>
+      </div>
+      <div class="price-row">
+        <span class="scale">301名〜</span>
+        <span class="amount">お問い合わせください</span>
+      </div>
+    </div>
+    <div style="margin-top:28px">
+      <a class="button blue" href="#contact">料金について相談する</a>
+    </div>
+  </div>
+</section>
+
+<section id="options" class="container section compact">
+  <div class="center">
+    <div class="eyebrow">Options</div>
+    <h2>オプションサービス</h2>
+    <p class="lead">基本の料金プランに加えて、導入支援からカスタマイズ、データ活用まで、必要に応じて選べるオプションをご用意しています。</p>
+  </div>
+  <div class="cards">
+    <div class="card option">
+      <div class="icon">設定</div>
+      <h3>導入支援</h3>
+      <p>初期設定代行。ユーザー登録やカテゴリー設定など、導入時の初期設定をまとめて代行します。</p>
+      <div class="option-price">5万円</div>
+    </div>
+    <div class="card option">
+      <div class="icon">追加</div>
+      <h3>企業専用クイズ追加サービス</h3>
+      <p>すでに作成済みの自社専用問題を、システムへアップロードする作業を代行します。</p>
+      <div class="option-price">1万円<span>／回</span></div>
+    </div>
+    <div class="card option">
+      <div class="icon">作成</div>
+      <h3>企業専用クイズ作成サービス</h3>
+      <p>ヒアリング・構成・問題作成・校正まで、自社専用問題の作成を丸ごと代行します。</p>
+      <div class="option-price">5万円<span>〜（応相談）</span></div>
+    </div>
+    <div class="card option">
+      <div class="icon">分析</div>
+      <h3>データ分析サービス</h3>
+      <p>個人別・部署別ランキング作成、他社比較など、学習データを活用した詳細な分析を提供します。</p>
+      <div class="option-price">10万円<span>〜</span></div>
+    </div>
+    <div class="card option">
+      <div class="icon">提案</div>
+      <h3>教育訓練施策の提案</h3>
+      <p>学習データをもとに、次の教育・研修施策のご提案を継続的に行います。</p>
+      <div class="option-price">5万円<span>〜（応相談）</span></div>
+    </div>
+  </div>
+  <p class="center lead" style="margin-top:24px">オプションの詳細やお見積りは、お問い合わせフォームよりお気軽にご相談ください。</p>
+</section>
+
+<section id="flow" class="section compact" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="center">
+      <div class="eyebrow">Flow</div>
+      <h2>導入までの流れ</h2>
+      <p class="lead">お問い合わせから利用開始まで、シンプルなステップで進められます。</p>
+    </div>
+    <div class="flow">
+      <div class="flow-item"><strong>STEP 1</strong><p>お問い合わせ<br>下記フォームより資料請求・導入相談をお送りください。</p></div>
+      <div class="flow-item"><strong>STEP 2</strong><p>ご相談・お見積り<br>利用人数や運用ご要望をヒアリングし、最適なプランをご提案します。</p></div>
+      <div class="flow-item"><strong>STEP 3</strong><p>利用企業登録<br>企業情報を登録し、管理者アカウントを発行します。</p></div>
+      <div class="flow-item"><strong>STEP 4</strong><p>ご利用開始<br>管理者がユーザーを招待し、日次クイズの配信が始まります。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="container section">
+  <div class="center">
+    <div class="eyebrow">Contact</div>
+    <h2>資料請求・お問い合わせ</h2>
+    <p class="lead">導入のご相談、資料請求など、お気軽にお問い合わせください。</p>
+  </div>
+  <div class="contact-wrap">
+    <div id="formStatus" class="form-status error"></div>
+    <form id="contactForm" novalidate>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="companyName">会社名<span class="req">必須</span></label>
+          <input type="text" id="companyName" name="companyName" required>
+        </div>
+        <div class="form-row">
+          <label for="personName">ご担当者名<span class="req">必須</span></label>
+          <input type="text" id="personName" name="personName" required>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="email">メールアドレス<span class="req">必須</span></label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-row">
+          <label for="tel">電話番号（任意）</label>
+          <input type="tel" id="tel" name="tel">
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="inquiryType">お問い合わせ種別<span class="req">必須</span></label>
+        <select id="inquiryType" name="inquiryType" required>
+          <option value="">選択してください</option>
+          <option value="資料請求">資料請求</option>
+          <option value="導入相談・見積り">導入相談・見積り</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="message">メッセージ（任意）</label>
+        <textarea id="message" name="message" rows="4" placeholder="ご利用予定人数、導入時期のご希望などございましたらご記入ください。"></textarea>
+      </div>
+      <button type="submit" class="button blue" style="width:100%">この内容で問い合わせる</button>
+      <p class="form-note">送信ボタンを押すと、入力内容を転記したメールがお使いのメールソフトで作成されます。内容をご確認のうえ、送信してください（本フォームはメールソフトを起動するだけで、入力内容がサーバーに送信・保存されることはありません）。</p>
+    </form>
+  </div>
+</section>
+
+<section class="cta section">
+  <div class="container center">
+    <div class="eyebrow">Next Step</div>
+    <h2>1日1問の積み重ねが、会社を変える。</h2>
+    <p class="lead">『ビズもん』は、社員一人ひとりの気付きを増やし、組織の基礎体力を高めるきっかけをつくります。</p>
+    <div class="button-row" style="justify-content:center">
+      <a class="button blue" href="#contact">資料請求・お問い合わせ</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <img src="logo.png" alt="ビズもん" class="footer-logo">
+        <div>事業者名：株式会社xxxxx</div>
+        <div>所在地：千葉県千葉市</div>
+        <div>お問い合わせ：<a href="mailto:xxxxx@gmail.com">xxxxx@gmail.com</a></div>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">プライバシーポリシー</a>
+        <a href="index.html">ログインはこちら</a>
+      </div>
+    </div>
+    <div class="footer-copy">© 2026 株式会社xxxxx</div>
+  </div>
+</footer>
+
+<script>
+document.getElementById("contactForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var statusEl = document.getElementById("formStatus");
+  statusEl.classList.remove("show");
+  var companyName = document.getElementById("companyName").value.trim();
+  var personName = document.getElementById("personName").value.trim();
+  var email = document.getElementById("email").value.trim();
+  var tel = document.getElementById("tel").value.trim();
+  var inquiryType = document.getElementById("inquiryType").value;
+  var message = document.getElementById("message").value.trim();
+
+  if(!companyName || !personName || !email || !inquiryType){
+    statusEl.textContent = "会社名・ご担当者名・メールアドレス・お問い合わせ種別は必須項目です。ご確認ください。";
+    statusEl.classList.add("show");
+    statusEl.scrollIntoView({behavior:"smooth", block:"center"});
+    return;
+  }
+  var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailPattern.test(email)){
+    statusEl.textContent = "メールアドレスの形式をご確認ください。";
+    statusEl.classList.add("show");
+    statusEl.scrollIntoView({behavior:"smooth", block:"center"});
+    return;
+  }
+
+  var subject = "【ビズもん】" + inquiryType + "（" + companyName + "）";
+  var bodyLines = [
+    "会社名：" + companyName,
+    "ご担当者名：" + personName,
+    "メールアドレス：" + email,
+    "電話番号：" + (tel || "（未入力）"),
+    "お問い合わせ種別：" + inquiryType,
+    "",
+    "メッセージ：",
+    (message || "（未入力）")
+  ];
+  var mailto = "mailto:xxxxx@gmail.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(bodyLines.join("\n"));
+  window.location.href = mailto;
+});
+</script>
+
+<script>
+(function(){
+  var quizData = [
+    {cat1:"コミュニケーション・ビジネススキル", cat2:"説明力",
+     q:"説明が誤解されやすい原因として適切なのはどれか",
+     choices:{A:"短時間で説明した",B:"曖昧な表現が多い",C:"構造化されている"}, answer:"B",
+     exp:"曖昧な表現は聞き手によって解釈が分かれやすく、誤解や認識のずれにつながります。反対に、短時間で簡潔に説明したり内容を構造化したりすること自体は誤解を減らす工夫であり、誤解の原因にはなりません。具体的な言葉や数値を用いて説明することが誤解を防ぐ基本です。"},
+
+    {cat1:"読解力・思考力", cat2:"クリティカルシンキング",
+     q:"次の判断の問題点として最も適切なのはどれか：「SNSで多くの人が言っているから正しい。」",
+     choices:{A:"根拠が多数意見に依存している",B:"情報量が多い",C:"専門家の意見が含まれている"}, answer:"A",
+     exp:"多数派＝正しいではなく、根拠の質を確認する必要があります。情報量の多さは意見の正しさを保証するものではなく、単に多くの人が言っているというだけでは専門家の見解が含まれているとは限りません。SNSの意見を鵜呑みにせず、根拠や出典を確認する姿勢が求められます。"},
+
+    {cat1:"キャリア・自己管理", cat2:"キャリア",
+     q:"キャリアを考える際に最初に行うべきこととして最も適切なのはどれか",
+     choices:{A:"転職サイトを眺める",B:"自分の価値観・強み・興味を整理する",C:"周囲の人のキャリアを真似る"}, answer:"B",
+     exp:"キャリアを考えるうえでまず取り組むべきは、転職サイトの情報を眺めたり、周囲の人のキャリアをそのまま真似たりすることではなく、自分自身が何を大切にしたいのかという価値観、得意なこと、興味・関心を整理する自己理解です。自分の軸がないまま情報だけに触れると、かえって情報に振り回されてしまいます。"},
+
+    {cat1:"IT・デジタル", cat2:"デジタルツール",
+     q:"クラウドストレージ（例：OneDrive、Google Driveなど）を使う主なメリットとして最も適切なのはどれか",
+     choices:{A:"自分のパソコンでしかファイルを開けなくなる",B:"ファイルが自動的に削除される",C:"インターネット経由で複数の端末から同じファイルにアクセスできる"}, answer:"C",
+     exp:"クラウドストレージの主なメリットは、インターネット経由で複数の端末から同じファイルにアクセスできる点にあり、在宅勤務や出張中、スマートフォンからでも安全に業務を継続できます。自分のパソコンでしかファイルを開けなくなる、というのはこうした柔軟な働き方のメリットを真逆に捉えた誤解です。"},
+
+    {cat1:"情報管理・セキュリティ", cat2:"標的型攻撃・フィッシング対策",
+     q:"フィッシングの説明として最も適切なものはどれか",
+     choices:{A:"偽のメールやWebサイトなどでIDやパスワードや認証情報を盗み取ろうとする手口",B:"パスワードを安全に保管する方法",C:"迷惑メールを自動削除する仕組み"}, answer:"A",
+     exp:"フィッシングは本物に似たメールやログイン画面を使って認証情報や個人情報を入力させる攻撃です。URLや送信元や不自然な要求を確認することが重要で、パスワードの安全な保管方法や迷惑メールの自動削除の仕組みとは異なる概念であるため、混同しないよう注意が必要です。"},
+
+    {cat1:"データ分析・活用", cat2:"データ可視化",
+     q:"棒グラフの縦軸を途中から始める（ゼロを切る）ことの主なリスクとして最も適切なのはどれか",
+     choices:{A:"差が実際より大きく見えてしまう",B:"グラフが必ず正確になる",C:"見る人が理解しやすくなる"}, answer:"A",
+     exp:"棒グラフの縦軸を途中から始める（ゼロを切る）と、わずかな差でも大きく見えてしまい、印象を誤らせるリスクがあります。ゼロを切ったからといってグラフが必ず正確になるわけではなく、むしろ誤解を生みやすくなるため、説明なしに行うのは不適切です。"},
+
+    {cat1:"プロジェクト管理", cat2:"ステークホルダーマネジメント",
+     q:"ステークホルダーとは何を指すか",
+     choices:{A:"プロジェクトメンバーのみ",B:"プロジェクトに関わる利害関係者",C:"顧客のみ"}, answer:"B",
+     exp:"ステークホルダーとは、顧客や社内の関係者、他部門、取引先など、プロジェクトに関わる多様な利害関係者を指します。プロジェクトメンバーや顧客だけに限定される概念ではなく、幅広い関係者を含む点に注意が必要です。"},
+
+    {cat1:"業務改善・品質管理", cat2:"品質保証",
+     q:"「品質」の説明として最も適切なのはどれでしょう。",
+     choices:{A:"価格が高いほど品質が良い",B:"作った人が良いと思えば品質が良い",C:"顧客の要求を満たしているかどうかで決まる"}, answer:"C",
+     exp:"品質とは「顧客の要求を満たしているかどうか」で決まります。作り手の主観や価格の高さではなく、顧客が求める性能・安全性・使いやすさなどを満たしているかが品質の本質です。"},
+
+    {cat1:"経営・戦略", cat2:"経営指標",
+     q:"KPIの説明として最も適切なものはどれか",
+     choices:{A:"最終的な財務結果だけを示す指標",B:"法律で必ず定められた会計指標",C:"目標達成に向けた重要な活動や成果を測る指標"}, answer:"C",
+     exp:"KPIは重要業績評価指標であり、目標達成に向けて重要な活動や中間成果を測るために使います。売上件数や不良率や納期遵守率などが例で、最終的な財務結果だけを示す指標ではなく、また法律で定められた会計指標でもない点に注意が必要です。"},
+
+    {cat1:"顧客理解・マーケティング", cat2:"顧客満足",
+     q:"顧客満足と品質の関係として最も適切なものはどれか",
+     choices:{A:"商品やサービスの品質だけでなく対応品質や説明の分かりやすさも満足に影響する",B:"品質が高ければ顧客対応は不要である",C:"対応が早ければ品質問題は無視してよい"}, answer:"A",
+     exp:"顧客満足は製品やサービスの性能だけではなく、問い合わせ対応や納期、説明の分かりやすさなど総合的な体験で決まります。品質が高くても対応が悪ければ満足度は下がるため、いずれか一方だけを重視するのは適切ではありません。"},
+
+    {cat1:"会計・財務・税務", cat2:"投資判断",
+     q:"iDeCoの基本的な説明として最も適切なものはどれか",
+     choices:{A:"個人が任意で加入し老後資金を積み立てる個人型確定拠出年金である",B:"いつでも自由に全額引き出せる普通預金である",C:"会社が必ず全額掛金を負担する制度である"}, answer:"A",
+     exp:"iDeCoは老後資金形成を目的とした私的年金制度です。加入者自身が掛金を拠出し運用商品を選ぶため、普通預金のようにいつでも自由に引き出せるものではなく、また掛金は会社ではなく加入者自身が拠出する制度である点にも注意が必要です。"},
+
+    {cat1:"税金・年末調整", cat2:"ふるさと納税と寄附金控除",
+     q:"ふるさと納税と寄附金控除に関する説明として最も適切なものはどれですか",
+     choices:{A:"自治体への寄附により一定の範囲で所得税や住民税の控除を受けられる制度である",B:"寄附した金額が必ず全額現金で戻る制度である",C:"会社の年末調整だけで必ず完結する制度である"}, answer:"A",
+     exp:"ふるさと納税は自治体への寄附であり、一定の上限内で寄附額から2,000円を除いた金額が所得税や住民税から控除される制度です。控除を受けるには確定申告またはワンストップ特例の手続きが必要で、会社の年末調整だけでは手続が完結しません。"},
+
+    {cat1:"社会保険", cat2:"出産・育児に関する給付",
+     q:"育児休業給付金の支給率として最も一般的な説明はどれか？",
+     choices:{A:"休業開始から一定期間は賃金の67％、その後は50％",B:"常に賃金の100％が支給される",C:"一律で賃金の30％のみ支給される"}, answer:"A",
+     exp:"育児休業給付金は、休業開始から一定期間（原則6か月）は賃金の67％、その後は50％が支給される仕組みが一般的です。なお2025年4月からは要件を満たすと出生後休業支援給付金が上乗せされ、給付率が実質80％程度（手取りで概ね10割相当）となる場合があります。100％補償ではない点に注意が必要です。"},
+
+    {cat1:"勤怠管理", cat2:"36協定と残業上限",
+     q:"36協定の原則的な時間外労働の限度時間として最も適切なものはどれですか",
+     choices:{A:"上限は法律上定められていない",B:"月45時間・年360時間",C:"月80時間・年960時間"}, answer:"B",
+     exp:"時間外労働の原則的な限度時間は月45時間・年360時間です。臨時的な特別の事情がない限りこの限度時間を超えないよう管理する必要があり、法律上の上限が存在しないという理解は誤りで、特別条項を結んだ場合でも際限なく延長できるわけではありません。"},
+
+    {cat1:"労務・雇用", cat2:"就業規則",
+     q:"就業規則の作成・届出義務について最も適切なものはどれですか",
+     choices:{A:"会社全体で10人以上いればすべての事業場で届出が必要である",B:"常時10人以上の労働者を使用する事業場では作成し労働基準監督署へ届け出る必要がある",C:"就業規則は作成しても届出は任意である"}, answer:"B",
+     exp:"就業規則の作成・届出義務は原則として事業場単位で判断します。常時10人以上には雇用形態を問わず労働者を含めて考えるためパートやアルバイトも確認が必要です。会社全体の人数ではなく事業場ごとに要件を満たすかを確認する点、また届出は任意ではなく法律上の義務である点にも注意が必要です。"},
+
+    {cat1:"法務・コンプライアンス", cat2:"電子契約",
+     q:"電子契約の基本的な考え方として最も適切なものはどれですか",
+     choices:{A:"紙の契約書でなければ契約は成立しない",B:"電子契約は取引先の承諾がなくても常に一方的に利用できる",C:"電子データで締結する契約であっても当事者の合意が確認できれば有効となり得る"}, answer:"C",
+     exp:"契約は原則として当事者の合意により成立するため、紙の書面がなければ成立しないというわけではありません。また電子契約も相手方の同意なく一方的に押し付けられる方法ではなく、重要なのは契約形態ではなく合意内容と本人性や改ざん防止などの証拠性を確保することです。"},
+
+    {cat1:"組織・マネジメント", cat2:"評価・フィードバック",
+     q:"人事評価で陥りやすいハロー効果の説明として最も適切なものはどれか",
+     choices:{A:"一つの良い印象や悪い印象が全体評価に影響すること",B:"直近の出来事だけを重視すること",C:"自己評価を必ず高くすること"}, answer:"A",
+     exp:"ハロー効果では一部の印象が他の項目の評価にも影響しやすくなります。複数の事実や評価項目を分けて確認することが重要で、直近の出来事だけを重視したり自己評価を一律に高くしたりすることは、ハロー効果とは別の評価の偏りであり混同しないよう注意が必要です。"},
+
+    {cat1:"リスク管理・危機対応", cat2:"災害対応",
+     q:"災害発生直後に最も重要な行動はどれか",
+     choices:{A:"資料を守る",B:"すぐに業務を再開する",C:"自分と周囲の安全を確保する"}, answer:"C",
+     exp:"災害発生直後はまず自分自身と周囲の人の安全を確保することが最優先です。資料や物品を守ろうとして避難が遅れると命に関わる危険があり、安全が確保され状況が落ち着いてから業務再開を検討すべきで、直後に急いで再開するべきではありません。"},
+
+    {cat1:"サステナビリティ・ESG", cat2:"SDGs",
+     q:"SDGsの基本的な目的として最も適切なものはどれか？",
+     choices:{A:"企業の利益だけを最大化する",B:"持続可能な社会を実現するための世界共通目標",C:"一部の国だけが豊かになることを目指す"}, answer:"B",
+     exp:"SDGsは、貧困・気候変動・格差などの課題を解決し、持続可能な社会を実現することを目指す国連の世界共通目標であり、環境・社会・経済のバランスを重視する点に本質があります。企業の利益だけを最大化することを目的とするものではありません。"},
+
+    {cat1:"グローバル・ダイバーシティ", cat2:"アンコンシャス・バイアス",
+     q:"ビジネスにおいてアンコンシャスバイアスが影響する場面はどれか",
+     choices:{A:"偶然の出来事のみ",B:"採用や評価の判断",C:"財務数値のみ"}, answer:"B",
+     exp:"無意識の偏見は採用や評価などの意思決定に影響を与える可能性があります。単なる偶然の出来事や財務数値のような客観的な数字だけの話ではなく、人が人を評価するあらゆる場面に潜んでいる点に注意が必要です。"},
+
+    {cat1:"心理・行動", cat2:"行動経済学",
+     q:"現状維持バイアスの説明として最も適切なものはどれか",
+     choices:{A:"現在の状態を変えることに抵抗を感じやすい傾向",B:"過去の選択をすぐ忘れる傾向",C:"情報が少ないほど正しく判断できる傾向"}, answer:"A",
+     exp:"現状維持バイアスにより人は変更による手間や不安を避け、現在の選択を続けやすくなります。業務改善や新システム導入ではこの心理を考慮する必要があり、過去の選択をすぐ忘れるわけでも、情報が少ないほど正しく判断できるわけでもありません。"}
+  ];
+
+  // 表示順をランダム化（毎回の閲覧で違う問題から始まるように）
+  for (var i = quizData.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = quizData[i]; quizData[i] = quizData[j]; quizData[j] = tmp;
+  }
+
+  var idx = 0;
+  var answered = false;
+
+  var elCategory = document.getElementById("quizCategory");
+  var elQuestion = document.getElementById("quizQuestion");
+  var elChoices = document.getElementById("quizChoices");
+  var elExplain = document.getElementById("quizExplain");
+  var elNext = document.getElementById("quizNext");
+  var elBadge = document.getElementById("quizBadge");
+
+  function render(){
+    var d = quizData[idx];
+    answered = false;
+    elBadge.textContent = "サンプル " + (idx + 1) + " / " + quizData.length;
+    elCategory.textContent = d.cat1 + " ＞ " + d.cat2;
+    elQuestion.textContent = "Q. " + d.q;
+    elChoices.innerHTML = "";
+    ["A","B","C"].forEach(function(key){
+      var div = document.createElement("div");
+      div.className = "mock-choice";
+      div.setAttribute("data-key", key);
+      div.textContent = key + "：" + d.choices[key];
+      div.addEventListener("click", function(){ onChoose(this.getAttribute("data-key")); });
+      elChoices.appendChild(div);
+    });
+    elExplain.className = "mock-explain";
+    elExplain.innerHTML = "";
+    elNext.className = "mock-next show";
+    elNext.textContent = "次の問題を見る →";
+  }
+
+  function onChoose(key){
+    if(answered) return;
+    answered = true;
+    var d = quizData[idx];
+    var buttons = elChoices.querySelectorAll(".mock-choice");
+    buttons.forEach(function(btn){
+      var k = btn.getAttribute("data-key");
+      btn.style.pointerEvents = "none";
+      if(k === d.answer){ btn.classList.add("correct"); }
+      else if(k === key){ btn.classList.add("wrong"); }
+      else { btn.classList.add("disabled"); }
+    });
+    var isCorrect = (key === d.answer);
+    var badgeHtml = isCorrect
+      ? '<span class="result-badge correct">正解！</span>'
+      : '<span class="result-badge wrong">不正解</span>';
+    elExplain.innerHTML = badgeHtml + "<div>" + d.exp + "</div>";
+    elExplain.className = "mock-explain show";
+    elNext.className = "mock-next show";
+  }
+
+  elNext.addEventListener("click", function(){
+    idx = (idx + 1) % quizData.length;
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
