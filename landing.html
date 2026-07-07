@@ -218,6 +218,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
       <a href="#mission">想い</a>
       <a href="#problem">課題</a>
       <a href="#features">機能</a>
+      <a href="#tips">豆知識</a>
       <a href="#domains">学習領域</a>
       <a href="#pricing">料金</a>
       <a href="#options">オプション</a>
@@ -320,6 +321,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
       <div class="card solution"><div class="icon">2</div><h3>ダッシュボード・レポート</h3><p>部署別・役職別・カテゴリー別の正答率や回答状況をレポートで確認。今月・前月の学習状況を可視化し、CSVで出力できます。</p></div>
       <div class="card solution"><div class="icon">3</div><h3>かんたんユーザー管理</h3><p>個別招待・CSVによる一括招待に対応。権限管理や、退職者・利用停止者のアカウント無効化、完全削除まで管理画面から行えます。</p></div>
       <div class="card solution"><div class="icon">4</div><h3>リマインド・お知らせ</h3><p>未回答者へのリマインド設定に加え、天気予報の表示や社内向けお知らせ機能など、毎日開きたくなる工夫を備えています。</p></div>
+      <div class="card solution"><div class="icon">5</div><h3>ビジネス豆知識</h3><p>クイズとは別に、状況が変わっても通用する普遍的な心構え・考え方を毎日1つお届け。学習領域と同じ21カテゴリーから日替わりでランダムに表示されます。</p></div>
     </div>
   </div>
 </section>
@@ -359,6 +361,32 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
       <span class="badge">『ビズもん』だけのカスタムカテゴリー</span>
       <h3>「自社理解」問題で、自社専用の学びも届けられる</h3>
       <p>上記の標準カテゴリーに加え、<strong>「自社理解」</strong>というカスタムカテゴリーもご用意しています。就業規則や企業理念、商品・サービス知識、過去のヒヤリハット事例など、自社専用の問題を追加できるため、<strong>"世間相場"としての基礎力</strong>と<strong>"自社ならでは"の理解</strong>の両方を、日々の学習でカバーできます。</p>
+    </div>
+  </div>
+</section>
+
+<section id="tips" class="section compact" style="background:#f8fafc;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="split">
+      <div>
+        <div class="eyebrow">Business Tips</div>
+        <h2>クイズだけじゃない。毎日、心構えも1つ届く。</h2>
+        <p class="lead">『ビズもん』では、日次クイズに加えて「ビジネス豆知識」を毎日1つお届けします。特定の知識を問う問題とは違い、状況や制度が変わっても通用する“普遍的な心構え・考え方”をテーマに、学習領域と同じ21カテゴリーからまんべんなく出題されます。</p>
+        <div class="feature-list">
+          <div class="feature">状況に左右されない心構え<p>制度や手法が変わっても通用する、考え方そのものを届けます。</p></div>
+          <div class="feature">全21カテゴリーを網羅<p>学習領域と同じ21カテゴリーから、日替わりでバランスよく表示されます。</p></div>
+          <div class="feature">毎日ランダムに表示<p>表示順は日付ごとにシャッフルされ、飽きずに続けられます。</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-screen" id="tipDemo">
+          <div class="mock-top"><span class="mock-title">ビジネス豆知識</span><span class="mock-badge" id="tipBadge">サンプル 1 / 21</span></div>
+          <div class="mock-category" id="tipCategory">キャリア・自己管理 ＞ 休息</div>
+          <div class="mock-question" id="tipBody">休息は生産性を下げるものではなく、安定したパフォーマンスのために必要です。</div>
+          <button type="button" class="mock-next show" id="tipNext">次の豆知識を見る →</button>
+          <div class="mock-note">※実際の表示イメージに基づくサンプルです（全21カテゴリーより1つずつ）</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -786,6 +814,60 @@ document.getElementById("contactForm").addEventListener("submit", function(e){
   });
 
   render();
+})();
+</script>
+
+<script>
+(function(){
+  var tipsData = [
+    {cat:"コミュニケーション・ビジネススキル", title:"確認", body:"確認のタイミングを早めると、関係者の認識をそろえやすくなります。"},
+    {cat:"読解力・思考力", title:"視点変更", body:"視点を変えると、同じ問題でも別の解決策が見つかることがあります。"},
+    {cat:"キャリア・自己管理", title:"休息", body:"休息は生産性を下げるものではなく、安定したパフォーマンスのために必要です。"},
+    {cat:"IT・デジタル", title:"AI活用", body:"生成AIを使うときは、入力情報の機密性と出力内容の確認が重要です。"},
+    {cat:"情報管理・セキュリティ", title:"画面ロック", body:"短時間の離席でも画面ロックを行うと、情報漏えいのリスクを下げられます。"},
+    {cat:"データ分析・活用", title:"データに基づく意思決定", body:"経験や勘だけに頼らずデータを参照することは、判断の再現性と説明力を高めます。"},
+    {cat:"プロジェクト管理", title:"タスク管理", body:"タスクは、誰が・いつまでに・何をするかを明確にすると、抜け漏れや遅延を防ぎやすくなります。"},
+    {cat:"業務改善・品質管理", title:"原因分析", body:"問題の原因を考えるときは、なぜ起きたかを段階的に確認すると整理しやすくなります。"},
+    {cat:"経営・戦略", title:"戦略", body:"戦略は、何をするかだけでなく、何をしないかを決めることでもあります。"},
+    {cat:"顧客理解・マーケティング", title:"課題の深掘り", body:"顧客の要望の背景を聞くと、本質的な課題に近づきやすくなります。"},
+    {cat:"会計・財務・税務", title:"売上と利益", body:"売上の数字だけで満足せず、費用とのバランスまで見る視点を持つことが、経営判断には欠かせません。"},
+    {cat:"税金・年末調整", title:"扶養控除", body:"扶養控除の基準は税制改正で見直されることがあるため、思い込みで判断せず、その都度最新の情報を確認する姿勢が大切です。"},
+    {cat:"社会保険", title:"社会保険の基本", body:"社会保険は、生活や就労のさまざまなリスクに備える仕組みだと理解しておくと、いざという時に落ち着いて制度を頼ることができます。"},
+    {cat:"勤怠管理", title:"長時間労働と健康管理", body:"長時間労働が続いていないか自分や周囲を気にかける習慣は、健康を守るための第一歩になります。"},
+    {cat:"労務・雇用", title:"有給休暇", body:"有給休暇は計画的に取得すると、業務調整と健康管理の両立につながります。"},
+    {cat:"法務・コンプライアンス", title:"社会的信頼", body:"コンプライアンスは法令だけでなく、社内規程や社会的な期待を守ることも含みます。"},
+    {cat:"組織・マネジメント", title:"意思決定", body:"意思決定では、選んだ理由と選ばなかった理由を残すと後で振り返りやすくなります。"},
+    {cat:"リスク管理・危機対応", title:"BCP", body:"事業継続には、人・情報・設備・取引先の観点で備えを考えることが重要です。"},
+    {cat:"サステナビリティ・ESG", title:"SDGs", body:"SDGsのような大きな目標を意識すると、日々の仕事が社会にどうつながっているかを考えるきっかけになります。"},
+    {cat:"グローバル・ダイバーシティ", title:"アンコンシャス・バイアス", body:"無意識の思い込みに気づくことは、公平な評価や判断を行う第一歩になります。"},
+    {cat:"心理・行動", title:"心理的安全性", body:"心理的安全性の高い職場では、失敗やリスクを率直に話しやすく、学習と改善が進みやすくなります。"}
+  ];
+
+  // 表示順をランダム化（毎回の閲覧で違う豆知識から始まるように）
+  for (var i = tipsData.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = tipsData[i]; tipsData[i] = tipsData[j]; tipsData[j] = tmp;
+  }
+
+  var tipIdx = 0;
+  var elTipCategory = document.getElementById("tipCategory");
+  var elTipBody = document.getElementById("tipBody");
+  var elTipNext = document.getElementById("tipNext");
+  var elTipBadge = document.getElementById("tipBadge");
+
+  function renderTipDemo(){
+    var d = tipsData[tipIdx];
+    elTipBadge.textContent = "サンプル " + (tipIdx + 1) + " / " + tipsData.length;
+    elTipCategory.textContent = d.cat + " ＞ " + d.title;
+    elTipBody.textContent = d.body;
+  }
+
+  elTipNext.addEventListener("click", function(){
+    tipIdx = (tipIdx + 1) % tipsData.length;
+    renderTipDemo();
+  });
+
+  renderTipDemo();
 })();
 </script>
 </body>
