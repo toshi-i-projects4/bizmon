@@ -180,6 +180,25 @@ header.site{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filt
 
 .cta{background:linear-gradient(135deg,#eff6ff,#ffffff);border-top:1px solid #dbeafe;border-bottom:1px solid #dbeafe}
 
+/* プライバシーポリシー モーダル */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:20px;max-width:820px;width:100%;max-height:85vh;overflow-y:auto;padding:32px;box-shadow:0 24px 60px rgba(15,23,42,.25);position:relative}
+.modal-close{position:absolute;top:16px;right:16px;background:#f1f5f9;border:none;border-radius:999px;width:34px;height:34px;font-size:18px;line-height:1;cursor:pointer;color:var(--slate)}
+.modal-close:hover{background:#e2e8f0}
+.modal-box h2{font-size:21px;margin-bottom:4px;color:var(--navy)}
+.modal-box h3{font-size:15px;margin-top:22px;margin-bottom:8px;color:var(--navy);border-bottom:1px solid var(--line);padding-bottom:5px}
+.modal-box p{font-size:13.5px;color:var(--slate);line-height:1.8;margin:8px 0}
+.modal-box ol{padding-left:20px;margin:8px 0;font-size:13.5px;color:var(--slate);line-height:1.85}
+.modal-box li{margin-bottom:4px}
+.modal-box table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0}
+.modal-box th,.modal-box td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.modal-box th{background:#f8fafc}
+.modal-meta{font-size:12px;color:var(--muted);margin-bottom:16px;display:flex;gap:16px;flex-wrap:wrap}
+.modal-contact{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--slate);margin-top:10px}
+.modal-contact p{margin:2px 0}
+@media(max-width:560px){.modal-box{padding:22px 18px;max-height:88vh}}
+
 footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
 .footer-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;font-size:13px;color:var(--slate)}
 .footer-links a{text-decoration:none;color:var(--slate);margin-right:16px}
@@ -219,6 +238,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
       <a href="#problem">課題</a>
       <a href="#features">機能</a>
       <a href="#tips">豆知識</a>
+      <a href="#almanac">今日はこんな日</a>
       <a href="#domains">学習領域</a>
       <a href="#pricing">料金</a>
       <a href="#options">オプション</a>
@@ -387,6 +407,50 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
           <div class="mock-note">※実際の表示イメージに基づくサンプルです（全21カテゴリーより1つずつ）</div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="almanac" class="section compact" style="background:#f8fafc;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="split">
+      <div>
+        <div class="eyebrow">Today's Almanac</div>
+        <h2>「今日はこんな日」が、雑談と企画のきっかけになる。</h2>
+        <p class="lead">『ビズもん』は、日次クイズの回答画面で「今日はこんな日」という暦・記念日情報もあわせてお届けします。「今日は七夕ですね」「今日は世界環境デーなので…」——そんな一言を持っているだけで、コミュニケーションの質は上がり、企画の幅は広がり、相手との距離も縮まります。</p>
+        <div class="feature-list">
+          <div class="feature">会話のアイスブレイクに<p>初対面やオンライン会議の冒頭で、堅い雰囲気をほぐす一言に使えます。</p></div>
+          <div class="feature">企画・提案の切り口に<p>記念日や国際デーは、SNS投稿・社内報・営業提案・キャンペーンのタイミングとして使いやすいテーマです。</p></div>
+          <div class="feature">相手に合わせた気遣いに<p>「今日は禁煙デーなんですよ」など、相手の関心に合わせた話題選びができます。</p></div>
+          <div class="feature">チームの空気づくりに<p>朝会の一言に添えるだけで場が和み、続けることで心理的安全性にも効いてきます。</p></div>
+          <div class="feature">視野を広げるきっかけに<p>普段触れない国際デーや社会課題は、企画力・発想力にもつながる小さな気付きになります。</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="mock-screen" id="almanacDemo">
+          <div class="mock-top"><span class="mock-title">今日はこんな日</span><span class="mock-badge" id="almanacBadge">サンプル 1 / 10</span></div>
+          <div class="mock-category" id="almanacDate">1月1日</div>
+          <div class="mock-question" id="almanacBody">鉄腕アトムの日・世界初の定期航空便が就航した日・ユーロが誕生した日と言われているらしい</div>
+          <button type="button" class="mock-next show" id="almanacNext">次の今日はこんな日を見る →</button>
+          <div class="mock-note">※almanac.csvに登録された「たとえば」情報からの抜粋サンプルです</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="center" style="margin-top:56px">
+      <div class="eyebrow">In Your Answer Screen</div>
+      <h3 style="font-size:20px;color:var(--navy)">回答画面では、こんな情報もあわせて表示されます</h3>
+      <p class="lead">クイズに回答すると、天気予報・警報注意報に加えて、その日の暦にまつわる9種類の情報が自動で届きます。</p>
+    </div>
+    <div class="domains" style="margin-top:20px">
+      <div class="domain"><strong>天気予報・警報注意報</strong><span>気象庁データによる今日・明日の天気と、地域の警報・注意報</span></div>
+      <div class="domain"><strong>祝日</strong><span>国民の祝日</span></div>
+      <div class="domain"><strong>六曜</strong><span>大安・仏滅など、冠婚葬祭でおなじみの六曜</span></div>
+      <div class="domain"><strong>五節句</strong><span>桃の節句・七夕など、季節の伝統行事</span></div>
+      <div class="domain"><strong>選日</strong><span>一粒万倍日など、暦の上での吉日・凶日</span></div>
+      <div class="domain"><strong>二十四節気</strong><span>立春・夏至など、季節の節目となる暦日</span></div>
+      <div class="domain"><strong>七十二候</strong><span>二十四節気をさらに5日ごとに区切った、自然の便り</span></div>
+      <div class="domain"><strong>日干支・月干支・年干支</strong><span>十干十二支による、日・月・年それぞれの呼び方</span></div>
     </div>
   </div>
 </section>
@@ -591,13 +655,190 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
         <div>お問い合わせ：<a href="mailto:xxxxx@gmail.com">xxxxx@gmail.com</a></div>
       </div>
       <div class="footer-links">
-        <a href="privacy.html">プライバシーポリシー</a>
-        <a href="index.html">ログインはこちら</a>
+        <a href="#" id="privacyLink">プライバシーポリシー</a>
       </div>
     </div>
     <div class="footer-copy">© 2026 株式会社xxxxx</div>
   </div>
 </footer>
+
+<div class="modal-overlay" id="privacyModal">
+  <div class="modal-box">
+    <button type="button" class="modal-close" id="privacyModalClose" aria-label="閉じる">×</button>
+    <h2>ビズもん プライバシーポリシー</h2>
+    <div class="modal-meta">
+      <span>制定日：2026年7月3日</span>
+      <span>バージョン：2026-07-03</span>
+      <span>対象サービス：ビズもん</span>
+    </div>
+    <p>本プライバシーポリシーは、株式会社xxxxx（以下「当社」といいます）が提供するクイズ・学習支援サービス「ビズもん」における、個人情報および利用データの取扱いを定めるものです。企業利用を前提に、一般ユーザー・管理者・申込者・サービス提供者の関係を整理し、取得情報、利用目的、第三者提供、委託、外部サービス、安全管理、開示等請求、保存期間、問い合わせ先を網羅的に記載しています。</p>
+
+    <h3>第1条（基本方針）</h3>
+    <ol>
+      <li>当社は、個人情報の重要性を認識し、個人情報の保護に関する法令、ガイドラインその他関連規範を遵守し、適切に個人情報を取り扱います。</li>
+      <li>当社は、本サービスの提供、保守、改善、セキュリティ確保および利用企業の学習管理支援に必要な範囲で、個人情報および利用データを取得・利用します。</li>
+      <li>当社は、個人情報を不正アクセス、漏えい、滅失、毀損、改ざん、不正利用等から保護するため、合理的かつ適切な安全管理措置を講じます。</li>
+      <li>当社は、個人情報の取扱いについて、必要に応じて継続的な見直しおよび改善を行います。</li>
+    </ol>
+
+    <h3>第2条（適用範囲）</h3>
+    <ol>
+      <li>本ポリシーは、当社が提供するクイズ・学習支援サービス「ビズもん」（以下「本サービス」といいます）に適用されます。</li>
+      <li>本ポリシーは、本サービスを利用する企業、団体または組織（以下「利用企業」といいます）、利用企業に所属する管理者、申込者、一般ユーザーその他本サービスを利用する方（以下総称して「利用者」といいます）に適用されます。</li>
+      <li>本サービスからリンクされる外部サイト、外部サービス、外部アプリケーションにおける個人情報の取扱いについては、各提供事業者のプライバシーポリシーまたは利用条件が適用されます。</li>
+    </ol>
+
+    <h3>第3条（取得する情報）</h3>
+    <p>当社は、本サービスの提供にあたり、以下の情報を取得する場合があります。</p>
+    <table><thead><tr><th>分類</th><th>具体例</th><th>主な取得場面</th></tr></thead><tbody>
+      <tr><td>アカウント情報</td><td>UID、メールアドレス、氏名、社員コード、会社ID、会社名、部署、役職、権限、状態、申込者フラグ</td><td>ユーザー登録、ログイン、管理者によるユーザー管理</td></tr>
+      <tr><td>認証情報</td><td>ログイン状態、認証UID、認証に関する技術情報</td><td>ログイン、アクセス制御、本人確認</td></tr>
+      <tr><td>学習・回答情報</td><td>問題ID、問題文、選択肢、回答、正解、正誤、解説、カテゴリー、回答日時</td><td>クイズ回答、結果保存、レポート表示</td></tr>
+      <tr><td>管理・設定情報</td><td>出題カテゴリー設定、リマインド設定、ユーザー管理操作、企業設定、利用規約同意状態</td><td>管理者画面、企業設定、利用開始管理</td></tr>
+      <tr><td>操作・利用ログ</td><td>アクセス日時、操作日時、保存日時、更新日時、エラー情報、画面遷移、ブラウザ情報</td><td>障害調査、セキュリティ確認、保守</td></tr>
+      <tr><td>端末・通信情報</td><td>IPアドレス、端末種別、ブラウザ、OS、Cookie、LocalStorage等の識別情報</td><td>ログイン、セキュリティ、利便性向上</td></tr>
+      <tr><td>問い合わせ情報</td><td>問い合わせ内容、連絡先、対応履歴</td><td>サポート、障害対応、改善要望</td></tr>
+    </tbody></table>
+
+    <h3>第4条（利用目的）</h3>
+    <p>当社は、取得した情報を以下の目的で利用します。</p>
+    <ol>
+      <li>本サービスの提供、本人確認、ログイン管理、アカウント管理のため</li>
+      <li>利用企業ごとのユーザー管理、権限管理、企業設定、利用開始制御のため</li>
+      <li>クイズの出題、回答結果の保存、解説表示、学習履歴確認のため</li>
+      <li>回答履歴、正解率、部署別・役職別・カテゴリー別等のレポート作成のため</li>
+      <li>リマインド通知、未回答者確認、管理者への運用支援のため</li>
+      <li>利用規約、プライバシーポリシー、企業同意、申込者確認等の記録管理のため</li>
+      <li>不正アクセス、不正利用、データ改ざん、障害、セキュリティ事故の防止および調査のため</li>
+      <li>問い合わせ、障害報告、要望、苦情等への対応のため</li>
+      <li>本サービスの改善、新機能開発、品質向上、利用状況分析のため</li>
+      <li>法令、契約、社内規程、行政機関または裁判所等の要請への対応のため</li>
+      <li>上記各目的に付随または関連する目的のため</li>
+    </ol>
+
+    <h3>第5条（取得方法）</h3>
+    <ol>
+      <li>当社は、利用企業、管理者、申込者または利用者が本サービスに入力、登録、送信する方法により情報を取得します。</li>
+      <li>当社は、Firebase Authentication、Cloud Firestore、ホスティング環境その他本サービスの技術基盤を通じて、認証情報、保存データ、操作ログ、技術情報を取得する場合があります。</li>
+      <li>当社は、管理者によるCSVインポート、ユーザー管理画面、回答画面、レポート画面、リマインド設定画面等を通じて情報を取得する場合があります。</li>
+      <li>当社は、問い合わせフォーム、メール、チャット、会議、電話その他の連絡手段を通じて情報を取得する場合があります。</li>
+    </ol>
+
+    <h3>第6条（第三者提供）</h3>
+    <ol>
+      <li>当社は、本人または利用企業の同意がある場合、法令に基づく場合、人の生命・身体・財産の保護のために必要な場合、公衆衛生の向上または児童の健全育成の推進のために特に必要な場合、国の機関等への協力が必要な場合その他法令で認められる場合を除き、個人情報を第三者に提供しません。</li>
+      <li>当社は、利用企業内の管理者に対し、当該利用企業に所属する利用者のアカウント情報、回答履歴、レポート情報等を、本サービスの機能として提供する場合があります。</li>
+      <li>当社は、合併、会社分割、事業譲渡その他事業承継に伴い、必要な範囲で個人情報を承継先に提供する場合があります。</li>
+    </ol>
+
+    <h3>第7条（委託・外部サービスの利用）</h3>
+    <ol>
+      <li>当社は、本サービスの提供、保守、改善、認証、データ保存、配信、メール送信、障害監視等のため、業務の全部または一部を外部事業者に委託する場合があります。</li>
+      <li>当社は、委託先に個人情報を取り扱わせる場合、委託先に対して必要かつ適切な監督を行います。</li>
+      <li>本サービスでは、Firebase Authentication、Cloud Firestore、Vercelその他の外部クラウドサービスを利用する場合があります。これらの外部サービスにおける情報の取扱いは、各提供事業者の規約およびプライバシーポリシーにも従います。</li>
+      <li>本サービスは、天気予報・気象警報等の表示のため、気象庁（JMA）が公開する気象データを取得します。気象庁への通信は地域コード等の照会にとどまり、氏名・メールアドレス等の個人を特定する情報は送信されません。</li>
+    </ol>
+
+    <h3>第8条（共同利用）</h3>
+    <ol>
+      <li>現時点で、当社は個人情報の共同利用を予定していません。</li>
+      <li>将来、共同利用を行う場合は、共同利用する情報の項目、共同利用者の範囲、利用目的、管理責任者その他必要事項を、本サービス上または当社が適切と判断する方法により公表します。</li>
+    </ol>
+
+    <h3>第9条（安全管理措置）</h3>
+    <p>当社は、取得した情報について、漏えい、滅失、毀損、不正アクセス、不正利用、改ざん等を防止するため、以下の安全管理措置を講じるよう努めます。</p>
+    <ol>
+      <li>アクセス権限の管理、管理者権限の制御、企業IDによるデータ分離</li>
+      <li>認証機能の利用、ログイン状態の確認、UIDによる本人識別</li>
+      <li>Firestoreルール等による読み書き権限の制御</li>
+      <li>操作ログ、保存日時、更新日時等の記録</li>
+      <li>外部サービスのセキュリティ機能の活用</li>
+      <li>不要となった情報の削除または無効化</li>
+      <li>事故発生時の原因調査、影響範囲確認、再発防止策の検討</li>
+    </ol>
+
+    <h3>第10条（利用企業管理者による閲覧・利用）</h3>
+    <ol>
+      <li>本サービスでは、利用企業の管理者が、当該利用企業に所属する利用者のアカウント情報、回答履歴、正解率、部署、役職、社員コード、未回答状況、レポート情報等を閲覧または出力できる場合があります。</li>
+      <li>利用企業は、管理者に対し、個人情報および回答履歴を適切に取り扱わせるものとします。</li>
+      <li>利用企業が回答履歴やレポートを人事評価、懲戒、処遇判断等に利用する場合、利用企業の責任において、法令、社内規程、労使慣行、適正手続に十分配慮するものとします。</li>
+    </ol>
+
+    <h3>第11条（Cookie、LocalStorage等の利用）</h3>
+    <ol>
+      <li>本サービスは、ログイン状態の維持、画面表示、回答状態、利便性向上、セキュリティ確保等のため、Cookie、LocalStorageその他類似技術を使用する場合があります。</li>
+      <li>利用者は、ブラウザ設定によりCookie等を制限できますが、その場合、本サービスの全部または一部が正常に利用できないことがあります。</li>
+      <li>本サービスは、将来アクセス解析ツールを利用する場合があります。その場合は、利用するツール、取得情報、利用目的等を必要に応じて追記します。</li>
+    </ol>
+
+    <h3>第12条（保存期間・削除・無効化）</h3>
+    <ol>
+      <li>当社は、利用目的の達成に必要な範囲で、個人情報および利用データを保存します。</li>
+      <li>利用企業の管理者は、管理画面から、退職者・利用停止者等について、アカウントを無効化（利用停止状態への変更）することができます。無効化のみを行った場合、当該アカウントの情報および回答履歴は削除されず、レポート等の集計対象として保持されます。</li>
+      <li>利用企業の管理者は、管理画面から、対象ユーザーのアカウント情報および当該ユーザーに紐づく回答履歴等の関連データを完全に削除することができます。完全に削除された情報は復元できません。</li>
+      <li>完全削除を行った場合、削除されたユーザーの回答履歴が集計対象から除外されるため、削除後にダッシュボードやレポートを閲覧すると、削除前と比較して件数・正答率等の数値が変動する場合があります。</li>
+      <li>完全削除を実行した日時および実行した管理者の情報は、不正利用防止・監査等の目的で、削除されたデータとは別に操作履歴として記録されます。</li>
+      <li>保存期間経過後または利用目的の達成後、当社は合理的な範囲で情報の削除、匿名化、利用停止等を行います。</li>
+    </ol>
+
+    <h3>第13条（開示、訂正、利用停止、削除等の請求）</h3>
+    <ol>
+      <li>利用者または利用企業は、当社所定の方法により、自己に関する個人情報の開示、訂正、追加、削除、利用停止、第三者提供停止等を請求できます。</li>
+      <li>当社は、請求者本人または正当な権限を有する者であることを確認したうえで、法令に従い合理的な範囲で対応します。</li>
+      <li>利用企業に所属する利用者に関する情報については、利用企業の管理者を通じた確認や手続をお願いする場合があります。</li>
+      <li>法令上保存義務がある場合、業務上必要な場合、他の利用者または第三者の権利利益を害するおそれがある場合、当社の業務遂行に著しい支障を及ぼす場合等には、請求に応じられないことがあります。</li>
+    </ol>
+
+    <h3>第14条（外国にある第三者への提供・越境移転）</h3>
+    <ol>
+      <li>本サービスで利用するクラウドサービス、ホスティング、認証基盤等の提供事業者またはそのデータ処理拠点が外国に所在する場合、個人情報が外国で取り扱われる可能性があります。</li>
+      <li>当社は、外部サービスを利用する場合、当該サービスのセキュリティ、プライバシー、契約条件等を合理的な範囲で確認し、必要な措置を講じるよう努めます。</li>
+    </ol>
+
+    <h3>第15条（本ポリシーの変更）</h3>
+    <ol>
+      <li>当社は、法令改正、サービス内容変更、運用変更、セキュリティ対応その他必要に応じて、本ポリシーを変更することがあります。</li>
+      <li>重要な変更を行う場合、当社は本サービス上の掲示、メール、管理画面その他適切な方法により通知または公表します。</li>
+      <li>変更後の本ポリシーは、本サービス上に掲載された時点または当社が別途定める時点から効力を生じます。</li>
+    </ol>
+
+    <h3>第16条（お問い合わせ窓口）</h3>
+    <p>本ポリシー、個人情報の取扱い、開示等請求、苦情・相談に関するお問い合わせは、以下の窓口までお願いいたします。</p>
+    <div class="modal-contact">
+      <p>事業者名：株式会社xxxxx</p>
+      <p>所在地：千葉県千葉市</p>
+      <p>サービス名：ビズもん</p>
+      <p>個人情報取扱窓口：サービス管理担当</p>
+      <p>メールアドレス：xxxxx@gmail.com</p>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:16px">制定日：2026年7月3日</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var modal = document.getElementById("privacyModal");
+  var openLink = document.getElementById("privacyLink");
+  var closeBtn = document.getElementById("privacyModalClose");
+  function openModal(e){
+    if(e) e.preventDefault();
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal(){
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
+  }
+  openLink.addEventListener("click", openModal);
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", function(e){
+    if(e.target === modal) closeModal();
+  });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && modal.classList.contains("show")) closeModal();
+  });
+})();
+</script>
 
 <script>
 document.getElementById("contactForm").addEventListener("submit", function(e){
@@ -868,6 +1109,49 @@ document.getElementById("contactForm").addEventListener("submit", function(e){
   });
 
   renderTipDemo();
+})();
+</script>
+
+<script>
+(function(){
+  var almanacData = [
+    {date:"1月1日", body:"初詣・年賀状配達開始・鉄腕アトムの日・世界初の定期航空便が就航した日・ユーロが誕生した日と言われているらしい"},
+    {date:"3月3日", body:"ひな祭り・耳の日・民放ラジオの日・AT&Tが設立された日・Nintendo Switchが発売された日と言われているらしい"},
+    {date:"3月14日", body:"ホワイトデー・円周率の日・国際結婚の日・大阪万博が開幕した日・Linuxカーネルの最初の正式版（v1.0.0）がリリースされた日と言われているらしい"},
+    {date:"4月1日", body:"エイプリルフール・トレーニングの日・ストラップの日・Appleが設立された日・Yahoo! JAPANがサービスを開始した日と言われているらしい"},
+    {date:"6月1日", body:"写真の日・衣替え・気象記念日・ナムコの前身「中村製作所」が創業した日・第二電電（現KDDI）が設立された日と言われているらしい"},
+    {date:"7月7日", body:"七夕・ギフトの日・カルピスの日・三菱重工業の前身「長崎造船所」の事業が始まった日・日本初のファミリーレストラン「すかいらーく」が開店した日と言われているらしい"},
+    {date:"8月12日", body:"国際青少年デー・配布の日・君が代記念日・IBMが「IBM Personal Computer 5150」を発売した日・アイザック・シンガーがミシンの特許を取得した日と言われているらしい"},
+    {date:"9月23日", body:"手話言語の国際デー・テニスの日・任天堂が花札の製造・販売会社として創業した日・ダイエー第1号店が大阪に開店した日と言われているらしい"},
+    {date:"10月23日", body:"電信電話記念日・モルの日・津軽弁の日・Appleが携帯音楽プレーヤー「iPod」を発表した日・初の国際連合総会がニューヨークで開催された日と言われているらしい"},
+    {date:"11月11日", body:"ポッキー＆プリッツの日・麺の日・サッカーの日・鳥井信治郎が日本初のウイスキー蒸溜所「山崎蒸溜所」を開設した日（現サントリー）・日本初の私鉄「日本鉄道会社」が設立免許を受けた日と言われているらしい"}
+  ];
+
+  // 表示順をランダム化（毎回の閲覧で違う日から始まるように）
+  for (var i = almanacData.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = almanacData[i]; almanacData[i] = almanacData[j]; almanacData[j] = tmp;
+  }
+
+  var almanacIdx = 0;
+  var elAlmanacDate = document.getElementById("almanacDate");
+  var elAlmanacBody = document.getElementById("almanacBody");
+  var elAlmanacNext = document.getElementById("almanacNext");
+  var elAlmanacBadge = document.getElementById("almanacBadge");
+
+  function renderAlmanacDemo(){
+    var d = almanacData[almanacIdx];
+    elAlmanacBadge.textContent = "サンプル " + (almanacIdx + 1) + " / " + almanacData.length;
+    elAlmanacDate.textContent = d.date;
+    elAlmanacBody.textContent = d.body;
+  }
+
+  elAlmanacNext.addEventListener("click", function(){
+    almanacIdx = (almanacIdx + 1) % almanacData.length;
+    renderAlmanacDemo();
+  });
+
+  renderAlmanacDemo();
 })();
 </script>
 </body>
