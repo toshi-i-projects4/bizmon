@@ -47,7 +47,7 @@ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:c
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,sendEmailVerification,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,doc,getDoc,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,updateDoc,serverTimestamp,writeBatch}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import{PASSWORD_POLICY_TEXT,validateBizmonPassword,getPasswordLengthMessage,getPasswordLengthStatus,applyPasswordCountStyle}from"./password-policy.js";
 
 const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
@@ -72,8 +72,14 @@ async function getPendingUser(email){const ref=doc(db,"pendingUsers",email);cons
 
 async function createUserFromPending(user,pending,email){
   const userData={uid:user.uid,employeeCode:pending.employeeCode||"",name:pending.name||"",email:email,companyId:pending.companyId||"",companyName:pending.companyName||"",department:pending.department||"",position:pending.position||"",role:pending.role||"user",status:"active",isApplicant:pending.isApplicant===true,note:pending.note||"",createdAt:serverTimestamp(),createdBy:user.uid,updatedAt:serverTimestamp(),updatedBy:user.uid};
-  await setDoc(doc(db,"users",user.uid),userData,{merge:false});
-  await updateDoc(doc(db,"pendingUsers",email),{status:"registered",registeredAt:serverTimestamp(),registeredUid:user.uid,updatedAt:serverTimestamp(),updatedBy:user.uid});
+  const batch=writeBatch(db);
+  batch.set(doc(db,"users",user.uid),userData);
+  batch.update(doc(db,"pendingUsers",email),{status:"registered",registeredAt:serverTimestamp(),registeredUid:user.uid,updatedAt:serverTimestamp(),updatedBy:user.uid});
+  await batch.commit();
+}
+
+async function cleanupOrphanAccount(user){
+  try{await user.delete()}catch(e){console.warn("orphan auth account cleanup failed; manual deletion in Firebase Authentication console may be required",e)}
 }
 
 async function signup(){
@@ -88,6 +94,7 @@ async function signup(){
   if(passwordError){setStatus(passwordError,"error");passwordEl.focus();return}
   if(password!==confirmPassword){setStatus("パスワードと確認用パスワードが一致していません。","error");confirmPasswordEl.focus();return}
 
+  let createdUser=null;
   try{
     signupBtn.disabled=true;
     signupBtn.textContent="確認中...";
@@ -97,15 +104,35 @@ async function signup(){
     signupBtn.textContent="アカウント作成中...";
     const credential=await createUserWithEmailAndPassword(auth,email,password);
     const user=credential.user;
+    createdUser=user;
 
     signupBtn.textContent="招待情報確認中...";
-    const pending=await getPendingUser(email);
-    if(!pending){setStatus("このメールアドレスは初回登録対象として登録されていません。会社の管理者に確認してください。\n\n※Firebase Authentication のアカウントは作成済みです。管理者に連絡してください。","error");return}
-    if(pending.status!=="pending"){setStatus("このメールアドレスは初回登録待ちの状態ではありません。状態："+(pending.status||"未設定")+"\n既に登録済みの場合はログイン画面からログインしてください。","error");return}
-    if((pending.email||"").toLowerCase()!==email){setStatus("招待情報のメールアドレスが一致しません。会社の管理者に確認してください。","error");return}
+    let pending;
+    try{
+      pending=await getPendingUser(email);
+    }catch(pendingError){
+      console.error(pendingError);
+      await cleanupOrphanAccount(user);
+      const code=pendingError&&pendingError.code?pendingError.code:"unknown";
+      setStatus("招待情報の確認に失敗しました。会社の管理者に確認してください。\n\nエラーコード："+code+"\n詳細："+(pendingError.message||""),"error");
+      return;
+    }
+    if(!pending){await cleanupOrphanAccount(user);setStatus("このメールアドレスは初回登録対象として登録されていません。会社の管理者に確認してください。","error");return}
+    if(pending.status!=="pending"){await cleanupOrphanAccount(user);setStatus("このメールアドレスは初回登録待ちの状態ではありません。状態："+(pending.status||"未設定")+"\n既に登録済みの場合はログイン画面からログインしてください。","error");return}
+    if((pending.email||"").toLowerCase()!==email){await cleanupOrphanAccount(user);setStatus("招待情報のメールアドレスが一致しません。会社の管理者に確認してください。","error");return}
 
     signupBtn.textContent="ユーザー情報登録中...";
-    await createUserFromPending(user,pending,email);
+    try{
+      await createUserFromPending(user,pending,email);
+    }catch(createError){
+      console.error(createError);
+      await cleanupOrphanAccount(user);
+      const code=createError&&createError.code?createError.code:"unknown";
+      let message="ユーザー情報の登録に失敗しました。時間をおいて再度お試しください。";
+      if(code==="permission-denied")message="登録情報の保存権限がありません。管理者に連絡してください。";
+      setStatus(message+"\n\nエラーコード："+code+"\n詳細："+(createError.message||""),"error");
+      return;
+    }
 
     try{await sendEmailVerification(user)}catch(e){console.warn("email verification skipped",e)}
 
