@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運営管理トップ｜ビズもん</title>
+<link rel="icon" href="/favicon.ico?v=20260621" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=20260621" type="image/x-icon">
+<style>
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff7ed;color:#111827}
+.top-bar{max-width:1200px;margin:0 auto;padding:20px 20px 6px;display:flex;align-items:center;gap:18px;box-sizing:border-box;flex-wrap:wrap}
+.page-logo{width:130px;max-width:130px;display:block}
+.top-title{font-size:26px;font-weight:900;color:#c2410c}
+.top-sub{font-size:13px;color:#9a3412;font-weight:bold;background:#ffedd5;border-radius:999px;padding:4px 12px;display:inline-block}
+.layout{max-width:1200px;margin:0 auto 24px;padding:0 20px;box-sizing:border-box}
+.hello{background:#fff;border:1px solid #fed7aa;border-left:6px solid #f97316;border-radius:16px;padding:18px 22px;margin:10px 0 22px;box-shadow:0 4px 12px rgba(0,0,0,.06)}
+.hello-title{font-size:19px;font-weight:bold;color:#9a3412;margin-bottom:6px}
+.hello-body{font-size:14px;line-height:1.8;color:#374151}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.menu-card{background:#fff;border:1px solid #fed7aa;border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,.06);text-decoration:none;color:#111827;display:block;transition:transform .1s}
+.menu-card:hover{transform:translateY(-2px);border-color:#f97316}
+.menu-icon{font-size:26px;margin-bottom:8px}
+.menu-name{font-size:17px;font-weight:bold;color:#c2410c;margin-bottom:6px}
+.menu-desc{font-size:13px;color:#6b7280;line-height:1.6}
+.user-bar{margin-top:24px;background:#fff;border:1px solid #fed7aa;border-radius:14px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.user-info{font-size:13px;color:#374151;line-height:1.6}
+.logout-btn{border:none;border-radius:10px;background:#111827;color:#fff;padding:10px 20px;font-size:14px;cursor:pointer}
+.status{display:none;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;border-radius:10px;padding:14px 16px;margin:16px 0;white-space:pre-wrap;font-size:14px}
+.status.show{display:block}
+.page-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff7ed;color:#7c2d12;font-weight:bold}
+.page-loading.hidden{display:none!important}
+.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px}
+.loading-spinner{width:42px;height:42px;border:5px solid #fed7aa;border-top-color:#f97316;border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:640px){.top-bar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div>運営管理トップを読み込み中...</div></div></div>
+<div class="top-bar"><img src="logo.png" alt="ロゴ" class="page-logo"><div><div class="top-title">運営管理トップ</div><span class="top-sub">運営（オペレーター）モード</span></div></div>
+<div class="layout">
+  <div id="status" class="status"></div>
+  <div class="hello">
+    <div class="hello-title">ようこそ、運営担当者様</div>
+    <div class="hello-body">ここは、ビズもん運営側の管理メニューです。新規お申し込みの登録、各企業の管理画面への入室、企業横断のダッシュボード・レポート閲覧などができます。画面はすべてオレンジ色で表示され、通常の企業管理画面と見分けられるようになっています。</div>
+  </div>
+  <div class="menu-grid">
+    <a class="menu-card" href="operator-new-application.html">
+      <div class="menu-icon">📝</div>
+      <div class="menu-name">新規お申し込み登録</div>
+      <div class="menu-desc">お申し込みがあった企業の情報と、最初の管理者（申込者）の招待情報を入力します。Firestoreへ直接入力する必要はありません。</div>
+    </a>
+    <a class="menu-card" href="operator-companies.html">
+      <div class="menu-icon">🔎</div>
+      <div class="menu-name">企業検索・管理画面へ入る</div>
+      <div class="menu-desc">会社IDや会社名で企業を検索し、その企業の管理者と同じ管理画面（ダッシュボード・レポート・カテゴリー設定・ユーザー招待/編集など）に入ります。</div>
+    </a>
+    <a class="menu-card" href="operator-dashboard.html">
+      <div class="menu-icon">📊</div>
+      <div class="menu-name">横断ダッシュボード</div>
+      <div class="menu-desc">全企業を横断した回答率・正解率などのサマリーを確認します。</div>
+    </a>
+    <a class="menu-card" href="operator-report.html">
+      <div class="menu-icon">📄</div>
+      <div class="menu-name">横断レポート</div>
+      <div class="menu-desc">全企業（または指定した企業）の回答明細を確認し、CSVとして出力します。</div>
+    </a>
+  </div>
+  <div class="user-bar">
+    <div class="user-info" id="userInfo">確認中...</div>
+    <button class="logout-btn" id="logoutBtn">ログアウト</button>
+  </div>
+</div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,doc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+function hideLoading(){const l=document.getElementById("pageLoading");if(l){l.classList.add("hidden");l.style.display="none"}}
+function setStatus(msg){const e=document.getElementById("status");if(!msg){e.className="status";e.textContent="";return}e.textContent=msg;e.className="status show"}
+function escapeHtml(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href="login.html";return}
+  try{
+    const snap=await getDoc(doc(db,"users",user.uid));
+    if(!snap.exists()||snap.data().role!=="operator"){
+      setStatus("この画面は運営（オペレーター）権限が必要です。マイページへ戻ります。");
+      setTimeout(()=>{location.href="index.html"},1200);
+      hideLoading();
+      return;
+    }
+    const data=snap.data();
+    document.getElementById("userInfo").innerHTML="ログイン中："+escapeHtml(user.email)+"<br>権限：運営（オペレーター）"+(data.name?"　氏名："+escapeHtml(data.name):"");
+  }catch(e){
+    console.error(e);
+    setStatus("権限確認に失敗しました。もう一度ログインしてください。\n"+(e.message||e));
+  }finally{
+    hideLoading();
+  }
+});
+document.getElementById("logoutBtn").addEventListener("click",async()=>{
+  try{await signOut(auth);location.href="login.html"}catch(e){console.error(e);alert("ログアウトに失敗しました。")}
+});
+</script>
+</body>
+</html>

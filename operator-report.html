@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>横断レポート｜運営管理画面｜ビズもん</title>
+<link rel="icon" href="/favicon.ico?v=20260621" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=20260621" type="image/x-icon">
+<style>
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff7ed;color:#111827;padding:24px;box-sizing:border-box}
+.wrap{max-width:1500px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;border:1px solid #fed7aa}
+.header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+h1{margin:0;font-size:26px}
+.badge-op{background:#ffedd5;color:#9a3412;font-weight:bold;font-size:12px;border-radius:999px;padding:4px 12px}
+.top-link,.bottom-link{color:#c2410c;text-decoration:none;font-weight:bold;font-size:14px}
+.bottom-link{display:inline-block;margin-top:20px}
+.status{display:none;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:16px;line-height:1.7;white-space:pre-wrap}
+.status.error{display:block;background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.filter-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:16px;margin:16px 0}
+.filter-title{font-weight:bold;margin-bottom:12px;color:#7c2d12}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;align-items:end}
+.control-item label{display:block;font-size:12px;color:#7c2d12;font-weight:bold;margin-bottom:5px}
+select,input{width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;background:#fff}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:bold;cursor:pointer;background:#f97316;color:#fff;min-height:40px}
+.btn:hover{background:#ea580c}
+.btn.secondary{background:#9a3412}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}
+.card{background:#fff;border:1px solid #fed7aa;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.card-label{font-size:12px;color:#7c2d12;font-weight:bold;margin-bottom:5px}
+.card-value{font-size:28px;font-weight:900}
+.table-wrap{overflow:auto;border:1px solid #f3f4f6;border-radius:12px;margin-top:12px;max-height:600px}
+table{width:100%;border-collapse:collapse;min-width:2200px;background:#fff}
+th,td{border-bottom:1px solid #f3f4f6;padding:10px 12px;text-align:left;vertical-align:top;font-size:13px;white-space:nowrap}
+th{background:#fff7ed;color:#7c2d12;font-weight:bold;position:sticky;top:0;z-index:1}
+.cell-question,.cell-choices,.cell-answer,.cell-explanation{white-space:pre-wrap;min-width:180px;max-width:340px;line-height:1.55}
+.badge{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:bold;font-size:13px}
+.badge.ok{background:#dcfce7;color:#166534}.badge.ng{background:#fee2e2;color:#991b1b}
+.empty{text-align:center;color:#6b7280;padding:24px}
+.note{font-size:12px;color:#6b7280;line-height:1.7;margin-top:10px}
+.page-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff7ed;color:#7c2d12;font-weight:bold}
+.page-loading.hidden{display:none!important}
+.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;border:1px solid #fed7aa;border-radius:16px;padding:24px 28px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.loading-spinner{width:42px;height:42px;border:5px solid #fed7aa;border-top-color:#f97316;border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:640px){body{padding:14px}.wrap{padding:20px}.header{align-items:flex-start}.btn{width:100%}.btn-row{display:grid}.card-value{font-size:24px}}
+</style>
+</head>
+<body>
+<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div>横断レポートを読み込み中...</div></div></div>
+<div class="wrap">
+  <div class="header"><h1>横断レポート</h1><span class="badge-op">運営モード</span><a class="top-link" href="operator-home.html">← 運営トップへ</a></div>
+  <div id="status" class="status"></div>
+  <div class="filter-box">
+    <div class="filter-title">表示条件</div>
+    <div class="controls">
+      <div class="control-item"><label for="periodPreset">期間</label><select id="periodPreset"><option value="thisMonth">今月</option><option value="prevMonth">前月</option></select></div>
+      <div class="control-item"><label for="companyFilter">企業</label><select id="companyFilter"><option value="all">すべての企業</option></select></div>
+      <div class="control-item"><label>&nbsp;</label><div class="btn-row"><button class="btn" id="loadBtn" type="button">表示更新</button><button class="btn secondary" id="csvBtn" type="button" disabled>CSV出力</button></div></div>
+    </div>
+    <div class="note" id="periodHelp"></div>
+  </div>
+  <div class="cards"><div class="card"><div class="card-label">回答数</div><div class="card-value" id="totalCount">0</div></div><div class="card"><div class="card-label">正解数</div><div class="card-value" id="correctCount">0</div></div><div class="card"><div class="card-label">不正解数</div><div class="card-value" id="incorrectCount">0</div></div><div class="card"><div class="card-label">正答率</div><div class="card-value" id="correctRate">0%</div></div></div>
+  <div class="table-wrap"><table><thead><tr><th>会社ID</th><th>会社名</th><th>日付</th><th>社員コード</th><th>氏名</th><th>正誤</th><th>大項目</th><th>問題</th><th>選択肢A</th><th>選択肢B</th><th>選択肢C</th><th>回答</th><th>解答</th><th>解説</th><th>問題ID</th></tr></thead><tbody id="resultBody"><tr><td colspan="15" class="empty">データを読み込み中です。</td></tr></tbody></table></div>
+  <a class="bottom-link" href="operator-home.html">← 運営トップへ</a>
+</div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,query,where,getDocs,doc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{firstNonEmpty,isCorrectQuizResult as isCorrectResult,choiceA,choiceB,choiceC,selectedAnswer,correctAnswer,csvCell,downloadCsvFile}from"./bizmon-quiz-csv.js";
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const $=id=>document.getElementById(id);
+let allCompanies=[],companyNameMap={},rows=[];
+
+function hideLoading(){const l=$("pageLoading");if(l){l.classList.add("hidden");l.style.display="none"}}
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function setStatus(msg,type){const e=$("status");e.textContent=msg||"";e.className="status "+(msg?(type||""):"")}
+function pad2(n){return String(n).padStart(2,"0")}
+function dateKey(d){return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())}
+function rangeFor(p){const d=new Date();if(p==="prevMonth")return{start:dateKey(new Date(d.getFullYear(),d.getMonth()-1,1)),end:dateKey(new Date(d.getFullYear(),d.getMonth(),0))};return{start:dateKey(new Date(d.getFullYear(),d.getMonth(),1)),end:dateKey(d)}}
+function applyPreset(){const r=rangeFor($("periodPreset").value);$("periodHelp").textContent="対象期間："+r.start+" 〜 "+r.end+"　※横断レポートで取得できるデータは「今月」または「前月」のみです。";return r}
+
+async function loadCompanyOptions(){
+  const snap=await getDocs(collection(db,"companies"));
+  allCompanies=[];companyNameMap={};
+  snap.forEach(ds=>{const d=ds.data()||{};const cid=d.companyId||ds.id;allCompanies.push({companyId:cid,companyName:d.companyName||""});companyNameMap[cid]=d.companyName||""});
+  allCompanies.sort((a,b)=>String(a.companyId).localeCompare(String(b.companyId),"ja"));
+  const sel=$("companyFilter");
+  const cur=sel.value||"all";
+  sel.innerHTML='<option value="all">すべての企業</option>'+allCompanies.map(c=>'<option value="'+esc(c.companyId)+'">'+esc(c.companyId)+"："+esc(c.companyName)+"</option>").join("");
+  sel.value=allCompanies.some(c=>c.companyId===cur)?cur:"all";
+}
+
+function render(){
+  const total=rows.length,correct=rows.filter(r=>isCorrectResult(r)===true).length,incorrect=total-correct,rate=total?Math.round(correct/total*1000)/10:0;
+  $("totalCount").textContent=total;$("correctCount").textContent=correct;$("incorrectCount").textContent=incorrect;$("correctRate").textContent=total?rate+"%":"0%";
+  const body=$("resultBody");
+  if(!rows.length){body.innerHTML='<tr><td colspan="15" class="empty">指定条件の回答データはありません。</td></tr>';return}
+  const sorted=rows.slice().sort((a,b)=>String(b.dateKey||b.date||"").localeCompare(String(a.dateKey||a.date||""))||String(a.companyId||"").localeCompare(String(b.companyId||""))||String(a.employeeCode||"").localeCompare(String(b.employeeCode||"")));
+  body.innerHTML=sorted.map(r=>{
+    const ok=isCorrectResult(r);
+    return "<tr><td>"+esc(r.companyId||"")+"</td><td>"+esc(companyNameMap[r.companyId]||"")+"</td><td>"+esc(r.dateKey||r.date||"")+"</td><td>"+esc(firstNonEmpty(r.employeeCode,r.employeeNo,r.staffCode))+"</td><td>"+esc(firstNonEmpty(r.name,r.displayName))+"</td><td><span class=\"badge "+(ok?"ok":"ng")+"\">"+(ok?"○ 正解":"× 不正解")+"</span></td><td>"+esc(firstNonEmpty(r.category1,r.largeCategory,r.mainCategory))+"</td><td class=\"cell-question\">"+esc(firstNonEmpty(r.questionText,r.question))+"</td><td class=\"cell-choices\">"+esc(choiceA(r))+"</td><td class=\"cell-choices\">"+esc(choiceB(r))+"</td><td class=\"cell-choices\">"+esc(choiceC(r))+"</td><td class=\"cell-answer\">"+esc(selectedAnswer(r))+"</td><td class=\"cell-answer\">"+esc(correctAnswer(r))+"</td><td class=\"cell-explanation\">"+esc(firstNonEmpty(r.explanation,r.commentary))+"</td><td>"+esc(firstNonEmpty(r.questionId,r.id))+"</td></tr>";
+  }).join("");
+}
+
+async function loadReport(){
+  const range=applyPreset();
+  setStatus("","");
+  $("loadBtn").disabled=true;$("csvBtn").disabled=true;
+  $("resultBody").innerHTML='<tr><td colspan="15" class="empty">データを読み込み中です。</td></tr>';
+  try{
+    const q=query(collection(db,"quizResults"),where("dateKey",">=",range.start),where("dateKey","<=",range.end));
+    const snap=await getDocs(q);
+    let all=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const companyFilter=$("companyFilter").value;
+    if(companyFilter!=="all")all=all.filter(r=>r.companyId===companyFilter);
+    rows=all;
+    render();
+    $("csvBtn").disabled=rows.length===0;
+    setStatus("","");
+  }catch(e){
+    console.error(e);
+    let msg="取得に失敗しました："+(e.code||e.message||e);
+    if(e.code==="failed-precondition")msg+="\n\nFirestoreの複合インデックスが未作成の可能性があります。エラー詳細のリンクから作成してください。";
+    setStatus(msg,"error");
+    $("resultBody").innerHTML='<tr><td colspan="15" class="empty">取得に失敗しました。</td></tr>';
+  }finally{
+    $("loadBtn").disabled=false;
+    hideLoading();
+  }
+}
+
+function downloadCsv(){
+  const headers=["会社ID","会社名","日付","社員コード","氏名","正誤","大項目","問題","選択肢A","選択肢B","選択肢C","回答","解答","解説","問題ID"];
+  const lines=[headers.map(csvCell).join(",")];
+  rows.forEach(r=>{
+    const ok=isCorrectResult(r);
+    lines.push([r.companyId||"",companyNameMap[r.companyId]||"",r.dateKey||r.date||"",firstNonEmpty(r.employeeCode,r.employeeNo,r.staffCode),firstNonEmpty(r.name,r.displayName),ok?"正解":"不正解",firstNonEmpty(r.category1,r.largeCategory,r.mainCategory),firstNonEmpty(r.questionText,r.question),choiceA(r),choiceB(r),choiceC(r),selectedAnswer(r),correctAnswer(r),firstNonEmpty(r.explanation,r.commentary),firstNonEmpty(r.questionId,r.id)].map(csvCell).join(","));
+  });
+  const csv="﻿"+lines.join("\n");
+  const companyFilter=$("companyFilter").value;
+  downloadCsvFile("bizmon_operator_report_"+(companyFilter==="all"?"all":companyFilter)+"_"+$("periodPreset").value+".csv",csv);
+}
+
+$("periodPreset").addEventListener("change",loadReport);
+$("companyFilter").addEventListener("change",loadReport);
+$("loadBtn").addEventListener("click",loadReport);
+$("csvBtn").addEventListener("click",downloadCsv);
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href="login.html";return}
+  try{
+    const snap=await getDoc(doc(db,"users",user.uid));
+    if(!snap.exists()||snap.data().role!=="operator"){
+      alert("この画面は運営（オペレーター）権限が必要です。");
+      location.href="index.html";
+      return;
+    }
+    await loadCompanyOptions();
+    await loadReport();
+  }catch(e){
+    console.error(e);
+    setStatus("読み込みに失敗しました。\n"+(e.message||e),"error");
+    hideLoading();
+  }
+});
+</script>
+</body>
+</html>

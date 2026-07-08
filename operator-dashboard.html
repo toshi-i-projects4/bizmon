@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>横断ダッシュボード｜運営管理画面｜ビズもん</title>
+<link rel="icon" href="/favicon.ico?v=20260621" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=20260621" type="image/x-icon">
+<style>
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff7ed;color:#111827;padding:24px;box-sizing:border-box}
+.wrap{max-width:1480px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;border:1px solid #fed7aa}
+.header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+h1{margin:0;font-size:26px}
+.badge-op{background:#ffedd5;color:#9a3412;font-weight:bold;font-size:12px;border-radius:999px;padding:4px 12px}
+.top-link,.bottom-link{color:#c2410c;text-decoration:none;font-weight:bold;font-size:14px}
+.bottom-link{display:inline-block;margin-top:20px}
+.status{display:none;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:16px;line-height:1.7;white-space:pre-wrap}
+.status.error{display:block;background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.filter-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:16px;margin:16px 0}
+.filter-title{font-weight:bold;margin-bottom:12px;color:#7c2d12}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;align-items:end}
+.control-item label{display:block;font-size:12px;color:#7c2d12;font-weight:bold;margin-bottom:5px}
+select,input{width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:14px;background:#fff}
+.btn{border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:bold;cursor:pointer;background:#f97316;color:#fff;min-height:40px}
+.btn:hover{background:#ea580c}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0}
+.card{background:#fff;border:1px solid #fed7aa;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.card-label{font-size:12px;color:#7c2d12;font-weight:bold;margin-bottom:5px}
+.card-value{font-size:28px;font-weight:900;color:#111827}
+.panel{background:#fff;border:1px solid #fed7aa;border-radius:16px;padding:18px;margin-top:16px;box-sizing:border-box}
+.panel-title{font-size:18px;font-weight:bold;margin:0 0 12px}
+.table-wrap{overflow:auto;border:1px solid #f3f4f6;border-radius:12px;max-height:560px}
+table{width:100%;border-collapse:collapse;min-width:1100px;background:#fff}
+th,td{border-bottom:1px solid #f3f4f6;padding:10px 12px;text-align:left;vertical-align:top;font-size:13px;white-space:nowrap}
+th{background:#fff7ed;color:#7c2d12;font-weight:bold;position:sticky;top:0;z-index:1}
+.bar-cell{min-width:160px}
+.bar-track{height:10px;background:#f3f4f6;border-radius:999px;overflow:hidden;margin-top:4px}
+.bar-fill{height:100%;border-radius:999px}
+.bar-fill.answer{background:#f97316}
+.bar-fill.correct{background:#16a34a}
+.empty{text-align:center;color:#6b7280;padding:24px}
+.note{font-size:12px;color:#6b7280;line-height:1.7;margin-top:10px}
+.page-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff7ed;color:#7c2d12;font-weight:bold}
+.page-loading.hidden{display:none!important}
+.loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;border:1px solid #fed7aa;border-radius:16px;padding:24px 28px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.loading-spinner{width:42px;height:42px;border:5px solid #fed7aa;border-top-color:#f97316;border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:640px){body{padding:14px}.wrap{padding:20px}.header{align-items:flex-start}.card-value{font-size:24px}}
+</style>
+</head>
+<body>
+<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div>横断ダッシュボードを読み込み中...</div></div></div>
+<div class="wrap">
+  <div class="header"><h1>横断ダッシュボード</h1><span class="badge-op">運営モード</span><a class="top-link" href="operator-home.html">← 運営トップへ</a></div>
+  <div id="status" class="status"></div>
+  <div class="filter-box">
+    <div class="filter-title">表示条件</div>
+    <div class="controls">
+      <div class="control-item"><label for="periodPreset">対象期間</label><select id="periodPreset"><option value="thisMonth">今月</option><option value="prevMonth">前月</option></select></div>
+      <div class="control-item"><label for="companyFilter">企業</label><select id="companyFilter"><option value="all">すべての企業</option></select></div>
+      <div class="control-item"><label>&nbsp;</label><button class="btn" id="reloadBtn" type="button">表示更新</button></div>
+    </div>
+    <div class="note" id="periodHelp"></div>
+  </div>
+  <div class="cards" id="summaryCards" style="display:none">
+    <div class="card"><div class="card-label">対象企業数</div><div class="card-value" id="companyCount">0</div></div>
+    <div class="card"><div class="card-label">対象登録人数</div><div class="card-value" id="registeredTotal">0</div></div>
+    <div class="card"><div class="card-label">回答者数</div><div class="card-value" id="answeredTotal">0</div></div>
+    <div class="card"><div class="card-label">全体回答率</div><div class="card-value" id="answerRateTotal">0%</div></div>
+    <div class="card"><div class="card-label">全体正解率</div><div class="card-value" id="correctRateTotal">0%</div></div>
+  </div>
+  <div class="panel" id="companyPanel" style="display:none">
+    <p class="panel-title">企業別サマリー</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>会社ID</th><th>会社名</th><th>登録人数</th><th>回答者数</th><th>回答数</th><th>正解数</th><th>回答率</th><th>正解率</th><th>管理画面へ</th></tr></thead>
+        <tbody id="companyBody"><tr><td colspan="9" class="empty">読み込み中です。</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <a class="bottom-link" href="operator-home.html">← 運営トップへ</a>
+</div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,query,where,getDocs,doc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const $=id=>document.getElementById(id);
+let allCompanies=[],allUsers=[],allResults=[];
+
+function hideLoading(){const l=$("pageLoading");if(l){l.classList.add("hidden");l.style.display="none"}}
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function setStatus(msg,type){const e=$("status");e.textContent=msg||"";e.className="status "+(msg?(type||""):"")}
+function pad2(n){return String(n).padStart(2,"0")}
+function dateKey(d){return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())}
+function presetRange(p){const d=new Date();if(p==="prevMonth")return{start:dateKey(new Date(d.getFullYear(),d.getMonth()-1,1)),end:dateKey(new Date(d.getFullYear(),d.getMonth(),0))};return{start:dateKey(new Date(d.getFullYear(),d.getMonth(),1)),end:dateKey(d)}}
+function first(){for(let i=0;i<arguments.length;i++){const v=arguments[i];if(v!==undefined&&v!==null&&String(v).trim()!=="")return String(v).trim()}return""}
+function isActive(d){if(d.active===false)return false;const st=String(d.status||"").toLowerCase();if(st==="inactive"||st==="disabled"||st==="退職")return false;return true}
+function isCorrect(d){if(d.isCorrect===true)return true;if(d.isCorrect===false)return false;const x=String(d.result||d.judgement||d.resultText||"").toLowerCase();if(x.includes("incorrect")||x.includes("wrong")||x.includes("不正解")||x.includes("×"))return false;if(x.includes("correct")||x.includes("正解")||x.includes("○"))return true;const s=first(d.selectedChoice,d.selectedAnswer,d.userAnswer).toUpperCase(),c=first(d.correctChoice,d.correctAnswer).toUpperCase();return!!(s&&c&&s===c)}
+
+function applyPreset(){const r=presetRange($("periodPreset").value);$("periodHelp").textContent="対象期間："+r.start+" 〜 "+r.end+"　※横断ダッシュボードで取得できるデータは「今月」または「前月」のみです。";return r}
+
+async function loadCompanyOptions(){
+  const snap=await getDocs(collection(db,"companies"));
+  allCompanies=[];
+  snap.forEach(ds=>{const d=ds.data()||{};allCompanies.push({companyId:d.companyId||ds.id,companyName:d.companyName||""})});
+  allCompanies.sort((a,b)=>String(a.companyId).localeCompare(String(b.companyId),"ja"));
+  const sel=$("companyFilter");
+  const cur=sel.value||"all";
+  sel.innerHTML='<option value="all">すべての企業</option>'+allCompanies.map(c=>'<option value="'+esc(c.companyId)+'">'+esc(c.companyId)+"："+esc(c.companyName)+"</option>").join("");
+  sel.value=allCompanies.some(c=>c.companyId===cur)?cur:"all";
+}
+
+async function loadData(){
+  const r=applyPreset();
+  setStatus("","");
+  $("summaryCards").style.display="none";
+  $("companyPanel").style.display="none";
+  $("companyBody").innerHTML='<tr><td colspan="9" class="empty">読み込み中です。</td></tr>';
+  try{
+    const usQ=query(collection(db,"users"));
+    const rsQ=query(collection(db,"quizResults"),where("dateKey",">=",r.start),where("dateKey","<=",r.end));
+    const[usSnap,rsSnap]=await Promise.all([getDocs(usQ),getDocs(rsQ)]);
+    allUsers=[];
+    usSnap.forEach(ds=>{const d=ds.data()||{};allUsers.push({uid:ds.id,companyId:d.companyId||"",role:d.role||"user",active:isActive(d)})});
+    allResults=[];
+    rsSnap.forEach(ds=>{const d=ds.data()||{};allResults.push({uid:d.uid||"",companyId:d.companyId||"",isCorrect:isCorrect(d)})});
+    render();
+  }catch(e){
+    console.error(e);
+    let msg="データの取得に失敗しました。\n"+(e.code||e.message||e);
+    if(e.code==="failed-precondition")msg+="\n\nFirestoreの複合インデックスが未作成の可能性があります。エラー詳細のリンクから作成してください。";
+    setStatus(msg,"error");
+  }finally{
+    hideLoading();
+  }
+}
+
+function render(){
+  const companyFilter=$("companyFilter").value;
+  const users=companyFilter==="all"?allUsers:allUsers.filter(u=>u.companyId===companyFilter);
+  const results=companyFilter==="all"?allResults:allResults.filter(r=>r.companyId===companyFilter);
+  const byCompany={};
+  allCompanies.forEach(c=>{byCompany[c.companyId]={companyId:c.companyId,companyName:c.companyName,registered:0,answeredSet:new Set(),answerCount:0,correctCount:0}});
+  users.forEach(u=>{
+    if(!u.active)return;
+    if(!byCompany[u.companyId])byCompany[u.companyId]={companyId:u.companyId,companyName:"",registered:0,answeredSet:new Set(),answerCount:0,correctCount:0};
+    byCompany[u.companyId].registered++;
+  });
+  results.forEach(r=>{
+    if(!byCompany[r.companyId])byCompany[r.companyId]={companyId:r.companyId,companyName:"",registered:0,answeredSet:new Set(),answerCount:0,correctCount:0};
+    const c=byCompany[r.companyId];
+    c.answeredSet.add(r.uid);
+    c.answerCount++;
+    if(r.isCorrect)c.correctCount++;
+  });
+  const rows=Object.values(byCompany).filter(c=>companyFilter==="all"?true:c.companyId===companyFilter);
+  rows.sort((a,b)=>String(a.companyId).localeCompare(String(b.companyId),"ja"));
+
+  const totalRegistered=rows.reduce((a,c)=>a+c.registered,0);
+  const totalAnswered=rows.reduce((a,c)=>a+c.answeredSet.size,0);
+  const totalAnswerCount=rows.reduce((a,c)=>a+c.answerCount,0);
+  const totalCorrect=rows.reduce((a,c)=>a+c.correctCount,0);
+  const overallAnswerRate=totalRegistered?Math.round(totalAnswered/totalRegistered*1000)/10:0;
+  const overallCorrectRate=totalAnswerCount?Math.round(totalCorrect/totalAnswerCount*1000)/10:0;
+
+  $("companyCount").textContent=rows.length;
+  $("registeredTotal").textContent=totalRegistered;
+  $("answeredTotal").textContent=totalAnswered;
+  $("answerRateTotal").textContent=overallAnswerRate+"%";
+  $("correctRateTotal").textContent=overallCorrectRate+"%";
+  $("summaryCards").style.display="grid";
+  $("companyPanel").style.display="block";
+
+  if(!rows.length){$("companyBody").innerHTML='<tr><td colspan="9" class="empty">データがありません。</td></tr>';return}
+  $("companyBody").innerHTML=rows.map(c=>{
+    const answerRate=c.registered?Math.round(c.answeredSet.size/c.registered*1000)/10:0;
+    const correctRate=c.answerCount?Math.round(c.correctCount/c.answerCount*1000)/10:0;
+    const cid=encodeURIComponent(c.companyId);
+    return "<tr>"+
+      "<td>"+esc(c.companyId)+"</td>"+
+      "<td>"+esc(c.companyName)+"</td>"+
+      "<td>"+c.registered+"</td>"+
+      "<td>"+c.answeredSet.size+"</td>"+
+      "<td>"+c.answerCount+"</td>"+
+      "<td>"+c.correctCount+"</td>"+
+      "<td class=\"bar-cell\">"+answerRate+"%<div class=\"bar-track\"><div class=\"bar-fill answer\" style=\"width:"+answerRate+"%\"></div></div></td>"+
+      "<td class=\"bar-cell\">"+correctRate+"%<div class=\"bar-track\"><div class=\"bar-fill correct\" style=\"width:"+correctRate+"%\"></div></div></td>"+
+      "<td><a href=\"dashboard.html?opCompanyId="+cid+"\">この企業のダッシュボードへ</a></td>"+
+    "</tr>";
+  }).join("");
+}
+
+$("periodPreset").addEventListener("change",loadData);
+$("companyFilter").addEventListener("change",render);
+$("reloadBtn").addEventListener("click",loadData);
+
+onAuthStateChanged(auth,async user=>{
+  if(!user){location.href="login.html";return}
+  try{
+    const snap=await getDoc(doc(db,"users",user.uid));
+    if(!snap.exists()||snap.data().role!=="operator"){
+      alert("この画面は運営（オペレーター）権限が必要です。");
+      location.href="index.html";
+      return;
+    }
+    await loadCompanyOptions();
+    await loadData();
+  }catch(e){
+    console.error(e);
+    setStatus("読み込みに失敗しました。\n"+(e.message||e),"error");
+    hideLoading();
+  }
+});
+</script>
+</body>
+</html>
