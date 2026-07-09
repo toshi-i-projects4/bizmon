@@ -92,7 +92,14 @@ onAuthStateChanged(auth,async user=>{
   if(!user){location.href="login.html";return}
   try{
     const snap=await getDoc(doc(db,"users",user.uid));
-    const data=snap.exists()?snap.data():{};
+    if(!snap.exists()){
+      setStatus("このアカウントは利用できません。ログアウトします。");
+      try{await signOut(auth)}catch(e){console.warn(e)}
+      setTimeout(()=>{location.href="login.html?notice=account_removed"},1200);
+      hideLoading();
+      return;
+    }
+    const data=snap.data();
     const hasOperatorPermission=data.role==="operator"||data.isOperator===true;
     if(!hasOperatorPermission){
       setStatus("この画面は運営（オペレーター）権限が必要です。マイページへ戻ります。");
