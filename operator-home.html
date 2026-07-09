@@ -65,10 +65,18 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
       <div class="menu-name">横断レポート</div>
       <div class="menu-desc">全企業（または指定した企業）の回答明細を確認し、CSVとして出力します。</div>
     </a>
+    <a class="menu-card" href="operator-grant.html">
+      <div class="menu-icon">🔑</div>
+      <div class="menu-name">運営権限の招待・変更</div>
+      <div class="menu-desc">新しく運営（オペレーター）権限を持つ人を招待したり、既に企業側へ登録済みの人に運営権限を付与・解除したりします。</div>
+    </a>
   </div>
   <div class="user-bar">
     <div class="user-info" id="userInfo">確認中...</div>
-    <button class="logout-btn" id="logoutBtn">ログアウト</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <a id="toMyPageLink" href="index.html" style="display:none;border-radius:10px;background:#2563eb;color:#fff;padding:10px 20px;font-size:14px;text-decoration:none">マイページへ</a>
+      <button class="logout-btn" id="logoutBtn">ログアウト</button>
+    </div>
   </div>
 </div>
 <script type="module">
@@ -84,14 +92,16 @@ onAuthStateChanged(auth,async user=>{
   if(!user){location.href="login.html";return}
   try{
     const snap=await getDoc(doc(db,"users",user.uid));
-    if(!snap.exists()||snap.data().role!=="operator"){
+    const data=snap.exists()?snap.data():{};
+    const hasOperatorPermission=data.role==="operator"||data.isOperator===true;
+    if(!hasOperatorPermission){
       setStatus("この画面は運営（オペレーター）権限が必要です。マイページへ戻ります。");
       setTimeout(()=>{location.href="index.html"},1200);
       hideLoading();
       return;
     }
-    const data=snap.data();
-    document.getElementById("userInfo").innerHTML="ログイン中："+escapeHtml(user.email)+"<br>権限：運営（オペレーター）"+(data.name?"　氏名："+escapeHtml(data.name):"");
+    document.getElementById("userInfo").innerHTML="ログイン中："+escapeHtml(user.email)+"<br>権限：運営（オペレーター）"+(data.role!=="operator"?"（企業側登録との兼務）":"")+(data.name?"　氏名："+escapeHtml(data.name):"")+(data.companyId?"　所属企業："+escapeHtml(data.companyName||data.companyId):"");
+    if(data.companyId){const toMyPage=document.getElementById("toMyPageLink");if(toMyPage)toMyPage.style.display="inline-block"}
   }catch(e){
     console.error(e);
     setStatus("権限確認に失敗しました。もう一度ログインしてください。\n"+(e.message||e));

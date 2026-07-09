@@ -154,7 +154,7 @@ onAuthStateChanged(auth,async user=>{
   if(!user){location.href="login.html";return}
   try{
     const snap=await getDoc(doc(db,"users",user.uid));
-    if(!snap.exists()||snap.data().role!=="operator"){
+    if(!snap.exists()||(snap.data().role!=="operator"&&snap.data().isOperator!==true)){
       alert("この画面は運営（オペレーター）権限が必要です。");
       location.href="index.html";
       return;
