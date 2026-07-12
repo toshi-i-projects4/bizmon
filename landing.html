@@ -22,6 +22,7 @@ a{color:inherit}
 .section.compact{padding:52px 0}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;background:#dbeafe;color:#1e40af;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;margin-bottom:14px}
 .eyebrow.white{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.24)}
+.eyebrow.hero-eyebrow{font-size:16px;padding:8px 16px}
 h1,h2,h3,p{margin-top:0}
 h1{font-size:40px;line-height:1.4;letter-spacing:.02em;margin-bottom:18px}
 h2{font-size:28px;line-height:1.45;margin-bottom:16px;color:var(--navy)}
@@ -126,6 +127,9 @@ section[id]{scroll-margin-top:90px}
 .custom-highlight p{color:#7c2d12;font-size:14.5px;margin:0}
 .custom-highlight strong{color:#9a3412}
 @media(max-width:560px){.custom-highlight{flex-direction:column}}
+.domain.domain-highlight{background:linear-gradient(135deg,#fff7ed,#fffbeb);border:2px solid var(--orange)}
+.domain.domain-highlight strong{color:#9a3412}
+.domain.domain-highlight span{color:#7c2d12}
 
 .feature-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:24px}
 .feature{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;font-weight:800;font-size:14px}
@@ -252,7 +256,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-copy">
-      <div class="eyebrow white">企業向け 1日1問の社員教育サービス『ビズもん』</div>
+      <div class="eyebrow white hero-eyebrow">企業向け 1日1問の社員教育サービス『ビズもん』</div>
       <h1>1日1問が、<br>気付きを与え、会社を強くする。</h1>
       <p>『ビズもん』は、社会人としての知識・思考力・業務姿勢を毎日少しずつ育て、学習状況と組織の変化を見える化するマイクロラーニングサービスです。</p>
       <div class="button-row">
@@ -374,6 +378,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
     <div class="domain"><strong>サステナビリティ・ESG</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">SDGs</span><span class="domain-tag">CSR</span><span class="domain-tag">ESG経営</span><span class="domain-tag">ガバナンス</span><span class="domain-tag">環境対応</span><span class="domain-tag">脱炭素</span><span class="domain-tag">人権</span><span class="domain-tag">サプライチェーン</span><span class="domain-tag">非財務情報開示</span></div></details></div>
     <div class="domain"><strong>グローバル・ダイバーシティ</strong><details class="domain-detail"><summary>中項目：5件</summary><div class="domain-tags"><span class="domain-tag">ダイバーシティ</span><span class="domain-tag">多様性と公平性</span><span class="domain-tag">インクルージョン</span><span class="domain-tag">アンコンシャス・バイアス</span><span class="domain-tag">外国人雇用</span></div></details></div>
     <div class="domain"><strong>心理・行動</strong><details class="domain-detail"><summary>中項目：9件</summary><div class="domain-tags"><span class="domain-tag">モチベーション</span><span class="domain-tag">認知バイアス</span><span class="domain-tag">意思決定のクセ</span><span class="domain-tag">行動経済学</span><span class="domain-tag">ナッジ</span><span class="domain-tag">習慣化</span><span class="domain-tag">感情コントロール</span><span class="domain-tag">心理的安全性</span><span class="domain-tag">組織心理</span></div></details></div>
+    <div class="domain domain-highlight"><strong>自社理解</strong><span>就業規則・企業理念・商品知識など、自社専用の学びを届けるカスタムカテゴリー</span></div>
   </div>
   <div class="custom-highlight">
     <div class="icon">★</div>
@@ -438,7 +443,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
     <div class="center" style="margin-top:56px">
       <div class="eyebrow">In Your Answer Screen</div>
       <h3 style="font-size:20px;color:var(--navy)">回答画面では、こんな情報もあわせて表示されます</h3>
-      <p class="lead">クイズに回答すると、天気予報・警報注意報に加えて、その日の暦にまつわる9種類の情報が届きます。</p>
+      <p class="lead">クイズに回答すると、天気予報・警報注意報に加えて、その日の暦にまつわる情報が届きます。</p>
     </div>
     <div class="domains" style="margin-top:20px">
       <div class="domain"><strong>天気予報・警報注意報</strong><span>気象庁データによる今日・明日の天気と、地域の警報・注意報</span></div>
@@ -502,7 +507,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
     <div class="eyebrow white">Price</div>
     <h2>料金プラン</h2>
     <p style="color:#e2e8f0">ご利用人数に応じたシンプルな料金体系です。基本機能はすべての規模で共通してご利用いただけます。</p>
-    <div class="pricing-note">日次クイズ・回答履歴、ダッシュボード・レポート（部署別・役職別・カテゴリー別）、ユーザー招待・管理、「自社理解」カスタムカテゴリー対応など、基本機能はすべてのプランで共通です。301名以上のご利用や、特別な運用要件がある場合は、お問い合わせフォームより個別にご相談ください。</div>
+    <div class="pricing-note">日次クイズ、回答履歴、ダッシュボード（部署別・役職別・カテゴリー別）、レポート、ユーザー招待・管理など、基本機能はすべてのプランで共通です。301名以上のご利用や、特別な運用要件がある場合は、お問い合わせフォームより個別にご相談ください。</div>
     <div class="price-table">
       <div class="price-row">
         <span class="scale">〜100名</span>
@@ -538,31 +543,31 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
       <div class="icon">設定</div>
       <h3>導入支援</h3>
       <p>初期設定代行。ユーザー登録やカテゴリー設定など、導入時の初期設定をまとめて代行します。</p>
-      <div class="option-price">5万円</div>
-    </div>
-    <div class="card option">
-      <div class="icon">追加</div>
-      <h3>自社専用クイズ追加サービス</h3>
-      <p>すでに作成済みの自社専用問題を、「自社理解」というカスタムカテゴリーへアップロードします。</p>
-      <div class="option-price">1万円<span>／回</span></div>
+      <div class="option-price">50,000円</div>
     </div>
     <div class="card option">
       <div class="icon">作成</div>
       <h3>自社専用クイズ作成サービス</h3>
       <p>ヒアリング・構成・問題作成・校正まで、自社専用問題の作成を丸ごと代行します。</p>
-      <div class="option-price">5万円<span>〜（応相談）</span></div>
+      <div class="option-price">50,000円<span>〜（応相談）</span></div>
+    </div>
+    <div class="card option">
+      <div class="icon">追加</div>
+      <h3>自社専用クイズ追加サービス</h3>
+      <p>すでに作成済みの自社専用問題を、「自社理解」というカスタムカテゴリーへアップロードします。</p>
+      <div class="option-price">10,000円<span>／回</span></div>
     </div>
     <div class="card option">
       <div class="icon">分析</div>
       <h3>データ分析サービス</h3>
       <p>個人別・部署別ランキング作成、他社比較など、学習データを活用した詳細な分析を提供します。</p>
-      <div class="option-price">10万円<span>〜</span></div>
+      <div class="option-price">100,000円<span>〜</span></div>
     </div>
     <div class="card option">
       <div class="icon">提案</div>
       <h3>教育訓練施策の提案</h3>
       <p>学習データをもとに、次の教育・研修施策のご提案を継続的に行います。</p>
-      <div class="option-price">5万円<span>〜（応相談）</span></div>
+      <div class="option-price">50,000円<span>〜（応相談）</span></div>
     </div>
   </div>
   <p class="center lead" style="margin-top:24px">オプションの詳細やお見積りは、お問い合わせフォームよりお気軽にご相談ください。</p>
@@ -576,7 +581,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
       <p class="lead">お問い合わせから利用開始まで、シンプルなステップで進められます。</p>
     </div>
     <div class="flow">
-      <div class="flow-item"><strong>STEP 1</strong><p><b>お問い合わせ</b><br>下記フォームより資料請求・導入相談をお送りください。</p></div>
+      <div class="flow-item"><strong>STEP 1</strong><p><b>お問い合わせ</b><br>下記フォームより導入相談・申込をお送りください。</p></div>
       <div class="flow-item"><strong>STEP 2</strong><p><b>ご相談・お見積り</b><br>利用人数や運用ご要望をヒアリングし、最適なプランをご提案します。</p></div>
       <div class="flow-item"><strong>STEP 3</strong><p><b>利用企業登録</b><br>企業情報を登録し、管理者アカウントを発行します。</p></div>
       <div class="flow-item"><strong>STEP 4</strong><p><b>ご利用開始</b><br>管理者がユーザーを招待し、日次クイズの配信が始まります。</p></div>
@@ -588,7 +593,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
   <div class="center">
     <div class="eyebrow">Contact</div>
     <h2>お問い合わせ・お申し込み</h2>
-    <p class="lead">導入のご相談、資料請求など、お気軽にお問い合わせください。</p>
+    <p class="lead">導入のご相談、お見積りなど、お気軽にお問い合わせください。</p>
   </div>
   <div class="contact-wrap">
     <div id="formStatus" class="form-status error"></div>
