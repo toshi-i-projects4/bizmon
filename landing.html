@@ -42,6 +42,7 @@ header.site{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filt
 .nav-cta{background:var(--blue);color:#fff;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap}
 .nav-cta:hover{background:var(--blue-dark)}
 @media(max-width:780px){.nav-links{display:none}}
+section[id]{scroll-margin-top:90px}
 
 /* ヒーロー */
 .hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 48%,#38bdf8 100%);color:#fff}
@@ -340,8 +341,7 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
       <div class="card solution"><div class="icon">1</div><h3>毎日1問の日次クイズ</h3><p>ビジネス知識をテーマにした問題に、従業員が毎日1問だけ回答。負担が少なく続けやすい設計です。管理者は出題カテゴリーを設定できます。</p></div>
       <div class="card solution"><div class="icon">2</div><h3>ダッシュボード・レポート</h3><p>部署別・役職別・カテゴリー別の正答率や回答状況をレポートで確認。今月・前月の学習状況を可視化し、CSVで出力できます。</p></div>
       <div class="card solution"><div class="icon">3</div><h3>かんたんユーザー管理</h3><p>個別招待・CSVによる一括招待に対応。権限管理や、退職者・利用停止者のアカウント無効化、完全削除まで管理画面から行えます。</p></div>
-      <div class="card solution"><div class="icon">4</div><h3>リマインド・お知らせ</h3><p>未回答者へのリマインド設定に加え、天気予報の表示や社内向けお知らせ機能など、毎日開きたくなる工夫を備えています。</p></div>
-      <div class="card solution"><div class="icon">5</div><h3>ビジネス豆知識</h3><p>クイズとは別に、状況が変わっても通用する普遍的な心構え・考え方を毎日1つお届け。学習領域と同じ21カテゴリーから日替わりでランダムに表示されます。</p></div>
+      <div class="card solution"><div class="icon">4</div><h3>ビジネス豆知識</h3><p>クイズとは別に、状況が変わっても通用する普遍的な心構え・考え方を毎日1つお届け。学習領域と同じ21カテゴリーから日替わりでランダムに表示されます。</p></div>
     </div>
   </div>
 </section>
@@ -395,7 +395,6 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
         <div class="feature-list">
           <div class="feature">状況に左右されない心構え<p>制度や手法が変わっても通用する、考え方そのものを届けます。</p></div>
           <div class="feature">全21カテゴリーを網羅<p>学習領域と同じ21カテゴリーから、日替わりでバランスよく表示されます。</p></div>
-          <div class="feature">毎日ランダムに表示<p>表示順は日付ごとにシャッフルされ、飽きずに続けられます。</p></div>
         </div>
       </div>
       <div>
@@ -421,7 +420,6 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
         <div class="feature-list">
           <div class="feature">会話のアイスブレイクに<p>初対面やオンライン会議の冒頭で、堅い雰囲気をほぐす一言に使えます。</p></div>
           <div class="feature">企画・提案の切り口に<p>記念日や国際デーは、SNS投稿・社内報・営業提案・キャンペーンのタイミングとして使いやすいテーマです。</p></div>
-          <div class="feature">相手に合わせた気遣いに<p>「今日は禁煙デーなんですよ」など、相手の関心に合わせた話題選びができます。</p></div>
           <div class="feature">チームの空気づくりに<p>朝会の一言に添えるだけで場が和み、続けることで心理的安全性にも効いてきます。</p></div>
           <div class="feature">視野を広げるきっかけに<p>普段触れない国際デーや社会課題は、企画力・発想力にもつながる小さな気付きになります。</p></div>
         </div>
@@ -544,13 +542,13 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
     </div>
     <div class="card option">
       <div class="icon">追加</div>
-      <h3>企業専用クイズ追加サービス</h3>
-      <p>すでに作成済みの自社専用問題を、システムへアップロードする作業を代行します。</p>
+      <h3>自社専用クイズ追加サービス</h3>
+      <p>すでに作成済みの自社専用問題を、「自社理解」というカスタムカテゴリーへアップロードします。</p>
       <div class="option-price">1万円<span>／回</span></div>
     </div>
     <div class="card option">
       <div class="icon">作成</div>
-      <h3>企業専用クイズ作成サービス</h3>
+      <h3>自社専用クイズ作成サービス</h3>
       <p>ヒアリング・構成・問題作成・校正まで、自社専用問題の作成を丸ごと代行します。</p>
       <div class="option-price">5万円<span>〜（応相談）</span></div>
     </div>
@@ -578,10 +576,10 @@ footer.site{border-top:1px solid var(--line);padding:36px 0;background:#fff}
       <p class="lead">お問い合わせから利用開始まで、シンプルなステップで進められます。</p>
     </div>
     <div class="flow">
-      <div class="flow-item"><strong>STEP 1</strong><p>お問い合わせ<br>下記フォームより資料請求・導入相談をお送りください。</p></div>
-      <div class="flow-item"><strong>STEP 2</strong><p>ご相談・お見積り<br>利用人数や運用ご要望をヒアリングし、最適なプランをご提案します。</p></div>
-      <div class="flow-item"><strong>STEP 3</strong><p>利用企業登録<br>企業情報を登録し、管理者アカウントを発行します。</p></div>
-      <div class="flow-item"><strong>STEP 4</strong><p>ご利用開始<br>管理者がユーザーを招待し、日次クイズの配信が始まります。</p></div>
+      <div class="flow-item"><strong>STEP 1</strong><p><b>お問い合わせ</b><br>下記フォームより資料請求・導入相談をお送りください。</p></div>
+      <div class="flow-item"><strong>STEP 2</strong><p><b>ご相談・お見積り</b><br>利用人数や運用ご要望をヒアリングし、最適なプランをご提案します。</p></div>
+      <div class="flow-item"><strong>STEP 3</strong><p><b>利用企業登録</b><br>企業情報を登録し、管理者アカウントを発行します。</p></div>
+      <div class="flow-item"><strong>STEP 4</strong><p><b>ご利用開始</b><br>管理者がユーザーを招待し、日次クイズの配信が始まります。</p></div>
     </div>
   </div>
 </section>
