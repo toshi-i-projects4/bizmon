@@ -136,8 +136,10 @@ async function signup(){
 
     try{await sendEmailVerification(user)}catch(e){console.warn("email verification skipped",e)}
 
-    setStatus("初回登録が完了しました。\nログイン画面から、登録したメールアドレスとパスワードでログインしてください。\n確認メールが届いている場合は、メール内のリンクから確認を完了してください。","ok");
+    setStatus("初回登録が完了しました。\n確認メールが届いている場合は、メール内のリンクから確認を完了してください。\nこのあとログイン画面に移動します。","ok");
     emailEl.value="";passwordEl.value="";confirmPasswordEl.value="";updatePasswordCount();
+    try{await signOut(auth)}catch(e){console.warn("post-signup signout failed",e)}
+    setTimeout(function(){location.href="login.html"},1800);
   }catch(error){
     console.error(error);
     const code=error&&error.code?error.code:"unknown";
