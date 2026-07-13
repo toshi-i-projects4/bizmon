@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>横断ダッシュボード｜運営管理画面｜ビズもん</title>
+<title>ダッシュボード｜運営管理画面｜ビズもん</title>
 <link rel="icon" href="/favicon.ico?v=20260621" type="image/x-icon">
 <link rel="shortcut icon" href="/favicon.ico?v=20260621" type="image/x-icon">
 <style>
@@ -11,7 +11,6 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 .wrap{max-width:1480px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;border:1px solid #fed7aa}
 .header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
 h1{margin:0;font-size:26px}
-.badge-op{background:#ffedd5;color:#9a3412;font-weight:bold;font-size:12px;border-radius:999px;padding:4px 12px}
 .top-link,.bottom-link{color:#c2410c;text-decoration:none;font-weight:bold;font-size:14px}
 .bottom-link{display:inline-block;margin-top:20px}
 .status{display:none;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:16px;line-height:1.7;white-space:pre-wrap}
@@ -30,7 +29,7 @@ select,input{width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-ra
 .panel{background:#fff;border:1px solid #fed7aa;border-radius:16px;padding:18px;margin-top:16px;box-sizing:border-box}
 .panel-title{font-size:18px;font-weight:bold;margin:0 0 12px}
 .table-wrap{overflow:auto;border:1px solid #f3f4f6;border-radius:12px;max-height:560px}
-table{width:100%;border-collapse:collapse;min-width:1100px;background:#fff}
+table{width:100%;border-collapse:collapse;min-width:1200px;background:#fff}
 th,td{border-bottom:1px solid #f3f4f6;padding:10px 12px;text-align:left;vertical-align:top;font-size:13px;white-space:nowrap}
 th{background:#fff7ed;color:#7c2d12;font-weight:bold;position:sticky;top:0;z-index:1}
 .bar-cell{min-width:160px}
@@ -40,6 +39,12 @@ th{background:#fff7ed;color:#7c2d12;font-weight:bold;position:sticky;top:0;z-ind
 .bar-fill.correct{background:#16a34a}
 .empty{text-align:center;color:#6b7280;padding:24px}
 .note{font-size:12px;color:#6b7280;line-height:1.7;margin-top:10px}
+.rank-list{display:grid;gap:8px}
+.rank-item{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:10px 12px}
+.rank-name{font-weight:bold;color:#111827}
+.rank-sub{font-size:12px;color:#7c2d12}
+.progress{height:8px;background:#f3f4f6;border-radius:999px;margin-top:6px;overflow:hidden}
+.progress-bar{height:100%;background:#f97316;border-radius:999px}
 .page-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff7ed;color:#7c2d12;font-weight:bold}
 .page-loading.hidden{display:none!important}
 .loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;border:1px solid #fed7aa;border-radius:16px;padding:24px 28px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
@@ -49,14 +54,15 @@ th{background:#fff7ed;color:#7c2d12;font-weight:bold;position:sticky;top:0;z-ind
 </style>
 </head>
 <body>
-<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div>横断ダッシュボードを読み込み中...</div></div></div>
+<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div>ダッシュボードを読み込み中...</div></div></div>
 <div class="wrap">
-  <div class="header"><h1>横断ダッシュボード</h1><span class="badge-op">運営モード</span><a class="top-link" href="operator-home.html">← 運営トップへ</a></div>
+  <div class="header"><h1>ダッシュボード</h1><a class="top-link" href="operator-home.html">←運営管理ページへ戻る</a></div>
   <div id="status" class="status"></div>
   <div class="filter-box">
     <div class="filter-title">表示条件</div>
     <div class="controls">
-      <div class="control-item"><label for="periodPreset">対象期間</label><select id="periodPreset"><option value="thisMonth">今月</option><option value="prevMonth">前月</option></select></div>
+      <div class="control-item"><label for="startDate">開始日</label><input type="date" id="startDate"></div>
+      <div class="control-item"><label for="endDate">終了日</label><input type="date" id="endDate"></div>
       <div class="control-item"><label for="companyFilter">企業</label><select id="companyFilter"><option value="all">すべての企業</option></select></div>
       <div class="control-item"><label>&nbsp;</label><button class="btn" id="reloadBtn" type="button">表示更新</button></div>
     </div>
@@ -66,25 +72,32 @@ th{background:#fff7ed;color:#7c2d12;font-weight:bold;position:sticky;top:0;z-ind
     <div class="card"><div class="card-label">対象企業数</div><div class="card-value" id="companyCount">0</div></div>
     <div class="card"><div class="card-label">対象登録人数</div><div class="card-value" id="registeredTotal">0</div></div>
     <div class="card"><div class="card-label">回答者数</div><div class="card-value" id="answeredTotal">0</div></div>
-    <div class="card"><div class="card-label">全体回答率</div><div class="card-value" id="answerRateTotal">0%</div></div>
-    <div class="card"><div class="card-label">全体正解率</div><div class="card-value" id="correctRateTotal">0%</div></div>
+    <div class="card"><div class="card-label">平均回答率</div><div class="card-value" id="answerRateAvg">0%</div></div>
+    <div class="card"><div class="card-label">中央回答率</div><div class="card-value" id="answerRateMedian">0%</div></div>
+    <div class="card"><div class="card-label">平均正解率</div><div class="card-value" id="correctRateAvg">0%</div></div>
+    <div class="card"><div class="card-label">中央正解率</div><div class="card-value" id="correctRateMedian">0%</div></div>
   </div>
   <div class="panel" id="companyPanel" style="display:none">
     <p class="panel-title">企業別サマリー</p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>会社ID</th><th>会社名</th><th>登録人数</th><th>回答者数</th><th>回答数</th><th>正解数</th><th>回答率</th><th>正解率</th><th>管理画面へ</th></tr></thead>
-        <tbody id="companyBody"><tr><td colspan="9" class="empty">読み込み中です。</td></tr></tbody>
+        <thead><tr><th>会社ID</th><th>会社名</th><th>登録人数</th><th>回答者数</th><th>回答数</th><th>正解数</th><th>不正解数</th><th>平均回答率</th><th>平均正解率</th><th>管理画面へ</th></tr></thead>
+        <tbody id="companyBody"><tr><td colspan="10" class="empty">読み込み中です。</td></tr></tbody>
       </table>
     </div>
   </div>
-  <a class="bottom-link" href="operator-home.html">← 運営トップへ</a>
+  <div class="panel" id="categoryPanel" style="display:none">
+    <p class="panel-title">カテゴリー別 正解率（全体）</p>
+    <div id="categoryRanking" class="rank-list"></div>
+  </div>
+  <a class="bottom-link" href="operator-home.html">←運営管理ページへ戻る</a>
 </div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,collection,query,where,getDocs,doc,getDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomain:"bizmon-31ffc.firebaseapp.com",databaseURL:"https://bizmon-31ffc-default-rtdb.firebaseio.com",projectId:"bizmon-31ffc",storageBucket:"bizmon-31ffc.firebasestorage.app",messagingSenderId:"535364592474",appId:"1:535364592474:web:1f60b1eb2ad804b1a28963",measurementId:"G-CE1ZDBSVM6"};
+const CATEGORY_ORDER=["コミュニケーション・ビジネススキル","読解力・思考力","キャリア・自己管理","IT・デジタル","情報管理・セキュリティ","データ分析・活用","プロジェクト管理","業務改善・品質管理","経営・戦略","顧客理解・マーケティング","会計・財務・税務","税金・年末調整","社会保険","勤怠管理","労務・雇用","法務・コンプライアンス","組織・マネジメント","リスク管理・危機対応","サステナビリティ・ESG","グローバル・ダイバーシティ","心理・行動"];
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
 let allCompanies=[],allUsers=[],allResults=[];
@@ -94,12 +107,21 @@ function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;",
 function setStatus(msg,type){const e=$("status");e.textContent=msg||"";e.className="status "+(msg?(type||""):"")}
 function pad2(n){return String(n).padStart(2,"0")}
 function dateKey(d){return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())}
-function presetRange(p){const d=new Date();if(p==="prevMonth")return{start:dateKey(new Date(d.getFullYear(),d.getMonth()-1,1)),end:dateKey(new Date(d.getFullYear(),d.getMonth(),0))};return{start:dateKey(new Date(d.getFullYear(),d.getMonth(),1)),end:dateKey(d)}}
 function first(){for(let i=0;i<arguments.length;i++){const v=arguments[i];if(v!==undefined&&v!==null&&String(v).trim()!=="")return String(v).trim()}return""}
 function isActive(d){if(d.active===false)return false;const st=String(d.status||"").toLowerCase();if(st==="inactive"||st==="disabled"||st==="退職")return false;return true}
 function isCorrect(d){if(d.isCorrect===true)return true;if(d.isCorrect===false)return false;const x=String(d.result||d.judgement||d.resultText||"").toLowerCase();if(x.includes("incorrect")||x.includes("wrong")||x.includes("不正解")||x.includes("×"))return false;if(x.includes("correct")||x.includes("正解")||x.includes("○"))return true;const s=first(d.selectedChoice,d.selectedAnswer,d.userAnswer).toUpperCase(),c=first(d.correctChoice,d.correctAnswer).toUpperCase();return!!(s&&c&&s===c)}
+function round1(n){return Math.round(n*10)/10}
+function average(arr){if(!arr.length)return 0;return arr.reduce((a,b)=>a+b,0)/arr.length}
+function median(arr){if(!arr.length)return 0;const s=arr.slice().sort((a,b)=>a-b),mid=Math.floor(s.length/2);return s.length%2?s[mid]:(s[mid-1]+s[mid])/2}
+function catSort(a,b){const ia=CATEGORY_ORDER.indexOf(a),ib=CATEGORY_ORDER.indexOf(b);if(ia>=0&&ib>=0)return ia-ib;if(ia>=0)return-1;if(ib>=0)return 1;return a.localeCompare(b,"ja")}
 
-function applyPreset(){const r=presetRange($("periodPreset").value);$("periodHelp").textContent="対象期間："+r.start+" 〜 "+r.end+"　※横断ダッシュボードで取得できるデータは「今月」または「前月」のみです。";return r}
+function getDateRange(){return{start:$("startDate").value,end:$("endDate").value}}
+function isValidRange(r){return !!(r.start&&r.end&&r.start<=r.end)}
+function updatePeriodHelp(r){
+  if(isValidRange(r)){$("periodHelp").textContent="対象期間："+r.start+" 〜 "+r.end+"　※指定した期間の quizResults を集計します。";}
+  else{$("periodHelp").textContent="開始日・終了日を指定してください（開始日は終了日以前の日付にしてください）。";}
+}
+function defaultRange(){const d=new Date();return{start:dateKey(new Date(d.getFullYear(),d.getMonth(),1)),end:dateKey(d)}}
 
 async function loadCompanyOptions(){
   const snap=await getDocs(collection(db,"companies"));
@@ -113,11 +135,20 @@ async function loadCompanyOptions(){
 }
 
 async function loadData(){
-  const r=applyPreset();
+  const r=getDateRange();
+  updatePeriodHelp(r);
+  if(!isValidRange(r)){
+    setStatus("開始日・終了日を正しく指定してください（開始日は終了日以前の日付にしてください）。","error");
+    $("summaryCards").style.display="none";
+    $("companyPanel").style.display="none";
+    $("categoryPanel").style.display="none";
+    return;
+  }
   setStatus("","");
   $("summaryCards").style.display="none";
   $("companyPanel").style.display="none";
-  $("companyBody").innerHTML='<tr><td colspan="9" class="empty">読み込み中です。</td></tr>';
+  $("categoryPanel").style.display="none";
+  $("companyBody").innerHTML='<tr><td colspan="10" class="empty">読み込み中です。</td></tr>';
   try{
     const usQ=query(collection(db,"users"));
     const rsQ=query(collection(db,"quizResults"),where("dateKey",">=",r.start),where("dateKey","<=",r.end));
@@ -125,7 +156,7 @@ async function loadData(){
     allUsers=[];
     usSnap.forEach(ds=>{const d=ds.data()||{};allUsers.push({uid:ds.id,companyId:d.companyId||"",role:d.role||"user",active:isActive(d)})});
     allResults=[];
-    rsSnap.forEach(ds=>{const d=ds.data()||{};allResults.push({uid:d.uid||"",companyId:d.companyId||"",isCorrect:isCorrect(d)})});
+    rsSnap.forEach(ds=>{const d=ds.data()||{};allResults.push({uid:d.uid||"",companyId:d.companyId||"",isCorrect:isCorrect(d),category1:first(d.category1,d.largeCategory,d.mainCategory,"未分類")})});
     render();
   }catch(e){
     console.error(e);
@@ -160,39 +191,71 @@ function render(){
 
   const totalRegistered=rows.reduce((a,c)=>a+c.registered,0);
   const totalAnswered=rows.reduce((a,c)=>a+c.answeredSet.size,0);
-  const totalAnswerCount=rows.reduce((a,c)=>a+c.answerCount,0);
-  const totalCorrect=rows.reduce((a,c)=>a+c.correctCount,0);
-  const overallAnswerRate=totalRegistered?Math.round(totalAnswered/totalRegistered*1000)/10:0;
-  const overallCorrectRate=totalAnswerCount?Math.round(totalCorrect/totalAnswerCount*1000)/10:0;
+
+  const answerRates=[],correctRates=[];
+  const rowsComputed=rows.map(c=>{
+    const answerRate=c.registered?c.answeredSet.size/c.registered*100:0;
+    const correctRate=c.answerCount?c.correctCount/c.answerCount*100:0;
+    answerRates.push(answerRate);
+    correctRates.push(correctRate);
+    return Object.assign({},c,{answerRate,correctRate,incorrectCount:c.answerCount-c.correctCount});
+  });
+
+  const answerRateAvg=round1(average(answerRates));
+  const answerRateMedian=round1(median(answerRates));
+  const correctRateAvg=round1(average(correctRates));
+  const correctRateMedian=round1(median(correctRates));
 
   $("companyCount").textContent=rows.length;
   $("registeredTotal").textContent=totalRegistered;
   $("answeredTotal").textContent=totalAnswered;
-  $("answerRateTotal").textContent=overallAnswerRate+"%";
-  $("correctRateTotal").textContent=overallCorrectRate+"%";
+  $("answerRateAvg").textContent=answerRateAvg+"%";
+  $("answerRateMedian").textContent=answerRateMedian+"%";
+  $("correctRateAvg").textContent=correctRateAvg+"%";
+  $("correctRateMedian").textContent=correctRateMedian+"%";
   $("summaryCards").style.display="grid";
   $("companyPanel").style.display="block";
+  $("categoryPanel").style.display="block";
 
-  if(!rows.length){$("companyBody").innerHTML='<tr><td colspan="9" class="empty">データがありません。</td></tr>';return}
-  $("companyBody").innerHTML=rows.map(c=>{
-    const answerRate=c.registered?Math.round(c.answeredSet.size/c.registered*1000)/10:0;
-    const correctRate=c.answerCount?Math.round(c.correctCount/c.answerCount*1000)/10:0;
-    const cid=encodeURIComponent(c.companyId);
-    return "<tr>"+
-      "<td>"+esc(c.companyId)+"</td>"+
-      "<td>"+esc(c.companyName)+"</td>"+
-      "<td>"+c.registered+"</td>"+
-      "<td>"+c.answeredSet.size+"</td>"+
-      "<td>"+c.answerCount+"</td>"+
-      "<td>"+c.correctCount+"</td>"+
-      "<td class=\"bar-cell\">"+answerRate+"%<div class=\"bar-track\"><div class=\"bar-fill answer\" style=\"width:"+answerRate+"%\"></div></div></td>"+
-      "<td class=\"bar-cell\">"+correctRate+"%<div class=\"bar-track\"><div class=\"bar-fill correct\" style=\"width:"+correctRate+"%\"></div></div></td>"+
-      "<td><a href=\"dashboard.html?opCompanyId="+cid+"\">この企業のダッシュボードへ</a></td>"+
-    "</tr>";
-  }).join("");
+  if(!rowsComputed.length){$("companyBody").innerHTML='<tr><td colspan="10" class="empty">データがありません。</td></tr>';}
+  else{
+    $("companyBody").innerHTML=rowsComputed.map(c=>{
+      const answerRate=round1(c.answerRate),correctRate=round1(c.correctRate);
+      const cid=encodeURIComponent(c.companyId);
+      return "<tr>"+
+        "<td>"+esc(c.companyId)+"</td>"+
+        "<td>"+esc(c.companyName)+"</td>"+
+        "<td>"+c.registered+"</td>"+
+        "<td>"+c.answeredSet.size+"</td>"+
+        "<td>"+c.answerCount+"</td>"+
+        "<td>"+c.correctCount+"</td>"+
+        "<td>"+c.incorrectCount+"</td>"+
+        "<td class=\"bar-cell\">"+answerRate+"%<div class=\"bar-track\"><div class=\"bar-fill answer\" style=\"width:"+answerRate+"%\"></div></div></td>"+
+        "<td class=\"bar-cell\">"+correctRate+"%<div class=\"bar-track\"><div class=\"bar-fill correct\" style=\"width:"+correctRate+"%\"></div></div></td>"+
+        "<td><a href=\"dashboard.html?opCompanyId="+cid+"\">この企業のダッシュボードへ</a></td>"+
+      "</tr>";
+    }).join("");
+  }
+
+  const catMap={};
+  results.forEach(r=>{
+    const k=r.category1||"未分類";
+    if(!catMap[k])catMap[k]={total:0,correct:0};
+    catMap[k].total++;
+    if(r.isCorrect)catMap[k].correct++;
+  });
+  const catKeys=Object.keys(catMap).sort(catSort);
+  if(!catKeys.length){$("categoryRanking").innerHTML='<div class="empty">カテゴリー別データがありません。</div>';}
+  else{
+    $("categoryRanking").innerHTML=catKeys.map(k=>{
+      const m=catMap[k],rate=m.total?round1(m.correct/m.total*100):0;
+      return '<div class="rank-item"><div><div class="rank-name">'+esc(k)+'</div><div class="rank-sub">正解 '+m.correct+' / 回答 '+m.total+'</div><div class="progress"><div class="progress-bar" style="width:'+rate+'%"></div></div></div><div><strong>'+rate+'%</strong></div></div>';
+    }).join("");
+  }
 }
 
-$("periodPreset").addEventListener("change",loadData);
+$("startDate").addEventListener("change",loadData);
+$("endDate").addEventListener("change",loadData);
 $("companyFilter").addEventListener("change",render);
 $("reloadBtn").addEventListener("click",loadData);
 
@@ -205,6 +268,9 @@ onAuthStateChanged(auth,async user=>{
       location.href="index.html";
       return;
     }
+    const dr=defaultRange();
+    $("startDate").value=dr.start;
+    $("endDate").value=dr.end;
     await loadCompanyOptions();
     await loadData();
   }catch(e){
