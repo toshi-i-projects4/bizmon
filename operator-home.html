@@ -19,15 +19,19 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 .side-menu-link:hover{background:rgba(255,255,255,.26)}
 .main-content{flex:1;background:#fff;padding:20px 32px 26px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);box-sizing:border-box;text-align:center;min-height:320px}
 .user-info{margin-top:12px;font-size:13px;color:#fff;line-height:1.55;word-break:break-all;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:10px;padding:10px 14px}
-.mypage-btn{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:10px;padding:10px 24px;border:none;border-radius:10px;background:#2563eb;color:#fff;cursor:pointer;font-size:14px;font-weight:bold}
-.mypage-btn:hover{background:#1d4ed8}
-.logout-btn{display:block;width:100%;box-sizing:border-box;margin-top:10px;padding:10px 24px;border:none;border-radius:10px;background:#111827;color:#fff;cursor:pointer;font-size:14px;font-weight:bold}
+.mypage-btn{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:10px;padding:10px 24px;border:2px solid #2563eb;border-radius:10px;background:#eff6ff;color:#2563eb;cursor:pointer;font-size:14px;font-weight:bold}
+.mypage-btn:hover{background:#dbeafe}
+.logout-btn{display:block;width:100%;box-sizing:border-box;margin-top:10px;padding:10px 24px;border:2px solid transparent;border-radius:10px;background:#111827;color:#fff;cursor:pointer;font-size:14px;font-weight:bold}
 .logout-btn:hover{background:#000}
 .status{display:none;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;border-radius:10px;padding:14px 16px;margin:0 0 16px;white-space:pre-wrap;font-size:14px;text-align:left}
 .status.show{display:block}
 .business-message-area{width:100%;margin:0 auto 16px;background:#fff7ed;border:1px solid #fed7aa;border-left:5px solid #f97316;border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(249,115,22,.08);text-align:center;box-sizing:border-box}
 .business-message-line{font-size:14px;line-height:1.55;color:#1f2937}
 .business-message-label{font-weight:bold;color:#c2410c}
+.today-info-card{width:100%;margin:0 auto 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(249,115,22,.08);text-align:center;box-sizing:border-box}
+.today-info-title{font-size:15px;font-weight:900;color:#c2410c;margin-bottom:6px}
+.today-info-line{font-size:14px;line-height:1.6;color:#374151}
+.today-info-label{font-weight:bold;color:#c2410c}
 .calendar-card{margin-top:0;border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:#f9fafb;text-align:left}
 .calendar-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 .calendar-title{font-size:17px;font-weight:bold;color:#111827;text-align:center;flex:1}
@@ -61,18 +65,22 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
   <div class="left-sidebar">
     <div class="sidebar-heading">運営管理</div>
     <nav class="side-menu">
-      <a class="side-menu-link" href="operator-new-application.html">新規お申し込み登録</a>
-      <a class="side-menu-link" href="operator-companies.html">企業検索・管理画面へ入る</a>
-      <a class="side-menu-link" href="operator-dashboard.html">横断ダッシュボード</a>
-      <a class="side-menu-link" href="operator-report.html">横断レポート</a>
-      <a class="side-menu-link" href="operator-grant.html">運営権限の招待・変更</a>
+      <a class="side-menu-link" href="operator-new-application.html">新規申込登録</a>
+      <a class="side-menu-link" href="operator-companies.html">企業管理画面</a>
+      <a class="side-menu-link" href="operator-dashboard.html">ダッシュボード</a>
+      <a class="side-menu-link" href="operator-report.html">レポート</a>
+      <a class="side-menu-link" href="operator-grant.html">運営権限設定</a>
     </nav>
+    <a id="toMyPageLink" class="mypage-btn" href="index.html" style="display:none">マイページ</a>
     <div id="userInfo" class="user-info">確認中...</div>
-    <a id="toMyPageLink" class="mypage-btn" href="index.html" style="display:none">『ビズもん』マイページへ</a>
     <button class="logout-btn" id="logoutBtn" type="button">ログアウト</button>
   </div>
   <div class="main-content">
     <div id="status" class="status"></div>
+    <div class="today-info-card">
+      <div class="today-info-title">今日はこんな日</div>
+      <div id="todayInfoLine" class="today-info-line">読み込み中...</div>
+    </div>
     <div class="business-message-area"><div class="business-message-line"><span class="business-message-label">ビジネス豆知識：</span><span id="businessTipText">毎日の学び</span></div></div>
     <div class="calendar-card">
       <div class="calendar-header"><button type="button" id="prevMonthBtn" class="calendar-nav-btn">前月</button><div id="calendarTitle" class="calendar-title">カレンダー</div><button type="button" id="nextMonthBtn" class="calendar-nav-btn">次月</button></div>
@@ -121,6 +129,39 @@ loadBusinessTip();
   document.getElementById("prevMonthBtn").addEventListener("click",function(){calendarMonth--;if(calendarMonth<0){calendarMonth=11;calendarYear--}renderCalendar()});
   document.getElementById("nextMonthBtn").addEventListener("click",function(){calendarMonth++;if(calendarMonth>11){calendarMonth=0;calendarYear++}renderCalendar()});
   renderCalendar();
+})();
+</script>
+<script>
+(function(){
+  function pad2(n){return String(n).padStart(2,"0")}
+  function todayKey(){var d=new Date();return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())}
+  function normalizeDateKey(v){var s=String(v||"").trim().replace(/^\uFEFF/,"");var m=s.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);return m?m[1]+"-"+pad2(m[2])+"-"+pad2(m[3]):s}
+  function parseCsv(txt){var rows=[],row=[],cur="",q=false;for(var i=0;i<txt.length;i++){var ch=txt.charAt(i),nx=txt.charAt(i+1);if(ch==='"'){if(q&&nx==='"'){cur+='"';i++}else q=!q}else if(ch===","&&!q){row.push(cur);cur=""}else if((ch==="\n"||ch==="\r")&&!q){if(ch==="\r"&&nx==="\n")i++;row.push(cur);if(row.some(function(v){return String(v).trim()!==""}))rows.push(row);row=[];cur=""}else cur+=ch}row.push(cur);if(row.some(function(v){return String(v).trim()!==""}))rows.push(row);return rows}
+  function escapeHtml(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function setLine(html){var e=document.getElementById("todayInfoLine");if(e)e.innerHTML=html}
+  async function loadTodayInfo(){
+    try{
+      var res=await fetch("almanac.csv?v=20260707b");
+      if(!res.ok)throw new Error("almanac.csv "+res.status);
+      var txt=await res.text();
+      if(txt&&txt.charCodeAt(0)===65279)txt=txt.substring(1);
+      var rows=parseCsv(txt);
+      if(rows.length<2)throw new Error("empty csv");
+      var hd=rows[0].map(function(v){return String(v||"").replace(/^\uFEFF/,"").trim().toLowerCase()});
+      var di=hd.indexOf("date"),oi=hd.indexOf("other");
+      if(di<0||oi<0)throw new Error("column not found");
+      var target=todayKey(),row=null;
+      for(var i=1;i<rows.length;i++){if(normalizeDateKey(rows[i][di])===target){row=rows[i];break}}
+      if(!row)throw new Error("no row");
+      var val=String(row[oi]||"").trim();
+      if(!val||val.toLowerCase()==="nan"){setLine("対象日の情報はありません。");return}
+      setLine('<span class="today-info-label">たとえば：</span>'+escapeHtml(val));
+    }catch(e){
+      console.warn(e);
+      setLine("今日の情報を取得できませんでした。");
+    }
+  }
+  loadTodayInfo();
 })();
 </script>
 <script type="module">
