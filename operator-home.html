@@ -3,82 +3,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>運営管理トップ｜ビズもん</title>
+<title>運営管理｜ビズもん</title>
 <link rel="icon" href="/favicon.ico?v=20260621" type="image/x-icon">
 <link rel="shortcut icon" href="/favicon.ico?v=20260621" type="image/x-icon">
 <style>
-body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff7ed;color:#111827}
-.top-bar{max-width:1200px;margin:0 auto;padding:20px 20px 6px;display:flex;align-items:center;gap:18px;box-sizing:border-box;flex-wrap:wrap}
-.page-logo{width:130px;max-width:130px;display:block}
-.top-title{font-size:26px;font-weight:900;color:#c2410c}
-.top-sub{font-size:13px;color:#9a3412;font-weight:bold;background:#ffedd5;border-radius:999px;padding:4px 12px;display:inline-block}
-.layout{max-width:1200px;margin:0 auto 24px;padding:0 20px;box-sizing:border-box}
-.hello{background:#fff;border:1px solid #fed7aa;border-left:6px solid #f97316;border-radius:16px;padding:18px 22px;margin:10px 0 22px;box-shadow:0 4px 12px rgba(0,0,0,.06)}
-.hello-title{font-size:19px;font-weight:bold;color:#9a3412;margin-bottom:6px}
-.hello-body{font-size:14px;line-height:1.8;color:#374151}
-.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-.menu-card{background:#fff;border:1px solid #fed7aa;border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,.06);text-decoration:none;color:#111827;display:block;transition:transform .1s}
-.menu-card:hover{transform:translateY(-2px);border-color:#f97316}
-.menu-icon{font-size:26px;margin-bottom:8px}
-.menu-name{font-size:17px;font-weight:bold;color:#c2410c;margin-bottom:6px}
-.menu-desc{font-size:13px;color:#6b7280;line-height:1.6}
-.user-bar{margin-top:24px;background:#fff;border:1px solid #fed7aa;border-radius:14px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
-.user-info{font-size:13px;color:#374151;line-height:1.6}
-.logout-btn{border:none;border-radius:10px;background:#111827;color:#fff;padding:10px 20px;font-size:14px;cursor:pointer}
-.status{display:none;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;border-radius:10px;padding:14px 16px;margin:16px 0;white-space:pre-wrap;font-size:14px}
+body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#fff7ed;color:#333}
+.top-bar{max-width:1400px;margin:0 auto;padding:8px 20px 2px;display:grid;grid-template-columns:240px 1fr;align-items:center;gap:24px;box-sizing:border-box}
+.page-logo{width:170px;max-width:170px;justify-self:center;display:block}
+.greeting-message{text-align:center;font-size:32px;font-weight:bold;color:#c2410c;line-height:1.15}
+.layout{max-width:1400px;margin:0 auto 18px;display:flex;gap:24px;align-items:flex-start;padding:0 20px;box-sizing:border-box}
+.left-sidebar{width:240px;background:linear-gradient(180deg,#f97316,#c2410c);padding:18px 24px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.10);box-sizing:border-box;color:#fff;margin-top:16px}
+.sidebar-heading{font-size:15px;font-weight:900;letter-spacing:.02em;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.3);text-align:center}
+.side-menu{display:grid;gap:8px;margin-bottom:12px}
+.side-menu-link{display:block;text-decoration:none;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:bold}
+.side-menu-link:hover{background:rgba(255,255,255,.26)}
+.main-content{flex:1;background:#fff;padding:20px 32px 26px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);box-sizing:border-box;text-align:center;min-height:320px}
+.user-info{margin-top:12px;font-size:13px;color:#fff;line-height:1.55;word-break:break-all;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:10px;padding:10px 14px}
+.mypage-btn{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;margin-top:10px;padding:10px 24px;border:none;border-radius:10px;background:#2563eb;color:#fff;cursor:pointer;font-size:14px;font-weight:bold}
+.mypage-btn:hover{background:#1d4ed8}
+.logout-btn{display:block;width:100%;box-sizing:border-box;margin-top:10px;padding:10px 24px;border:none;border-radius:10px;background:#111827;color:#fff;cursor:pointer;font-size:14px;font-weight:bold}
+.logout-btn:hover{background:#000}
+.status{display:none;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;border-radius:10px;padding:14px 16px;margin:0 0 16px;white-space:pre-wrap;font-size:14px;text-align:left}
 .status.show{display:block}
+.business-message-area{width:100%;margin:0 auto 16px;background:#fff7ed;border:1px solid #fed7aa;border-left:5px solid #f97316;border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(249,115,22,.08);text-align:center;box-sizing:border-box}
+.business-message-line{font-size:14px;line-height:1.55;color:#1f2937}
+.business-message-label{font-weight:bold;color:#c2410c}
+.calendar-card{margin-top:0;border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:#f9fafb;text-align:left}
+.calendar-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.calendar-title{font-size:17px;font-weight:bold;color:#111827;text-align:center;flex:1}
+.calendar-nav-btn{border:none;border-radius:9px;background:#f97316;color:#fff;padding:6px 10px;cursor:pointer;font-size:12px}
+.calendar-nav-btn:hover{background:#ea580c}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.calendar-weekday{text-align:center;font-size:12px;font-weight:bold;color:#4b5563;padding:2px 0}
+.calendar-day{min-height:44px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:3px;box-sizing:border-box;position:relative}
+.calendar-day.empty{background:transparent;border:none}
+.calendar-day.today{border:2px solid #f97316}
+.day-number{font-size:12px;color:#374151;font-weight:bold}
 .page-loading{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff7ed;color:#7c2d12;font-weight:bold}
 .page-loading.hidden{display:none!important}
 .loading-box{display:flex;flex-direction:column;align-items:center;gap:12px}
 .loading-spinner{width:42px;height:42px;border:5px solid #fed7aa;border-top-color:#f97316;border-radius:50%;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:640px){.top-bar{flex-direction:column;align-items:flex-start}}
+@media(max-width:1000px){
+  .top-bar{grid-template-columns:1fr;row-gap:6px;justify-items:center;padding:10px 20px 4px}
+  .page-logo{width:145px;max-width:145px;justify-self:center}
+  .greeting-message{font-size:28px}
+  .layout{display:flex;flex-direction:column}
+  .main-content{order:1;width:100%;padding:18px 18px;box-sizing:border-box}
+  .left-sidebar{order:2;width:100%;margin-top:0;box-sizing:border-box}
+}
 </style>
 </head>
 <body>
-<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div>運営管理トップを読み込み中...</div></div></div>
-<div class="top-bar"><img src="logo.png" alt="ロゴ" class="page-logo"><div><div class="top-title">運営管理トップ</div><span class="top-sub">運営（オペレーター）モード</span></div></div>
+<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div>運営管理を読み込み中...</div></div></div>
+<div class="top-bar"><img src="logo.png" alt="ロゴ" class="page-logo"><div id="greetingMessage" class="greeting-message">表示準備中</div></div>
 <div class="layout">
-  <div id="status" class="status"></div>
-  <div class="hello">
-    <div class="hello-title">ようこそ、運営担当者様</div>
-    <div class="hello-body">ここは、ビズもん運営側の管理メニューです。新規お申し込みの登録、各企業の管理画面への入室、企業横断のダッシュボード・レポート閲覧などができます。画面はすべてオレンジ色で表示され、通常の企業管理画面と見分けられるようになっています。</div>
+  <div class="left-sidebar">
+    <div class="sidebar-heading">運営管理</div>
+    <nav class="side-menu">
+      <a class="side-menu-link" href="operator-new-application.html">新規お申し込み登録</a>
+      <a class="side-menu-link" href="operator-companies.html">企業検索・管理画面へ入る</a>
+      <a class="side-menu-link" href="operator-dashboard.html">横断ダッシュボード</a>
+      <a class="side-menu-link" href="operator-report.html">横断レポート</a>
+      <a class="side-menu-link" href="operator-grant.html">運営権限の招待・変更</a>
+    </nav>
+    <div id="userInfo" class="user-info">確認中...</div>
+    <a id="toMyPageLink" class="mypage-btn" href="index.html" style="display:none">『ビズもん』マイページへ</a>
+    <button class="logout-btn" id="logoutBtn" type="button">ログアウト</button>
   </div>
-  <div class="menu-grid">
-    <a class="menu-card" href="operator-new-application.html">
-      <div class="menu-icon">📝</div>
-      <div class="menu-name">新規お申し込み登録</div>
-      <div class="menu-desc">お申し込みがあった企業の情報と、最初の管理者（申込者）の招待情報を入力します。Firestoreへ直接入力する必要はありません。</div>
-    </a>
-    <a class="menu-card" href="operator-companies.html">
-      <div class="menu-icon">🔎</div>
-      <div class="menu-name">企業検索・管理画面へ入る</div>
-      <div class="menu-desc">会社IDや会社名で企業を検索し、その企業の管理者と同じ管理画面（ダッシュボード・レポート・カテゴリー設定・ユーザー招待/編集など）に入ります。</div>
-    </a>
-    <a class="menu-card" href="operator-dashboard.html">
-      <div class="menu-icon">📊</div>
-      <div class="menu-name">横断ダッシュボード</div>
-      <div class="menu-desc">全企業を横断した回答率・正解率などのサマリーを確認します。</div>
-    </a>
-    <a class="menu-card" href="operator-report.html">
-      <div class="menu-icon">📄</div>
-      <div class="menu-name">横断レポート</div>
-      <div class="menu-desc">全企業（または指定した企業）の回答明細を確認し、CSVとして出力します。</div>
-    </a>
-    <a class="menu-card" href="operator-grant.html">
-      <div class="menu-icon">🔑</div>
-      <div class="menu-name">運営権限の招待・変更</div>
-      <div class="menu-desc">新しく運営（オペレーター）権限を持つ人を招待したり、既に企業側へ登録済みの人に運営権限を付与・解除したりします。</div>
-    </a>
-  </div>
-  <div class="user-bar">
-    <div class="user-info" id="userInfo">確認中...</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <a id="toMyPageLink" href="index.html" style="display:none;border-radius:10px;background:#2563eb;color:#fff;padding:10px 20px;font-size:14px;text-decoration:none">マイページへ</a>
-      <button class="logout-btn" id="logoutBtn">ログアウト</button>
+  <div class="main-content">
+    <div id="status" class="status"></div>
+    <div class="business-message-area"><div class="business-message-line"><span class="business-message-label">ビジネス豆知識：</span><span id="businessTipText">毎日の学び</span></div></div>
+    <div class="calendar-card">
+      <div class="calendar-header"><button type="button" id="prevMonthBtn" class="calendar-nav-btn">前月</button><div id="calendarTitle" class="calendar-title">カレンダー</div><button type="button" id="nextMonthBtn" class="calendar-nav-btn">次月</button></div>
+      <div class="calendar-grid" id="calendarGrid"></div>
     </div>
   </div>
 </div>
+<script>
+(function(){try{var h=new Date().getHours(),imgFile='',altText='';if(h>=5&&h<=10){imgFile='Good morning.png';altText='おはようございます'}else if(h>=11&&h<=15){imgFile='Good afternoon.png';altText='こんにちは'}else if(h>=16&&h<=17){imgFile='Hello.png';altText='おつかれさまです'}else if(h>=18&&h<=21){imgFile='Good evening.png';altText='こんばんは'}else{imgFile='Hello.png';altText='おつかれさまです'}var el=document.getElementById('greetingMessage');if(el){el.textContent='';var img=document.createElement('img');img.src=imgFile;img.alt=altText;img.style.height='52px';img.style.width='auto';img.style.maxWidth='100%';img.style.display='inline-block';img.style.verticalAlign='middle';el.appendChild(img)}}catch(e){console.error(e)}})();
+</script>
+<script>
+(function(){function parseCsvLine(line){var out=[],cur='',q=false;for(var i=0;i<line.length;i++){var ch=line.charAt(i);if(ch==='"'){if(q&&line.charAt(i+1)==='"'){cur+='"';i++}else q=!q}else if(ch===','&&!q){out.push(cur);cur=''}else cur+=ch}out.push(cur);return out}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+var BASE_DATE=new Date(2026,5,20);
+function daysSinceBase(){var now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.floor((today-BASE_DATE)/86400000)}
+function idNumber(id){var m=String(id||'').match(/(\d+)/);return m?Number(m[1]):999999}
+function mulberry32(a){return function(){var t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function hashSeed(str){var h=1779033703^str.length;for(var i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}return(h^h>>>16)>>>0}
+function shuffledOrder(n,cycle){var rng=mulberry32(hashSeed('bizmon-tip-'+cycle)),arr=[];for(var i=0;i<n;i++)arr.push(i);for(var j=n-1;j>0;j--){var k=Math.floor(rng()*(j+1)),tmp=arr[j];arr[j]=arr[k];arr[k]=tmp}return arr}
+function renderTip(text){var area=document.querySelector('.business-message-area');if(!area)return;area.innerHTML='<div class="business-message-line"><span class="business-message-label">ビジネス豆知識：</span><span id="businessTipText">'+escapeHtml(text||'毎日の学び')+'</span></div>'}
+function loadBusinessTip(){var xhr=new XMLHttpRequest();xhr.open('GET','business-tips.csv?v=20260707b',true);xhr.overrideMimeType('text/plain; charset=UTF-8');xhr.onreadystatechange=function(){if(xhr.readyState!==4)return;if(xhr.status!==200){renderTip('毎日の学び');return}try{var text=xhr.responseText||'';if(text.length>0&&text.charCodeAt(0)===65279)text=text.substring(1);var lines=text.split(/\r?\n/).filter(function(l){return l.trim()!==''});if(lines.length<=1){renderTip('毎日の学び');return}var header=parseCsvLine(lines[0]).map(function(v){return v.trim().toLowerCase()}),idx={id:header.indexOf('id'),body:header.indexOf('body'),active:header.indexOf('active')},rows=[];for(var i=1;i<lines.length;i++){var c=parseCsvLine(lines[i]),active=idx.active>=0?String(c[idx.active]||'true').toLowerCase():'true';if(active==='false')continue;var body=idx.body>=0?String(c[idx.body]||'').trim():'';if(!body)continue;rows.push({id:idx.id>=0?c[idx.id]:'',body:body})}rows.sort(function(a,b){return idNumber(a.id)-idNumber(b.id)||String(a.id).localeCompare(String(b.id),'ja')});if(!rows.length){renderTip('毎日の学び');return}var n=rows.length,day=daysSinceBase(),cycle=Math.floor(day/n),pos=((day%n)+n)%n,order=shuffledOrder(n,cycle),index=order[pos];renderTip(rows[index].body)}catch(e){console.warn(e);renderTip('毎日の学び')}};xhr.onerror=function(){renderTip('毎日の学び')};xhr.send()}
+loadBusinessTip();
+})();
+</script>
+<script>
+(function(){
+  var calendarYear=new Date().getFullYear(),calendarMonth=new Date().getMonth();
+  function pad2(n){return String(n).padStart(2,"0")}
+  function toDateKey(y,m,d){var x=new Date(y,m,d);return x.getFullYear()+"-"+pad2(x.getMonth()+1)+"-"+pad2(x.getDate())}
+  function renderCalendar(){
+    var grid=document.getElementById("calendarGrid"),title=document.getElementById("calendarTitle");
+    if(!grid||!title)return;
+    grid.innerHTML="";
+    title.textContent=calendarYear+"年"+(calendarMonth+1)+"月";
+    ["日","月","火","水","木","金","土"].forEach(function(w){var c=document.createElement("div");c.className="calendar-weekday";c.textContent=w;grid.appendChild(c)});
+    var fw=new Date(calendarYear,calendarMonth,1).getDay(),last=new Date(calendarYear,calendarMonth+1,0).getDate();
+    for(var i=0;i<fw;i++){var e=document.createElement("div");e.className="calendar-day empty";grid.appendChild(e)}
+    var t=new Date(),tk=toDateKey(t.getFullYear(),t.getMonth(),t.getDate());
+    for(var day=1;day<=last;day++){
+      var dk=toDateKey(calendarYear,calendarMonth,day),cell=document.createElement("div");
+      cell.className="calendar-day"+(dk===tk?" today":"");
+      var num=document.createElement("div");num.className="day-number";num.textContent=day;cell.appendChild(num);
+      grid.appendChild(cell);
+    }
+  }
+  document.getElementById("prevMonthBtn").addEventListener("click",function(){calendarMonth--;if(calendarMonth<0){calendarMonth=11;calendarYear--}renderCalendar()});
+  document.getElementById("nextMonthBtn").addEventListener("click",function(){calendarMonth++;if(calendarMonth>11){calendarMonth=0;calendarYear++}renderCalendar()});
+  renderCalendar();
+})();
+</script>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -108,7 +152,7 @@ onAuthStateChanged(auth,async user=>{
       return;
     }
     document.getElementById("userInfo").innerHTML="ログイン中："+escapeHtml(user.email)+"<br>権限：運営（オペレーター）"+(data.role!=="operator"?"（企業側登録との兼務）":"")+(data.name?"　氏名："+escapeHtml(data.name):"")+(data.companyId?"　所属企業："+escapeHtml(data.companyName||data.companyId):"");
-    if(data.companyId){const toMyPage=document.getElementById("toMyPageLink");if(toMyPage)toMyPage.style.display="inline-block"}
+    if(data.companyId){const toMyPage=document.getElementById("toMyPageLink");if(toMyPage)toMyPage.style.display="block"}
   }catch(e){
     console.error(e);
     setStatus("権限確認に失敗しました。もう一度ログインしてください。\n"+(e.message||e));
