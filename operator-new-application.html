@@ -236,7 +236,7 @@ async function loadRecent(){
     const rows=[];
     snap.forEach(ds=>{const d=ds.data()||{};rows.push({companyId:d.companyId||ds.id,companyName:d.companyName||"",contactName:d.contactName||"",contactEmail:d.contactEmail||"",createdAt:d.createdAt})});
     if(!rows.length){$("recentTbody").innerHTML='<tr><td colspan="6">登録済みのお申し込みはまだありません。</td></tr>';return}
-    $("recentTbody").innerHTML=rows.map(r=>"<tr><td>"+esc(r.companyId)+"</td><td>"+esc(r.companyName)+"</td><td>"+esc(r.contactName)+"</td><td>"+esc(r.contactEmail)+"</td><td>"+fmtDate(r.createdAt)+"</td><td><a href=\"operator-companies.html\">企業管理画面</a></td></tr>").join("");
+    $("recentTbody").innerHTML=rows.map(r=>"<tr><td>"+esc(r.companyId)+"</td><td>"+esc(r.companyName)+"</td><td>"+esc(r.contactName)+"</td><td>"+esc(r.contactEmail)+"</td><td>"+fmtDate(r.createdAt)+"</td><td><a href=\"operator-companies.html\">企業管理ページ</a></td></tr>").join("");
   }catch(e){
     console.error(e);
     $("recentTbody").innerHTML='<tr><td colspan="6">取得に失敗しました：'+esc(e.message||e)+'</td></tr>';

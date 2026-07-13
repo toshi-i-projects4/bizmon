@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>横断レポート｜運営管理画面｜ビズもん</title>
+<title>レポート｜運営管理画面｜ビズもん</title>
 <link rel="icon" href="/favicon.ico?v=20260621" type="image/x-icon">
 <link rel="shortcut icon" href="/favicon.ico?v=20260621" type="image/x-icon">
 <style>
@@ -11,7 +11,6 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 .wrap{max-width:1500px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:28px;box-sizing:border-box;border:1px solid #fed7aa}
 .header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
 h1{margin:0;font-size:26px}
-.badge-op{background:#ffedd5;color:#9a3412;font-weight:bold;font-size:12px;border-radius:999px;padding:4px 12px}
 .top-link,.bottom-link{color:#c2410c;text-decoration:none;font-weight:bold;font-size:14px}
 .bottom-link{display:inline-block;margin-top:20px}
 .status{display:none;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:16px;line-height:1.7;white-space:pre-wrap}
@@ -26,10 +25,6 @@ select,input{width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-ra
 .btn:hover{background:#ea580c}
 .btn.secondary{background:#9a3412}
 .btn:disabled{opacity:.6;cursor:not-allowed}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}
-.card{background:#fff;border:1px solid #fed7aa;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.card-label{font-size:12px;color:#7c2d12;font-weight:bold;margin-bottom:5px}
-.card-value{font-size:28px;font-weight:900}
 .table-wrap{overflow:auto;border:1px solid #f3f4f6;border-radius:12px;margin-top:12px;max-height:600px}
 table{width:100%;border-collapse:collapse;min-width:2200px;background:#fff}
 th,td{border-bottom:1px solid #f3f4f6;padding:10px 12px;text-align:left;vertical-align:top;font-size:13px;white-space:nowrap}
@@ -44,26 +39,26 @@ th{background:#fff7ed;color:#7c2d12;font-weight:bold;position:sticky;top:0;z-ind
 .loading-box{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;border:1px solid #fed7aa;border-radius:16px;padding:24px 28px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .loading-spinner{width:42px;height:42px;border:5px solid #fed7aa;border-top-color:#f97316;border-radius:50%;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:640px){body{padding:14px}.wrap{padding:20px}.header{align-items:flex-start}.btn{width:100%}.btn-row{display:grid}.card-value{font-size:24px}}
+@media(max-width:640px){body{padding:14px}.wrap{padding:20px}.header{align-items:flex-start}.btn{width:100%}.btn-row{display:grid}}
 </style>
 </head>
 <body>
-<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div>横断レポートを読み込み中...</div></div></div>
+<div id="pageLoading" class="page-loading"><div class="loading-box"><div class="loading-spinner"></div><div>レポートを読み込み中...</div></div></div>
 <div class="wrap">
-  <div class="header"><h1>横断レポート</h1><span class="badge-op">運営モード</span><a class="top-link" href="operator-home.html">← 運営トップへ</a></div>
+  <div class="header"><h1>レポート</h1><a class="top-link" href="operator-home.html">←運営管理ページへ戻る</a></div>
   <div id="status" class="status"></div>
   <div class="filter-box">
     <div class="filter-title">表示条件</div>
     <div class="controls">
-      <div class="control-item"><label for="periodPreset">期間</label><select id="periodPreset"><option value="thisMonth">今月</option><option value="prevMonth">前月</option></select></div>
+      <div class="control-item"><label for="startDate">開始日</label><input type="date" id="startDate"></div>
+      <div class="control-item"><label for="endDate">終了日</label><input type="date" id="endDate"></div>
       <div class="control-item"><label for="companyFilter">企業</label><select id="companyFilter"><option value="all">すべての企業</option></select></div>
       <div class="control-item"><label>&nbsp;</label><div class="btn-row"><button class="btn" id="loadBtn" type="button">表示更新</button><button class="btn secondary" id="csvBtn" type="button" disabled>CSV出力</button></div></div>
     </div>
     <div class="note" id="periodHelp"></div>
   </div>
-  <div class="cards"><div class="card"><div class="card-label">回答数</div><div class="card-value" id="totalCount">0</div></div><div class="card"><div class="card-label">正解数</div><div class="card-value" id="correctCount">0</div></div><div class="card"><div class="card-label">不正解数</div><div class="card-value" id="incorrectCount">0</div></div><div class="card"><div class="card-label">正答率</div><div class="card-value" id="correctRate">0%</div></div></div>
   <div class="table-wrap"><table><thead><tr><th>会社ID</th><th>会社名</th><th>日付</th><th>社員コード</th><th>氏名</th><th>正誤</th><th>大項目</th><th>問題</th><th>選択肢A</th><th>選択肢B</th><th>選択肢C</th><th>回答</th><th>解答</th><th>解説</th><th>問題ID</th></tr></thead><tbody id="resultBody"><tr><td colspan="15" class="empty">データを読み込み中です。</td></tr></tbody></table></div>
-  <a class="bottom-link" href="operator-home.html">← 運営トップへ</a>
+  <a class="bottom-link" href="operator-home.html">←運営管理ページへ戻る</a>
 </div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -80,8 +75,14 @@ function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;",
 function setStatus(msg,type){const e=$("status");e.textContent=msg||"";e.className="status "+(msg?(type||""):"")}
 function pad2(n){return String(n).padStart(2,"0")}
 function dateKey(d){return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())}
-function rangeFor(p){const d=new Date();if(p==="prevMonth")return{start:dateKey(new Date(d.getFullYear(),d.getMonth()-1,1)),end:dateKey(new Date(d.getFullYear(),d.getMonth(),0))};return{start:dateKey(new Date(d.getFullYear(),d.getMonth(),1)),end:dateKey(d)}}
-function applyPreset(){const r=rangeFor($("periodPreset").value);$("periodHelp").textContent="対象期間："+r.start+" 〜 "+r.end+"　※横断レポートで取得できるデータは「今月」または「前月」のみです。";return r}
+
+function getDateRange(){return{start:$("startDate").value,end:$("endDate").value}}
+function isValidRange(r){return !!(r.start&&r.end&&r.start<=r.end)}
+function updatePeriodHelp(r){
+  if(isValidRange(r)){$("periodHelp").textContent="対象期間："+r.start+" 〜 "+r.end;}
+  else{$("periodHelp").textContent="開始日・終了日を指定してください（開始日は終了日以前の日付にしてください）。";}
+}
+function defaultRange(){const d=new Date();return{start:dateKey(new Date(d.getFullYear(),d.getMonth(),1)),end:dateKey(d)}}
 
 async function loadCompanyOptions(){
   const snap=await getDocs(collection(db,"companies"));
@@ -95,8 +96,6 @@ async function loadCompanyOptions(){
 }
 
 function render(){
-  const total=rows.length,correct=rows.filter(r=>isCorrectResult(r)===true).length,incorrect=total-correct,rate=total?Math.round(correct/total*1000)/10:0;
-  $("totalCount").textContent=total;$("correctCount").textContent=correct;$("incorrectCount").textContent=incorrect;$("correctRate").textContent=total?rate+"%":"0%";
   const body=$("resultBody");
   if(!rows.length){body.innerHTML='<tr><td colspan="15" class="empty">指定条件の回答データはありません。</td></tr>';return}
   const sorted=rows.slice().sort((a,b)=>String(b.dateKey||b.date||"").localeCompare(String(a.dateKey||a.date||""))||String(a.companyId||"").localeCompare(String(b.companyId||""))||String(a.employeeCode||"").localeCompare(String(b.employeeCode||"")));
@@ -107,7 +106,15 @@ function render(){
 }
 
 async function loadReport(){
-  const range=applyPreset();
+  const range=getDateRange();
+  updatePeriodHelp(range);
+  if(!isValidRange(range)){
+    setStatus("開始日・終了日を正しく指定してください（開始日は終了日以前の日付にしてください）。","error");
+    $("resultBody").innerHTML='<tr><td colspan="15" class="empty">開始日・終了日を指定してください。</td></tr>';
+    $("csvBtn").disabled=true;
+    rows=[];
+    return;
+  }
   setStatus("","");
   $("loadBtn").disabled=true;$("csvBtn").disabled=true;
   $("resultBody").innerHTML='<tr><td colspan="15" class="empty">データを読み込み中です。</td></tr>';
@@ -134,18 +141,20 @@ async function loadReport(){
 }
 
 function downloadCsv(){
-  const headers=["会社ID","会社名","日付","社員コード","氏名","正誤","大項目","問題","選択肢A","選択肢B","選択肢C","回答","解答","解説","問題ID"];
+  const headers=["会社ID","会社名","日付","社員コード","氏名","部署","役職","正誤","大項目","問題","選択肢A","選択肢B","選択肢C","回答","解答","解説","問題ID"];
   const lines=[headers.map(csvCell).join(",")];
   rows.forEach(r=>{
     const ok=isCorrectResult(r);
-    lines.push([r.companyId||"",companyNameMap[r.companyId]||"",r.dateKey||r.date||"",firstNonEmpty(r.employeeCode,r.employeeNo,r.staffCode),firstNonEmpty(r.name,r.displayName),ok?"正解":"不正解",firstNonEmpty(r.category1,r.largeCategory,r.mainCategory),firstNonEmpty(r.questionText,r.question),choiceA(r),choiceB(r),choiceC(r),selectedAnswer(r),correctAnswer(r),firstNonEmpty(r.explanation,r.commentary),firstNonEmpty(r.questionId,r.id)].map(csvCell).join(","));
+    lines.push([r.companyId||"",companyNameMap[r.companyId]||"",r.dateKey||r.date||"",firstNonEmpty(r.employeeCode,r.employeeNo,r.staffCode),firstNonEmpty(r.name,r.displayName),firstNonEmpty(r.department),firstNonEmpty(r.position),ok?"正解":"不正解",firstNonEmpty(r.category1,r.largeCategory,r.mainCategory),firstNonEmpty(r.questionText,r.question),choiceA(r),choiceB(r),choiceC(r),selectedAnswer(r),correctAnswer(r),firstNonEmpty(r.explanation,r.commentary),firstNonEmpty(r.questionId,r.id)].map(csvCell).join(","));
   });
   const csv="﻿"+lines.join("\n");
   const companyFilter=$("companyFilter").value;
-  downloadCsvFile("bizmon_operator_report_"+(companyFilter==="all"?"all":companyFilter)+"_"+$("periodPreset").value+".csv",csv);
+  const range=getDateRange();
+  downloadCsvFile("bizmon_operator_report_"+(companyFilter==="all"?"all":companyFilter)+"_"+range.start+"_"+range.end+".csv",csv);
 }
 
-$("periodPreset").addEventListener("change",loadReport);
+$("startDate").addEventListener("change",loadReport);
+$("endDate").addEventListener("change",loadReport);
 $("companyFilter").addEventListener("change",loadReport);
 $("loadBtn").addEventListener("click",loadReport);
 $("csvBtn").addEventListener("click",downloadCsv);
@@ -159,6 +168,9 @@ onAuthStateChanged(auth,async user=>{
       location.href="index.html";
       return;
     }
+    const dr=defaultRange();
+    $("startDate").value=dr.start;
+    $("endDate").value=dr.end;
     await loadCompanyOptions();
     await loadReport();
   }catch(e){
