@@ -28,9 +28,9 @@ body{margin:0;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic
 .business-message-area{width:100%;margin:0 auto 16px;background:#fff7ed;border:1px solid #fed7aa;border-left:5px solid #f97316;border-radius:14px;padding:8px 14px;box-shadow:0 2px 8px rgba(249,115,22,.08);text-align:center;box-sizing:border-box}
 .business-message-line{font-size:14px;line-height:1.55;color:#1f2937}
 .business-message-label{font-weight:bold;color:#c2410c}
-.today-info-card{width:100%;margin:0 auto 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(249,115,22,.08);text-align:center;box-sizing:border-box}
-.today-info-title{font-size:15px;font-weight:900;color:#c2410c;margin-bottom:6px}
-.today-info-line{font-size:14px;line-height:1.6;color:#374151}
+.today-info-card{width:100%;height:145px;margin:0 auto 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(249,115,22,.08);text-align:center;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.today-info-title{font-size:15px;font-weight:900;color:#c2410c;margin-bottom:6px;flex:0 0 auto}
+.today-info-line{font-size:14px;line-height:1.6;color:#374151;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .today-info-label{font-weight:bold;color:#c2410c}
 .calendar-card{margin-top:0;border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:#f9fafb;text-align:left}
 .calendar-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
@@ -192,7 +192,7 @@ onAuthStateChanged(auth,async user=>{
       hideLoading();
       return;
     }
-    document.getElementById("userInfo").innerHTML="ログイン中："+escapeHtml(user.email)+"<br>権限：運営（オペレーター）"+(data.role!=="operator"?"（企業側登録との兼務）":"")+(data.name?"　氏名："+escapeHtml(data.name):"")+(data.companyId?"　所属企業："+escapeHtml(data.companyName||data.companyId):"");
+    document.getElementById("userInfo").innerHTML="ログイン中："+escapeHtml(user.email)+"<br>権限：運営権限"+(data.name?"<br>氏名："+escapeHtml(data.name):"")+(data.companyId?"<br>所属企業："+escapeHtml(data.companyName||data.companyId):"");
     if(data.companyId){const toMyPage=document.getElementById("toMyPageLink");if(toMyPage)toMyPage.style.display="block"}
   }catch(e){
     console.error(e);
