@@ -81,14 +81,17 @@
     var companyLabel = opts.companyName
       ? esc(opts.companyName) + "（" + esc(opts.companyId || "") + "）"
       : esc(opts.companyId || "未指定");
+    var opFrom = getQueryParam("opFrom");
+    var backLinks = opFrom === "dashboard"
+      ? '<a href="operator-dashboard.html">←ダッシュボード（運営管理）</a>'
+      : '<a href="operator-companies.html">← 企業検索へ戻る</a>' + '<a href="operator-home.html">運営トップへ</a>';
     banner.innerHTML =
       '<span class="bo-left">' +
       '<span class="bo-badge">運営モード</span>' +
       "<span>現在の操作対象企業：<strong>" + companyLabel + "</strong></span>" +
       "</span>" +
       '<span class="bo-left">' +
-      '<a href="operator-companies.html">← 企業検索へ戻る</a>' +
-      '<a href="operator-home.html">運営トップへ</a>' +
+      backLinks +
       "</span>";
   }
 
