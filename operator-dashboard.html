@@ -100,7 +100,7 @@ const firebaseConfig={apiKey:"AIzaSyBMm7YmGFo4ZOdlXvsojZ-O40f8Rnf8Lus",authDomai
 const CATEGORY_ORDER=["コミュニケーション・ビジネススキル","読解力・思考力","キャリア・自己管理","IT・デジタル","情報管理・セキュリティ","データ分析・活用","プロジェクト管理","業務改善・品質管理","経営・戦略","顧客理解・マーケティング","会計・財務・税務","税金・年末調整","社会保険","勤怠管理","労務・雇用","法務・コンプライアンス","組織・マネジメント","リスク管理・危機対応","サステナビリティ・ESG","グローバル・ダイバーシティ","心理・行動"];
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
-let allCompanies=[],allUsers=[],allResults=[];
+let allCompanies=[],allUsers=[],allResults=[],currentRange=null;
 
 function hideLoading(){const l=$("pageLoading");if(l){l.classList.add("hidden");l.style.display="none"}}
 function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
@@ -113,6 +113,9 @@ function isCorrect(d){if(d.isCorrect===true)return true;if(d.isCorrect===false)r
 function round1(n){return Math.round(n*10)/10}
 function average(arr){if(!arr.length)return 0;return arr.reduce((a,b)=>a+b,0)/arr.length}
 function median(arr){if(!arr.length)return 0;const s=arr.slice().sort((a,b)=>a-b),mid=Math.floor(s.length/2);return s.length%2?s[mid]:(s[mid-1]+s[mid])/2}
+function parseDateKey(s){const p=String(s||"").split("-");return new Date(Number(p[0]),Number(p[1])-1,Number(p[2]))}
+function addDays(k,n){const d=parseDateKey(k);d.setDate(d.getDate()+n);return dateKey(d)}
+function enumerateDates(start,end){const arr=[];let cur=start,guard=0;while(cur&&end&&cur<=end&&guard<3660){arr.push(cur);cur=addDays(cur,1);guard++}return arr}
 function catSort(a,b){const ia=CATEGORY_ORDER.indexOf(a),ib=CATEGORY_ORDER.indexOf(b);if(ia>=0&&ib>=0)return ia-ib;if(ia>=0)return-1;if(ib>=0)return 1;return a.localeCompare(b,"ja")}
 
 function getDateRange(){return{start:$("startDate").value,end:$("endDate").value}}
@@ -144,6 +147,7 @@ async function loadData(){
     $("categoryPanel").style.display="none";
     return;
   }
+  currentRange=r;
   setStatus("","");
   $("summaryCards").style.display="none";
   $("companyPanel").style.display="none";
@@ -156,7 +160,7 @@ async function loadData(){
     allUsers=[];
     usSnap.forEach(ds=>{const d=ds.data()||{};allUsers.push({uid:ds.id,companyId:d.companyId||"",role:d.role||"user",active:isActive(d)})});
     allResults=[];
-    rsSnap.forEach(ds=>{const d=ds.data()||{};allResults.push({uid:d.uid||"",companyId:d.companyId||"",isCorrect:isCorrect(d),category1:first(d.category1,d.largeCategory,d.mainCategory,"未分類")})});
+    rsSnap.forEach(ds=>{const d=ds.data()||{};allResults.push({uid:d.uid||"",companyId:d.companyId||"",dateKey:first(d.dateKey,d.date),isCorrect:isCorrect(d),category1:first(d.category1,d.largeCategory,d.mainCategory,"未分類")})});
     render();
   }catch(e){
     console.error(e);
@@ -172,19 +176,24 @@ function render(){
   const companyFilter=$("companyFilter").value;
   const users=companyFilter==="all"?allUsers:allUsers.filter(u=>u.companyId===companyFilter);
   const results=companyFilter==="all"?allResults:allResults.filter(r=>r.companyId===companyFilter);
+  function blankCompany(id,name){return{companyId:id,companyName:name,registered:0,answeredSet:new Set(),answerCount:0,correctCount:0,dailySets:{}}}
   const byCompany={};
-  allCompanies.forEach(c=>{byCompany[c.companyId]={companyId:c.companyId,companyName:c.companyName,registered:0,answeredSet:new Set(),answerCount:0,correctCount:0}});
+  allCompanies.forEach(c=>{byCompany[c.companyId]=blankCompany(c.companyId,c.companyName)});
   users.forEach(u=>{
     if(!u.active)return;
-    if(!byCompany[u.companyId])byCompany[u.companyId]={companyId:u.companyId,companyName:"",registered:0,answeredSet:new Set(),answerCount:0,correctCount:0};
+    if(!byCompany[u.companyId])byCompany[u.companyId]=blankCompany(u.companyId,"");
     byCompany[u.companyId].registered++;
   });
   results.forEach(r=>{
-    if(!byCompany[r.companyId])byCompany[r.companyId]={companyId:r.companyId,companyName:"",registered:0,answeredSet:new Set(),answerCount:0,correctCount:0};
+    if(!byCompany[r.companyId])byCompany[r.companyId]=blankCompany(r.companyId,"");
     const c=byCompany[r.companyId];
     c.answeredSet.add(r.uid);
     c.answerCount++;
     if(r.isCorrect)c.correctCount++;
+    if(r.dateKey){
+      if(!c.dailySets[r.dateKey])c.dailySets[r.dateKey]=new Set();
+      c.dailySets[r.dateKey].add(r.uid);
+    }
   });
   const rows=Object.values(byCompany).filter(c=>companyFilter==="all"?true:c.companyId===companyFilter);
   rows.sort((a,b)=>String(a.companyId).localeCompare(String(b.companyId),"ja"));
@@ -192,9 +201,17 @@ function render(){
   const totalRegistered=rows.reduce((a,c)=>a+c.registered,0);
   const totalAnswered=rows.reduce((a,c)=>a+c.answeredSet.size,0);
 
+  // 平均回答率は、企業のダッシュボード（dashboard.html）と同じロジックで算出する：
+  // 対象期間内の日ごとに「その日に回答した人数 / 登録人数」を求め、日単位の回答率を期間全体で平均する。
+  const dateList=currentRange?enumerateDates(currentRange.start,currentRange.end):[];
   const answerRates=[],correctRates=[];
   const rowsComputed=rows.map(c=>{
-    const answerRate=c.registered?c.answeredSet.size/c.registered*100:0;
+    const dailyRates=dateList.map(dk=>{
+      const set=c.dailySets[dk];
+      const answeredCount=set?set.size:0;
+      return c.registered?answeredCount/c.registered*100:0;
+    });
+    const answerRate=dailyRates.length?average(dailyRates):0;
     const correctRate=c.answerCount?c.correctCount/c.answerCount*100:0;
     answerRates.push(answerRate);
     correctRates.push(correctRate);
