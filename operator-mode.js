@@ -83,8 +83,8 @@
       : esc(opts.companyId || "未指定");
     var opFrom = getQueryParam("opFrom");
     var backLinks = opFrom === "dashboard"
-      ? '<a href="operator-dashboard.html">← ダッシュボード（運営管理）</a>'
-      : '<a href="operator-companies.html">← 企業管理ページへ戻る</a>';
+      ? '<a href="operator-dashboard.html">← ダッシュボード（運営管理）へ戻る</a>'
+      : '<a href="operator-companies.html">← 企業管理ページ（運用管理）へ戻る</a>';
     banner.innerHTML =
       '<span class="bo-left">' +
       '<span class="bo-badge">運営モード</span>' +
@@ -101,7 +101,7 @@
       '<span class="bo-left"><span class="bo-badge">運営モード</span><span>' +
       esc(message || "対象企業が指定されていません。企業検索画面から入り直してください。") +
       "</span></span>" +
-      '<span class="bo-left"><a href="operator-companies.html">← 企業管理ページへ戻る</a></span>';
+      '<span class="bo-left"><a href="operator-companies.html">← 企業管理ページ（運用管理）へ戻る</a></span>';
   }
 
   global.BizmonOperatorMode = {
