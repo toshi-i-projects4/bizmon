@@ -33,7 +33,7 @@ export function choiceC(r) { return firstNonEmpty(r.choiceC, r.c); }
 export function selectedAnswer(r) { return firstNonEmpty(r.selectedChoice, r.selectedAnswer, r.userAnswer) || '未取得'; }
 export function correctAnswer(r) { return firstNonEmpty(r.correctChoice, r.correctAnswer) || '未取得'; }
 
-export const QUIZ_RESULT_CSV_HEADERS = ['日付', '社員コード', '氏名', '正誤', '大項目', '問題', '選択肢A', '選択肢B', '選択肢C', '回答', '解答', '解説', '問題ID'];
+export const QUIZ_RESULT_CSV_HEADERS = ['日付', '社員コード', '氏名', 'メールアドレス', '部署', '役職', '備考', '正誤', '大項目', '問題', '選択肢A', '選択肢B', '選択肢C', '回答', '解答', '解説', '問題ID'];
 
 export function quizResultToCsvRow(r) {
   const ok = isCorrectQuizResult(r);
@@ -41,6 +41,10 @@ export function quizResultToCsvRow(r) {
     r.dateKey || r.date || '',
     firstNonEmpty(r.employeeCode, r.employeeNo, r.staffCode),
     firstNonEmpty(r.name, r.displayName),
+    firstNonEmpty(r.email),
+    firstNonEmpty(r.department),
+    firstNonEmpty(r.position),
+    firstNonEmpty(r.note),
     ok ? '正解' : '不正解',
     firstNonEmpty(r.category1, r.largeCategory, r.mainCategory),
     firstNonEmpty(r.questionText, r.question),
