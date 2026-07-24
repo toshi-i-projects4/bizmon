@@ -113,7 +113,7 @@ ${location.origin+location.pathname.replace(/[^\/]*$/,"login.html")}
 
 ビズもん`;
 return{email:data.email,subject,body}}
-function showInviteMail(data){lastInvite=buildInviteMail(data);$("inviteTo").value=lastInvite.email;$("inviteSubject").value=lastInvite.subject;$("inviteBody").value=lastInvite.body;$("inviteMailCard").classList.remove("hidden");setInviteStatus("","")}
+function showInviteMail(data){lastInvite=buildInviteMail(data);if(lastInvite.email){lastInvite.email=`${data.name||"対象者"} <${lastInvite.email}>`}$("inviteTo").value=lastInvite.email;$("inviteSubject").value=lastInvite.subject;$("inviteBody").value=lastInvite.body;$("inviteMailCard").classList.remove("hidden");setInviteStatus("","")}
 async function copyInviteBody(){try{await navigator.clipboard.writeText(lastInvite.body);setInviteStatus("招待メール本文をコピーしました。","ok")}catch(e){$("inviteBody").focus();$("inviteBody").select();setInviteStatus("自動コピーできませんでした。本文欄を選択しましたので、手動でコピーしてください。","error")}}
 function openMailto(){if(!lastInvite.email){setInviteStatus("送信先メールアドレスがありません。","error");return}const url="mailto:"+encodeURIComponent(lastInvite.email)+"?subject="+encodeURIComponent(lastInvite.subject)+"&body="+encodeURIComponent(lastInvite.body);location.href=url;setInviteStatus("メールソフトを起動しました。送信前に内容を確認してください。","ok")}
 
