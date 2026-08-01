@@ -82,7 +82,7 @@ function updatePeriodHelp(r){
   if(isValidRange(r)){$("periodHelp").textContent="対象期間："+r.start+" 〜 "+r.end;}
   else{$("periodHelp").textContent="開始日・終了日を指定してください（開始日は終了日以前の日付にしてください）。";}
 }
-function defaultRange(){const d=new Date();return{start:dateKey(new Date(d.getFullYear(),d.getMonth(),1)),end:dateKey(d)}}
+function defaultRange(){const d=new Date();return{start:'2026-06-11',end:dateKey(d)}}
 
 async function loadCompanyOptions(){
   const snap=await getDocs(collection(db,"companies"));
