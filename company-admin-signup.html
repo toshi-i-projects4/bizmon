@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企業管理者登録｜ビズけあ</title>
+<link rel="icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<style>
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:"Hiragino Maru Gothic ProN","BIZ UDPGothic","Yu Gothic UI","Meiryo",sans-serif;background:#eef2f7;color:#111827;padding:20px;box-sizing:border-box}
+.card{width:100%;max-width:480px;background:#fff;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.10);padding:34px;box-sizing:border-box}
+h1{margin:0 0 20px;text-align:center;font-size:24px}
+.field-label{display:block;margin:16px 0 8px;font-size:14px;font-weight:bold;color:#374151}
+.text-input{width:100%;height:46px;padding:0 12px;border:1px solid #d1d5db;border-radius:10px;box-sizing:border-box;font-size:15px}
+.hint{font-size:12px;color:#6b7280;margin-top:6px;white-space:pre-wrap;line-height:1.6}
+.submit-btn{width:100%;margin-top:22px;height:48px;border:none;border-radius:12px;background:#55902f;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
+.submit-btn:hover{background:#487b28}
+.submit-btn:disabled{opacity:.6}
+.status-message{min-height:22px;margin-top:16px;font-size:14px;line-height:1.6;white-space:pre-wrap}
+.status-message.error{color:#dc2626}
+.status-message.ok{color:#166534}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>企業管理者登録</h1>
+  <p style="font-size:13px;color:#6b7280">運営または自社の企業管理者から届いた招待メールに記載のメールアドレスを入力し、パスワードを設定してください。</p>
+
+  <label class="field-label" for="email">メールアドレス（招待先と同じもの）</label>
+  <input id="email" class="text-input" type="email" placeholder="メールアドレスを入力">
+
+  <label class="field-label" for="password">パスワード</label>
+  <input id="password" class="text-input" type="password" placeholder="パスワードを入力">
+  <div id="pwHint" class="hint"></div>
+
+  <button id="submitBtn" class="submit-btn">登録する</button>
+  <div id="statusMessage" class="status-message"></div>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { PASSWORD_POLICY_TEXT, validatePassword } from "./password-policy.js";
+
+document.getElementById("pwHint").textContent = PASSWORD_POLICY_TEXT;
+function setStatus(msg, type) { const el = document.getElementById("statusMessage"); el.textContent = msg; el.className = "status-message " + (type || ""); }
+
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  setStatus("", "");
+  if (!email) { setStatus("メールアドレスを入力してください。", "error"); return; }
+  const pwErr = validatePassword(password);
+  if (pwErr) { setStatus(pwErr, "error"); return; }
+
+  const btn = document.getElementById("submitBtn");
+  try {
+    btn.disabled = true; btn.textContent = "確認中...";
+    const pendingSnap = await getDoc(doc(db, "pendingCompanyAdmins", email));
+    if (!pendingSnap.exists() || pendingSnap.data().status !== "pending") {
+      setStatus("このメールアドレス宛の招待が見つかりません。管理者にお問い合わせください。", "error");
+      return;
+    }
+    const pending = pendingSnap.data();
+    btn.textContent = "登録中...";
+
+    // 運営・産業医・従業員など、既に別の権限でビズけあのアカウントを持っている方が
+    // 追加で企業管理者としても招待されるケースに対応する。
+    // その場合は新規アカウントは作らず、既存アカウントに企業管理者の権限を追加する。
+    let cred;
+    let linkedExistingAccount = false;
+    try {
+      cred = await createUserWithEmailAndPassword(auth, email, password);
+    } catch (createErr) {
+      if (createErr && createErr.code === "auth/email-already-in-use") {
+        try {
+          cred = await signInWithEmailAndPassword(auth, email, password);
+          linkedExistingAccount = true;
+        } catch (signInErr) {
+          setStatus(
+            "このメールアドレスは既にビズけあの別のアカウント（運営・産業医・従業員など）で登録されています。\n"
+            + "その際に設定したパスワードを入力してください。パスワードが分からない場合は、ログイン画面の「パスワードを忘れた場合」から再設定できます。",
+            "error"
+          );
+          return;
+        }
+      } else {
+        throw createErr;
+      }
+    }
+
+    const existingCaSnap = await getDoc(doc(db, "companyAdmins", cred.user.uid));
+    if (existingCaSnap.exists() && existingCaSnap.data().status === "active") {
+      setStatus("このアカウントは既に企業管理者として登録されています。ログイン画面からログインしてください。", "error");
+      return;
+    }
+
+    await setDoc(doc(db, "companyAdmins", cred.user.uid), {
+      uid: cred.user.uid, companyId: pending.companyId,
+      employeeCode: pending.employeeCode || "", name: pending.name || "",
+      department: pending.department || "", position: pending.position || "",
+      email, role: "companyAdmin", status: "active", isApplicant: pending.isApplicant === true, note: pending.note || "",
+      createdAt: serverTimestamp(), createdBy: cred.user.uid, updatedAt: serverTimestamp(), updatedBy: cred.user.uid,
+    });
+    await updateDoc(doc(db, "pendingCompanyAdmins", email), {
+      status: "registered", registeredAt: serverTimestamp(), registeredUid: cred.user.uid, updatedAt: serverTimestamp(),
+    });
+    setStatus(
+      linkedExistingAccount
+        ? "既存のアカウントに企業管理者の権限を追加しました。企業管理ページへ移動します..."
+        : "登録が完了しました。企業管理ページへ移動します...",
+      "ok"
+    );
+    setTimeout(() => { location.href = "company-admin-home.html"; }, 900);
+  } catch (e) {
+    console.error(e);
+    const code = e && e.code ? e.code : "";
+    if (code === "auth/email-already-in-use") setStatus("このメールアドレスは既に登録されています。ログイン画面からログインしてください。", "error");
+    else setStatus("登録に失敗しました。時間をおいて再度お試しください。", "error");
+  } finally {
+    btn.disabled = false; btn.textContent = "登録する";
+  }
+});
+</script>
+</body>
+</html>
