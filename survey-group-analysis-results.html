@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サーベイ分析結果（全体）｜ビズけあ</title>
+<link rel="icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="stylesheet" href="shared-panel.css">
+<style>
+.company-line{font-size:13px;color:var(--muted);margin:-4px 0 14px}
+h3.subhead{font-size:14px;margin:18px 0 6px;color:var(--navy)}
+h4.subhead{font-size:12.5px;margin:10px 0 4px;color:var(--navy)}
+.q-bar{margin:12px 0}
+.q-bar-label{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.q-bar-track{display:flex;height:20px;border-radius:10px;overflow:hidden;background:#f3f4f6}
+.q-seg+.q-seg{margin-left:1px}
+.q-bar-summary{font-size:12px;color:var(--muted);margin-top:3px}
+.q-bar-legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);margin:6px 0 4px;flex-wrap:wrap}
+.legend-dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,200px));gap:10px;margin:10px 0}
+.card{background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.card-label{font-size:11.5px;color:var(--muted);font-weight:800}
+.card-value{font-size:22px;font-weight:900;color:var(--navy)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header-row"><h1>サーベイ分析結果（全体）</h1><a class="back" id="backLink" href="company-admin-home.html">← 企業管理者ホームへ戻る</a></div>
+  <div class="company-line" id="companyLine">読み込み中...</div>
+  <div class="notice-box">
+    このページは、氏名・メールアドレスなど個人を特定できる情報を含まない匿名の集計データのみを使用しています。記名式で実施したサイクルであっても、この集計データ自体は匿名です。厚生労働省マニュアルの推奨に準じ、10人未満の集計は個人が特定されるおそれがあるため詳細な数値の表示を抑制しています。個人別の回答は「従業員サーベイ回答結果（個別）」からご確認ください（記名式サイクルのみ）。
+  </div>
+
+  <div class="panel">
+    <h2>対象サイクルの選択</h2>
+    <label class="field-label">対象サイクル</label>
+    <select class="text-input" id="cycleSelect"><option value="">サイクルを選択してください</option></select>
+    <div class="row"><button class="btn" id="loadBtn">集計を表示する</button></div>
+    <div id="statusMessage" class="status-message"></div>
+  </div>
+
+  <div id="resultsArea" class="hidden">
+    <div class="panel">
+      <h2>実施概要（今回）</h2>
+      <div class="cards">
+        <div class="card"><div class="card-label">配信対象者数</div><div class="card-value" id="statEnrolled">-</div></div>
+        <div class="card"><div class="card-label">匿名集計データ数</div><div class="card-value" id="statResponded">-</div></div>
+        <div class="card"><div class="card-label">回答率</div><div class="card-value" id="statRate">-</div></div>
+        <div class="card"><div class="card-label">自由記述の記入率</div><div class="card-value" id="statOpenRate">-</div></div>
+      </div>
+      <div class="desc">配信対象者数は、このサイクルで発行した配信リンクの数（対象外にした分を含む）です。</div>
+    </div>
+
+    <div class="panel">
+      <h2>定点観測：設問ごとの結果（今回）</h2>
+      <div class="desc">毎回共通で聞く定点観測の設問について、5件法（全くそう思わない〜非常にそう思う）の回答分布と平均点です。</div>
+      <div id="questionBarsLegend"></div>
+      <div id="fixedQuestionsWrap"></div>
+    </div>
+
+    <div class="panel hidden" id="deepDivePanel">
+      <h2>深堀質問：設問ごとの結果（今回）</h2>
+      <div class="desc">このサイクルで実施した深堀質問（選択式のみ。自由記述は集計対象外）の回答分布と平均点です。</div>
+      <div id="deepDiveQuestionsWrap"></div>
+    </div>
+  </div>
+
+  <a class="back bottom-back" id="backLinkBottom" href="company-admin-home.html">← 企業管理者ホームへ戻る</a>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { esc, pct, fetchAllSurveyCyclesMeta, fetchSurveyCycleItems, fetchSurveyEnrolledCount, questionStats, renderQuestionBar, renderQuestionBarLegend } from "./survey-group-analysis-shared.js";
+import { DEFAULT_FIXED_QUESTIONS } from "./survey-shared.js";
+
+function setStatus(msg, type) { const el = document.getElementById("statusMessage"); el.textContent = msg; el.className = "status-message " + (type || ""); }
+function setBackLink(href, text) {
+  ["backLink", "backLinkBottom"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) { el.href = href; el.textContent = text; }
+  });
+}
+
+let myCompanyId = "", myCompanyName = "";
+let allCyclesMeta = [];
+let fixedQuestions = [];
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { location.href = "login.html"; return; }
+  const caSnap = await getDoc(doc(db, "companyAdmins", user.uid));
+  if (caSnap.exists() && caSnap.data().status === "active") {
+    myCompanyId = caSnap.data().companyId;
+  } else {
+    const drSnap = await getDoc(doc(db, "doctors", user.uid));
+    if (drSnap.exists() && drSnap.data().status === "active") {
+      myCompanyId = drSnap.data().companyId;
+      setBackLink("doctor-home.html", "← 産業医ホームへ戻る");
+    } else { alert("企業管理者または産業医のアカウントでのログインが必要です。"); location.href = "login.html"; return; }
+  }
+  const companySnap = await getDoc(doc(db, "companies", myCompanyId));
+  myCompanyName = companySnap.exists() ? companySnap.data().companyName : myCompanyId;
+  document.getElementById("companyLine").textContent = `${myCompanyName}（会社ID：${myCompanyId}）`;
+
+  const fixedSnap = await getDocs(query(collection(db, "companies", myCompanyId, "surveyFixedQuestions"), orderBy("order", "asc")));
+  fixedQuestions = fixedSnap.empty ? DEFAULT_FIXED_QUESTIONS : fixedSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+  document.getElementById("questionBarsLegend").innerHTML = renderQuestionBarLegend();
+  await loadCycles();
+});
+
+async function loadCycles() {
+  allCyclesMeta = await fetchAllSurveyCyclesMeta(db, myCompanyId);
+  const optionsHtml = allCyclesMeta.map((c) => `<option value="${c.id}">${c.label}</option>`).join("");
+  document.getElementById("cycleSelect").innerHTML = '<option value="">サイクルを選択してください</option>' + optionsHtml;
+
+  const urlCycleId = new URLSearchParams(location.search).get("cycle");
+  if (urlCycleId && allCyclesMeta.some((c) => c.id === urlCycleId)) {
+    document.getElementById("cycleSelect").value = urlCycleId;
+    loadSelectedCycle();
+  }
+}
+
+async function loadSelectedCycle() {
+  const cycleId = document.getElementById("cycleSelect").value;
+  if (!cycleId) { setStatus("対象サイクルを選択してください。", "error"); return; }
+  document.getElementById("resultsArea").classList.add("hidden");
+  setStatus("読み込み中...", "");
+  try {
+    const [items, enrolledCount] = await Promise.all([
+      fetchSurveyCycleItems(db, myCompanyId, cycleId),
+      fetchSurveyEnrolledCount(db, myCompanyId, cycleId),
+    ]);
+    if (!items.length) { setStatus("この対象サイクルには匿名集計データがありません（まだ回答が完了していない可能性があります）。", "error"); return; }
+
+    document.getElementById("statEnrolled").textContent = enrolledCount + "人";
+    document.getElementById("statResponded").textContent = items.length + "人";
+    document.getElementById("statRate").textContent = pct(items.length, enrolledCount) + "%";
+    const openCount = items.filter((it) => it.hasOpenAnswer).length;
+    document.getElementById("statOpenRate").textContent = pct(openCount, items.length) + "%";
+
+    let fixedHtml = "";
+    fixedQuestions.forEach((q, i) => { fixedHtml += renderQuestionBar(`Q${i + 1}. ${q.questionText}`, questionStats(items, q.id)); });
+    document.getElementById("fixedQuestionsWrap").innerHTML = fixedHtml;
+
+    const cycleMeta = allCyclesMeta.find((c) => c.id === cycleId);
+    const deepDiveQuestions = (cycleMeta && cycleMeta.deepDiveQuestions || []).filter((q) => q.type !== "freeText");
+    const deepDivePanel = document.getElementById("deepDivePanel");
+    if (deepDiveQuestions.length) {
+      let ddHtml = "";
+      deepDiveQuestions.forEach((q) => { ddHtml += renderQuestionBar(`${q.groupLabel ? "［" + q.groupLabel + "］" : ""}${q.questionText}`, questionStats(items, q.id)); });
+      document.getElementById("deepDiveQuestionsWrap").innerHTML = ddHtml;
+      deepDivePanel.classList.remove("hidden");
+    } else {
+      deepDivePanel.classList.add("hidden");
+    }
+
+    document.getElementById("resultsArea").classList.remove("hidden");
+    setStatus(`集計を表示しました（対象：${items.length}人）。`, "ok");
+  } catch (e) {
+    console.error(e);
+    setStatus("集計の取得に失敗しました。", "error");
+  }
+}
+
+document.getElementById("loadBtn").addEventListener("click", loadSelectedCycle);
+</script>
+</body>
+</html>

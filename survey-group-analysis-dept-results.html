@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サーベイ分析結果（部署別）｜ビズけあ</title>
+<link rel="icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="stylesheet" href="shared-panel.css">
+<style>
+.company-line{font-size:13px;color:var(--muted);margin:-4px 0 14px}
+h3.subhead{font-size:14px;margin:18px 0 6px;color:var(--navy)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header-row"><h1>サーベイ分析結果（部署別）</h1><a class="back" id="backLink" href="company-admin-home.html">← 企業管理者ホームへ戻る</a></div>
+  <div class="company-line" id="companyLine">読み込み中...</div>
+  <div class="notice-box">
+    このページは、氏名・メールアドレスなど個人を特定できる情報を含まない匿名の集計データのみを使用しています。厚生労働省マニュアルの推奨に準じ、10人未満の部署は個人が特定されるおそれがあるため、詳細な数値の表示を抑制しています。「定点観測 平均点」は、毎回共通で聞く定点観測の設問（5件法）について、回答者ごとの平均点をさらにグループ内で平均したものです。
+  </div>
+
+  <div class="panel">
+    <h2>対象サイクルの選択</h2>
+    <label class="field-label">対象サイクル</label>
+    <select class="text-input" id="cycleSelect"><option value="">サイクルを選択してください</option></select>
+    <div class="row"><button class="btn" id="loadBtn">集計を表示する</button></div>
+    <div id="statusMessage" class="status-message"></div>
+  </div>
+
+  <div id="resultsArea" class="hidden">
+    <div class="panel">
+      <h2>部署別の比較（今回）</h2>
+      <div class="desc">対象サイクルとして選択した回における、部署1・部署2・部署3それぞれの定点観測平均点です。平均点が高い順に表示しています。人数が10人未満の部署は、個人が特定されるおそれがあるため人数のみを表示しています。「全社平均との比較」は目安です（設問の性質により、必ずしも高いほうが良いとは限りません）。</div>
+      <div id="deptTablesWrap"></div>
+    </div>
+  </div>
+
+  <a class="back bottom-back" id="backLinkBottom" href="company-admin-home.html">← 企業管理者ホームへ戻る</a>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  fetchAllSurveyCyclesMeta, fetchSurveyCycleItems, aggregateSurveyGroups,
+  overallAvgStats, sortSurveyGroupRows, renderSurveyDeptTable,
+} from "./survey-group-analysis-shared.js";
+import { DEFAULT_FIXED_QUESTIONS } from "./survey-shared.js";
+
+function setStatus(msg, type) { const el = document.getElementById("statusMessage"); el.textContent = msg; el.className = "status-message " + (type || ""); }
+function setBackLink(href, text) {
+  ["backLink", "backLinkBottom"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) { el.href = href; el.textContent = text; }
+  });
+}
+
+let myCompanyId = "", myCompanyName = "";
+let allCyclesMeta = [];
+let fixedQuestionIds = [];
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { location.href = "login.html"; return; }
+  const caSnap = await getDoc(doc(db, "companyAdmins", user.uid));
+  if (caSnap.exists() && caSnap.data().status === "active") {
+    myCompanyId = caSnap.data().companyId;
+  } else {
+    const drSnap = await getDoc(doc(db, "doctors", user.uid));
+    if (drSnap.exists() && drSnap.data().status === "active") {
+      myCompanyId = drSnap.data().companyId;
+      setBackLink("doctor-home.html", "← 産業医ホームへ戻る");
+    } else { alert("企業管理者または産業医のアカウントでのログインが必要です。"); location.href = "login.html"; return; }
+  }
+  const companySnap = await getDoc(doc(db, "companies", myCompanyId));
+  myCompanyName = companySnap.exists() ? companySnap.data().companyName : myCompanyId;
+  document.getElementById("companyLine").textContent = `${myCompanyName}（会社ID：${myCompanyId}）`;
+
+  const fixedSnap = await getDocs(query(collection(db, "companies", myCompanyId, "surveyFixedQuestions"), orderBy("order", "asc")));
+  const fixedQuestions = fixedSnap.empty ? DEFAULT_FIXED_QUESTIONS : fixedSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  fixedQuestionIds = fixedQuestions.map((q) => q.id);
+
+  await loadCycles();
+});
+
+async function loadCycles() {
+  allCyclesMeta = await fetchAllSurveyCyclesMeta(db, myCompanyId);
+  const optionsHtml = allCyclesMeta.map((c) => `<option value="${c.id}">${c.label}</option>`).join("");
+  document.getElementById("cycleSelect").innerHTML = '<option value="">サイクルを選択してください</option>' + optionsHtml;
+
+  const urlCycleId = new URLSearchParams(location.search).get("cycle");
+  if (urlCycleId && allCyclesMeta.some((c) => c.id === urlCycleId)) {
+    document.getElementById("cycleSelect").value = urlCycleId;
+    loadSelectedCycle();
+  }
+}
+
+function renderResults(items) {
+  const { byDept } = aggregateSurveyGroups(items);
+  const companyAvg = overallAvgStats(items, fixedQuestionIds).avg;
+
+  const levelLabels = ["部署1", "部署2", "部署3"];
+  let deptHtml = "";
+  byDept.forEach((map, idx) => {
+    const rows = sortSurveyGroupRows(Object.entries(map).map(([name, arr]) => ({ name, stats: overallAvgStats(arr, fixedQuestionIds) })));
+    deptHtml += renderSurveyDeptTable(levelLabels[idx], rows, companyAvg);
+  });
+  document.getElementById("deptTablesWrap").innerHTML = deptHtml || '<div class="desc">部署別の集計対象データがありません。</div>';
+}
+
+async function loadSelectedCycle() {
+  const cycleId = document.getElementById("cycleSelect").value;
+  if (!cycleId) { setStatus("対象サイクルを選択してください。", "error"); return; }
+  document.getElementById("resultsArea").classList.add("hidden");
+  setStatus("読み込み中...", "");
+  try {
+    const items = await fetchSurveyCycleItems(db, myCompanyId, cycleId);
+    if (!items.length) { setStatus("この対象サイクルには匿名集計データがありません（まだ回答が完了していない可能性があります）。", "error"); return; }
+    renderResults(items);
+    document.getElementById("resultsArea").classList.remove("hidden");
+    setStatus(`集計を表示しました（対象：${items.length}人）。`, "ok");
+  } catch (e) {
+    console.error(e);
+    setStatus("集計の取得に失敗しました。", "error");
+  }
+}
+
+document.getElementById("loadBtn").addEventListener("click", loadSelectedCycle);
+</script>
+</body>
+</html>

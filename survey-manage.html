@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>従業員サーベイ実施｜ビズけあ</title>
+<link rel="icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="stylesheet" href="shared-panel.css">
+<style>
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,200px));gap:10px;margin:10px 0}
+.card{background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.card-label{font-size:11.5px;color:var(--muted);font-weight:800}
+.card-value{font-size:22px;font-weight:900;color:var(--navy)}
+.linkcell{font-size:11.5px;color:var(--muted);word-break:break-all;max-width:260px}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:6px}
+.header-row h1{margin:0}
+.bottom-back{display:block;margin-top:22px}
+.invite-mail-textarea{min-height:200px;font-family:inherit;line-height:1.6}
+.badge.not_started{background:#f3f4f6;color:#6b7280}
+.badge.completed{background:#dcfce7;color:#166534}
+.badge.cancelled{background:#f3f4f6;color:#94a3b8}
+/* ボタンの役割ごとの配色（ストレスチェック実施画面と同じ考え方に合わせる）
+   ・緑（既定の.btn）：実施・送信などの主要アクション
+   ・青緑（--teal）：招待メール作成／再有効化など、前向きな補助アクション
+   ・紺（--navy）：CSV出力などのデータ書き出し
+   ・オレンジ（--orange）：受付終了・対象外にするなど、状態を止める系の操作
+   ・グレー（--muted）：コピー系のユーティリティ操作 */
+.btn-teal{background:var(--teal)}
+.btn-teal:hover{background:var(--teal-dark)}
+.btn-navy{background:var(--navy)}
+.btn-navy:hover{background:#1e293b}
+.btn-orange{background:var(--orange)}
+.btn-orange:hover{background:var(--orange-deep)}
+.btn-muted{background:var(--muted)}
+.btn-muted:hover{background:#475569}
+.scroll-table-wrap{max-height:300px;overflow:auto}
+.scroll-table-wrap table{width:auto}
+.scroll-table-wrap th,.scroll-table-wrap td{white-space:nowrap}
+.scroll-table-wrap .linkcell{word-break:normal;max-width:none}
+.scroll-table-wrap thead th{position:sticky;top:0;background:#f8fafc;z-index:1}
+.scroll-table-wrap th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+.scroll-table-wrap th.sortable:hover{background:#eef2f7}
+.scroll-table-wrap th.sortable::after{content:"⇵";font-size:10px;color:var(--muted);margin-left:4px}
+.scroll-table-wrap th.sortable.sort-asc::after{content:"▲";color:var(--navy)}
+.scroll-table-wrap th.sortable.sort-desc::after{content:"▼";color:var(--navy)}
+#invitesTableWrap table{min-width:1050px}
+#cyclesTableWrap table{min-width:1250px}
+.dd-suggest-box{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:6px}
+.dd-suggest-box.triggered{border-color:#f59e0b;background:#fffbeb}
+.dd-suggest-head{display:flex;align-items:flex-start;gap:8px}
+.dd-suggest-head label{font-size:13px;font-weight:800;color:var(--navy)}
+.dd-suggest-meta{font-size:11.5px;color:var(--muted);margin:2px 0 6px 22px}
+.dd-suggest-q{font-size:12.5px;color:#374151;margin:2px 0 2px 22px}
+.freq-banner{font-size:12.5px;color:#075985;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:10px 12px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header-row">
+    <h1>従業員サーベイ実施</h1>
+    <a class="back" id="backLink" href="company-admin-home.html">← 企業管理者ホームへ戻る</a>
+  </div>
+  <div id="bannerHost"></div>
+  <div class="freq-banner" id="freqBanner"></div>
+
+  <div class="panel" id="adminOnlyCyclePanel">
+    <div class="desc">
+      「新しい従業員サーベイを実施する」を押すと、そのとき「従業員名簿管理」に登録されている有効な従業員全員分の回答リンク（個別トークンURL）が発行されます。従業員はログインせず、発行されたリンクから直接回答します。
+    </div>
+
+    <div id="deepDivePanel" style="background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 20px">
+      <label class="field-label" style="margin-top:0">参照するストレスチェックサイクル（深堀質問の自動提案用・任意）</label>
+      <div class="desc" style="margin-top:2px;margin-bottom:0">
+        ストレスチェックの集団分析結果を踏まえて、深堀質問を組み立てたい場合に選択してください。選択したサイクルの集団分析結果（全社ベース）をもとに、下に深堀質問候補を自動提案します。選択しない場合、深堀質問なし（定点観測＋自由記述のみ）のサーベイになります。
+      </div>
+      <select class="text-input" id="refCycleSelect" style="margin-top:10px"><option value="">（参照しない）</option></select>
+      <div id="deepDiveSuggestions"></div>
+    </div>
+
+    <div id="cycleSurveyModePanel" style="background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 20px">
+      <label class="field-label" style="margin-top:0">記名／無記名</label>
+      <div class="desc" style="margin-top:2px;margin-bottom:8px">
+        実施の都度、このサーベイを記名式で行うか無記名式で行うかを選べます（デフォルトは記名式）。無記名式の場合、個人別の回答は企業管理画面では確認できません（運営管理画面でのみ確認できます）。
+      </div>
+      <div style="display:flex;gap:16px">
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px"><input type="radio" name="cycleSurveyMode" value="named" checked> 記名式</label>
+        <label style="font-size:13px;display:flex;align-items:center;gap:6px"><input type="radio" name="cycleSurveyMode" value="anonymous"> 無記名式</label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div><label class="field-label">年度</label><select class="text-input" id="fiscalYear"></select></div>
+      <div><label class="field-label">第○回</label><select class="text-input" id="roundNumber"></select></div>
+    </div>
+    <div class="grid2">
+      <div><label class="field-label">開始日時（任意）</label><input type="datetime-local" class="text-input" id="cycleStartDate"></div>
+      <div><label class="field-label">終了日時（任意）</label><input type="datetime-local" class="text-input" id="cycleEndDate"></div>
+    </div>
+    <div class="desc" style="margin-top:2px">
+      開始日時・終了日時を入力すると、下の招待メール案内文（「受付期間」欄）に自動的に反映されます。ただし、ここで終了日時を入力しても受付は自動的には終了しません。受付を締め切る場合は、下の「実施履歴一覧」から「受付終了にする」を押してください。
+    </div>
+    <label class="field-label">備考（任意）</label>
+    <input class="text-input" id="cycleRemarks" placeholder="例：2026年8月 定点観測サーベイ">
+    <div class="row"><button class="btn" id="createCycleBtn">新しい従業員サーベイを実施する</button></div>
+    <div id="cycleCreateStatus" class="status-message"></div>
+
+    <div id="createResultCard" class="hidden" style="margin-top:14px">
+      <div class="notice-box" id="createResultSummary"></div>
+      <div class="row">
+        <button class="btn btn-teal" id="createBulkMailBtn">招待メール作成（一括）</button>
+      </div>
+    </div>
+
+    <div id="inviteMailCard" class="hidden" style="margin-top:14px;border-top:1px solid var(--line);padding-top:16px">
+      <h2 style="font-size:15px">招待メール案内</h2>
+      <div class="desc">対象者への案内メールのひな形です。個別の「招待メール作成」から開いた場合は、氏名・回答リンクが自動的に差し込まれます。「招待メール作成（一括）」から開いた場合は、{{氏名}}・{{回答リンク}}などのプレースホルダーのままなので、「CSVでダウンロード（メール差し込み用データ）」のCSVを使ったメール差し込み配信にご利用ください。内容をご確認のうえ、必要に応じて編集してからお使いください。</div>
+      <label class="field-label">送信先</label>
+      <input class="text-input" id="inviteMailTo">
+      <label class="field-label">件名</label>
+      <input class="text-input" id="inviteMailSubject">
+      <label class="field-label">本文</label>
+      <textarea class="text-input invite-mail-textarea" id="inviteMailBody"></textarea>
+      <div id="inviteMailStatus" class="status-message"></div>
+      <div class="row">
+        <button class="btn btn-navy" id="downloadResultCsvBtn">CSVでダウンロード（メール差し込み用データ）</button>
+        <button class="btn btn-muted" id="copyInviteMailBtn">本文をコピー</button>
+        <button class="btn" id="mailtoInviteBtn">メールを作成</button>
+      </div>
+    </div>
+
+    <h2 style="font-size:15px;margin-top:24px">実施履歴一覧</h2>
+    <div class="desc">
+      これまでに実施した従業員サーベイの一覧です。「受付終了にする」を押すと、そのサイクルは受付を停止し、対象者がリンクを開いても回答を進められなくなります（発行済みのリンク自体は残りますが、データは削除されません。「受付を再開する」を押すといつでも受付を再開できます）。表には、各サイクルで発行した回答リンクの発行数と、状態（未回答・回答済・対象外）ごとの人数を表示しています。列見出しをクリックすると並べ替えができます。表が画面に収まらない場合は、表の中で上下・左右にスクロールしてご覧ください。
+    </div>
+    <div class="table-wrap scroll-table-wrap" id="cyclesTableWrap">
+      <table>
+        <thead><tr>
+          <th>操作</th>
+          <th class="sortable" data-sort-key="status">状態</th>
+          <th class="sortable" data-sort-key="fiscalYear">年度</th>
+          <th class="sortable" data-sort-key="roundNumber">第○回</th>
+          <th class="sortable" data-sort-key="startDate">開始日時</th>
+          <th class="sortable" data-sort-key="endDate">終了日時</th>
+          <th>備考</th>
+          <th>記名/無記名</th>
+          <th>深堀質問領域</th>
+          <th class="sortable" data-sort-key="issuedCount">発行数</th>
+          <th class="sortable" data-sort-key="notStartedCount">未回答</th>
+          <th class="sortable" data-sort-key="completedCount">回答済</th>
+          <th class="sortable" data-sort-key="cancelledCount">対象外</th>
+        </tr></thead>
+        <tbody id="cyclesBody"><tr><td colspan="13">読み込み中...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>選択中サイクルの配信リンク一覧</h2>
+    <div class="desc">対象者ごとの回答リンクです。「リンクのコピー」でコピーし、各自にメールやチャット等で送付してください。メールアドレスが登録されている方は「招待メール作成（個別）」からそのまま案内メールを作成できます。招待対象から外した方は「対象外」として管理できます。記名式サーベイの個人別の回答内容は、「従業員サーベイ回答結果（個別）」の画面から確認できます。</div>
+    <label class="field-label">対象サイクル</label>
+    <select class="text-input" id="cycleSelect"></select>
+    <div class="row"><button class="btn btn-navy" id="downloadLinksCsvBtn">リンク一覧をCSVで出力</button></div>
+    <div class="table-wrap scroll-table-wrap" id="invitesTableWrap">
+      <table>
+        <thead><tr>
+          <th>操作</th><th>リンクのコピー</th><th>招待メール作成（個別）</th>
+          <th class="sortable" data-sort-key="status">状態</th>
+          <th class="sortable" data-sort-key="invitedAt">発行日</th>
+          <th class="sortable" data-sort-key="employeeCode">社員コード</th>
+          <th class="sortable" data-sort-key="name">氏名</th>
+          <th class="sortable" data-sort-key="department1">部署1</th>
+          <th class="sortable" data-sort-key="department2">部署2</th>
+          <th class="sortable" data-sort-key="department3">部署3</th>
+          <th class="sortable" data-sort-key="email">メールアドレス</th>
+          <th class="sortable" data-sort-key="link">回答リンク</th>
+        </tr></thead>
+        <tbody id="invitesBody"><tr><td colspan="12">サイクルを選択してください。</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <a class="back bottom-back" id="backLinkBottom" href="company-admin-home.html">← 企業管理者ホームへ戻る</a>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, setDoc, updateDoc, writeBatch, collection, getDocs, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getDepartmentLevels, formatDepartmentPath } from "./stress-check-data.js";
+import { fetchCycleItems, aggregate, pct } from "./group-analysis-shared.js";
+import { DEEPDIVE_TRIGGER_THRESHOLD, computeDeepDiveSuggestions, buildDeepDiveQuestions } from "./survey-shared.js";
+
+const INVITE_STATUS_LABEL = { not_started: "未回答", completed: "回答済", cancelled: "対象外" };
+const FREQ_LABELS = { annual1: "年1回（法定最低限）", annual2: "年2回", annual4: "年4回（推奨）" };
+
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function csvEscape(v) { const s = String(v == null ? "" : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+function fmtDateTime(v) {
+  if (v && v.toDate) return v.toDate().toLocaleString("ja-JP");
+  return "-";
+}
+function fmtLocalDateTime(v) {
+  if (!v) return "-";
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return "-";
+  return d.toLocaleString("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+function fmtMailDateTime(v) {
+  if (!v) return "未定";
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return "未定";
+  return d.toLocaleString("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+function downloadCsv(filename, rows) {
+  const csv = rows.map((r) => r.map(csvEscape).join(",")).join("\r\n");
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function setBackLink(href, text) {
+  ["backLink", "backLinkBottom"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) { el.href = href; el.textContent = text; }
+  });
+}
+
+function populateCycleFormOptions() {
+  const nowYear = new Date().getFullYear();
+  const years = [];
+  for (let y = nowYear; y <= 2035; y++) years.push(y);
+  document.getElementById("fiscalYear").innerHTML = years.map((y) => `<option value="${y}">${y}年度</option>`).join("");
+  document.getElementById("roundNumber").innerHTML = [1, 2, 3, 4, 5, 6].map((n) => `<option value="${n}">第${n}回</option>`).join("");
+}
+populateCycleFormOptions();
+
+// -----------------------------------------------------------------------------
+// 深堀質問の自動提案（参照するストレスチェックサイクルの全社集団分析結果から算出）
+// -----------------------------------------------------------------------------
+let lastAggByCycle = {};
+
+async function loadRefCycles() {
+  const select = document.getElementById("refCycleSelect");
+  const snap = await getDocs(query(collection(db, "companies", myCompanyId, "stressCheckCycles"), orderBy("createdAt", "desc")));
+  const optionsHtml = snap.docs.map((d) => {
+    const c = d.data();
+    return `<option value="${esc(d.id)}">${c.fiscalYear}年度 第${c.roundNumber}回</option>`;
+  }).join("");
+  select.innerHTML = `<option value="">（参照しない）</option>` + optionsHtml;
+  select.addEventListener("change", onRefCycleChange);
+}
+
+async function onRefCycleChange() {
+  const cycleId = document.getElementById("refCycleSelect").value;
+  const box = document.getElementById("deepDiveSuggestions");
+  if (!cycleId) { box.innerHTML = ""; return; }
+  box.innerHTML = "集団分析結果を読み込み中...";
+  try {
+    let agg = lastAggByCycle[cycleId];
+    if (!agg) {
+      const items = await fetchCycleItems(db, myCompanyId, cycleId);
+      if (!items.length) { box.innerHTML = '<div class="desc">このサイクルの集団分析データがまだありません（未実施、または受検中の可能性があります）。</div>'; return; }
+      agg = aggregate(items);
+      lastAggByCycle[cycleId] = agg;
+    }
+    const { suggestions, harassment, mentalRisk } = computeDeepDiveSuggestions(agg, pct);
+    renderDeepDiveSuggestions(suggestions, harassment, mentalRisk);
+  } catch (e) { console.error(e); box.innerHTML = '<div class="desc">読み込みに失敗しました。</div>'; }
+}
+
+function fmtPctNote(item) {
+  if (item.insufficientN && item.n === 0) return "このサイクルではデータがありません（80項目版や該当する追加モジュールを実施していない可能性があります）";
+  if (item.insufficientN) return `対象人数が10人未満のため判定できません（n=${item.n}）`;
+  return `high比率 ${item.highPct.toFixed(1)}%（n=${item.n}、しきい値${DEEPDIVE_TRIGGER_THRESHOLD}%）`;
+}
+
+function renderDeepDiveSuggestions(suggestions, harassment, mentalRisk) {
+  const box = document.getElementById("deepDiveSuggestions");
+  let html = '<div class="desc" style="margin-top:8px">自動提案された領域はチェック済みです。必要に応じてオン・オフを切り替えてください（全社共通の質問として、配信対象の従業員全員に同じ内容を配信します）。</div>';
+  suggestions.forEach((s) => {
+    html += `<div class="dd-suggest-box ${s.triggered ? "triggered" : ""}">
+      <div class="dd-suggest-head">
+        <input type="checkbox" class="dd-suggest-check" id="dd_check_${esc(s.id)}" value="${esc(s.id)}" ${s.triggered ? "checked" : ""}>
+        <label for="dd_check_${esc(s.id)}">${esc(s.label)}${s.triggered ? "（自動提案）" : ""}</label>
+      </div>
+      <div class="dd-suggest-meta">${esc(fmtPctNote(s))}</div>
+      <div class="dd-suggest-q">・${esc(s.quant.questionText)}</div>
+      <div class="dd-suggest-q">・${esc(s.freeText.questionText)}</div>
+    </div>`;
+  });
+
+  const consultTriggered = harassment.triggered || mentalRisk.triggered;
+  html += `<div class="dd-suggest-box ${consultTriggered ? "triggered" : ""}">
+    <div class="dd-suggest-head">
+      <input type="checkbox" id="consultNoticeCheck" ${consultTriggered ? "checked" : ""}>
+      <label for="consultNoticeCheck">相談窓口・産業医面談のご案内を表示する${consultTriggered ? "（自動提案）" : ""}</label>
+    </div>
+    <div class="dd-suggest-meta">ハラスメント：${esc(fmtPctNote(harassment))} ／ メンタルリスク：${esc(fmtPctNote(mentalRisk))}</div>
+    <div class="dd-suggest-q">深堀質問は出さず、相談窓口・産業医面談のご案内のみを全員に表示します（二次被害防止のため、個別の深堀は行いません）。</div>
+  </div>`;
+
+  box.innerHTML = html;
+}
+
+function getSelectedDeepDiveIds() {
+  return Array.from(document.querySelectorAll(".dd-suggest-check:checked")).map((c) => c.value);
+}
+
+// 招待メール（案内メール）のひな形。{{氏名}}・{{回答リンク}}・{{部署}}（部署1〜3をまとめた表示）・
+// {{部署1}}・{{部署2}}・{{部署3}}・{{社員コード}}のプレースホルダーに対応。
+function buildDefaultInviteMailTemplate() {
+  const lines = [
+    "{{氏名}} 様", "",
+    "ビズけあより、従業員サーベイのご案内です。", "",
+    "以下のURLを開き、内容をご確認のうえご回答ください。", "",
+    "{{回答リンク}}", "",
+    "受付期間：{{開始日時}} ～ {{終了日時}}", "",
+    "記名式の場合、回答は会社の担当者・産業医が個人ごとに確認できます。無記名式の場合は、個人が特定されない形で扱われます。", "",
+    "ご不明な点がございましたら、下記の担当者までご連絡ください。",
+    "担当者：【　　】",
+    "連絡先：【　　】", "",
+    "ビズけあ",
+  ];
+  return { subject: "【ビズけあ】従業員サーベイのご案内", body: lines.join("\n") };
+}
+
+function fillMailPlaceholders(text, data) {
+  const dep = getDepartmentLevels(data);
+  const map = {
+    "{{氏名}}": data.name || "対象者",
+    "{{回答リンク}}": data.link || "",
+    "{{部署}}": formatDepartmentPath(data),
+    "{{部署1}}": dep.department1,
+    "{{部署2}}": dep.department2,
+    "{{部署3}}": dep.department3,
+    "{{社員コード}}": data.employeeCode || "",
+    "{{開始日時}}": fmtMailDateTime(data.startDate),
+    "{{終了日時}}": fmtMailDateTime(data.endDate),
+  };
+  let result = String(text || "");
+  Object.keys(map).forEach((k) => { result = result.split(k).join(map[k]); });
+  return result;
+}
+
+function fillDatePlaceholdersOnly(text, startDate, endDate) {
+  return String(text || "")
+    .split("{{開始日時}}").join(fmtMailDateTime(startDate))
+    .split("{{終了日時}}").join(fmtMailDateTime(endDate));
+}
+
+function setInviteMailStatus(msg, type) {
+  const el = document.getElementById("inviteMailStatus");
+  el.textContent = msg || "";
+  el.className = "status-message " + (type || "");
+}
+
+function showInviteMail(data, opts) {
+  opts = opts || {};
+  const template = buildDefaultInviteMailTemplate();
+  const card = document.getElementById("inviteMailCard");
+  card.classList.remove("hidden");
+  if (opts.rawPlaceholders) {
+    document.getElementById("inviteMailTo").value = "{{氏名}} <{{メールアドレス}}>";
+    document.getElementById("inviteMailSubject").value = fillDatePlaceholdersOnly(template.subject, opts.startDate, opts.endDate);
+    document.getElementById("inviteMailBody").value = fillDatePlaceholdersOnly(template.body, opts.startDate, opts.endDate);
+  } else {
+    document.getElementById("inviteMailTo").value = data.email ? `${data.name || "対象者"} <${data.email}>` : "";
+    document.getElementById("inviteMailSubject").value = fillMailPlaceholders(template.subject, data);
+    document.getElementById("inviteMailBody").value = fillMailPlaceholders(template.body, data);
+  }
+  setInviteMailStatus(opts.statusPrefix || "内容をご確認のうえ、必要であれば編集してから送信してください。", "");
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+document.getElementById("copyInviteMailBtn").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(document.getElementById("inviteMailBody").value); setInviteMailStatus("本文をコピーしました。", "ok"); }
+  catch (e) {
+    document.getElementById("inviteMailBody").focus();
+    document.getElementById("inviteMailBody").select();
+    setInviteMailStatus("自動コピーできませんでした。本文欄を選択しましたので、手動でコピーしてください。", "error");
+  }
+});
+
+document.getElementById("mailtoInviteBtn").addEventListener("click", () => {
+  const to = document.getElementById("inviteMailTo").value.trim();
+  const subject = document.getElementById("inviteMailSubject").value;
+  const body = document.getElementById("inviteMailBody").value;
+  if (!to) { setInviteMailStatus("送信先メールアドレスがありません。宛先を確認してください。", "error"); return; }
+  location.href = "mailto:" + encodeURIComponent(to) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  setInviteMailStatus("メールソフトを起動しました。送信前に内容を確認してください。", "ok");
+});
+
+document.getElementById("createBulkMailBtn").addEventListener("click", () => {
+  showInviteMail({}, {
+    rawPlaceholders: true,
+    startDate: lastCreateStartDate,
+    endDate: lastCreateEndDate,
+    statusPrefix: "複数の対象者へ一括送信する場合は、各メールサービスの メール差し込み（メールマージ）機能を使い、下記の「CSVでダウンロード（メール差し込み用データ）」ボタンよりファイルをダウンロードして、メール差し込み（メールマージ）データとして指定して送信してください。",
+  });
+});
+
+let myCompanyId = "";
+let isOperatorProxy = false;
+let isAdmin = false;
+let currentUid = "";
+let currentInvites = [];
+let lastCreateResults = [];
+let lastCreateStartDate = "";
+let lastCreateEndDate = "";
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { location.href = "login.html"; return; }
+  currentUid = user.uid;
+  const params = new URLSearchParams(location.search);
+  const companyParam = params.get("company");
+  const opSnap = await getDoc(doc(db, "operators", user.uid));
+  if (opSnap.exists() && companyParam) {
+    isOperatorProxy = true; myCompanyId = companyParam;
+    setBackLink("operator-companies.html", "← 運営：企業一覧へ戻る");
+  } else {
+    const caSnap = await getDoc(doc(db, "companyAdmins", user.uid));
+    if (caSnap.exists() && caSnap.data().status === "active") {
+      isAdmin = true; myCompanyId = caSnap.data().companyId;
+    } else {
+      const drSnap = await getDoc(doc(db, "doctors", user.uid));
+      if (drSnap.exists() && drSnap.data().status === "active") { myCompanyId = drSnap.data().companyId; setBackLink("doctor-home.html", "← 産業医ホームへ戻る"); }
+      else { alert("アクセス権限がありません。"); location.href = "login.html"; return; }
+    }
+  }
+  if (!isAdmin && !isOperatorProxy) {
+    // 産業医：サイクル作成・配信リンク発行は不可だが、会社共有結果の閲覧権限はある
+    document.getElementById("adminOnlyCyclePanel").classList.add("hidden");
+  }
+
+  if (isOperatorProxy) {
+    const companySnap = await getDoc(doc(db, "companies", myCompanyId));
+    const s = document.createElement("script"); s.src = "operator-mode.js";
+    s.onload = () => window.BizukeaOperatorMode.renderBanner({ companyId: myCompanyId, companyName: companySnap.exists() ? companySnap.data().companyName : "" });
+    document.head.appendChild(s);
+  }
+
+  const companySnap2 = await getDoc(doc(db, "companies", myCompanyId));
+  const freq = companySnap2.exists() ? companySnap2.data().checkFrequency : "";
+  document.getElementById("freqBanner").textContent = freq
+    ? `現在のストレスチェック実施頻度設定：${FREQ_LABELS[freq] || freq}。ストレスチェックの集団分析結果確定後、1か月以内を目安に従業員サーベイを実施することを推奨します（設定は「企業設定」で変更できます）。`
+    : "ストレスチェックの実施頻度が未設定です（「企業設定」から設定できます）。集団分析結果確定後、1か月以内を目安に従業員サーベイを実施することを推奨します。";
+
+  loadRefCycles();
+  loadCycles();
+});
+
+document.getElementById("createCycleBtn").addEventListener("click", async () => {
+  const el = document.getElementById("cycleCreateStatus");
+  document.getElementById("createResultCard").classList.add("hidden");
+  document.getElementById("inviteMailCard").classList.add("hidden");
+  try {
+    const fiscalYear = Number(document.getElementById("fiscalYear").value);
+    const roundNumber = Number(document.getElementById("roundNumber").value);
+    const startDate = document.getElementById("cycleStartDate").value;
+    const endDate = document.getElementById("cycleEndDate").value;
+    if (startDate && endDate && endDate <= startDate) {
+      el.textContent = "終了日時は開始日時より後の日時を指定してください。";
+      el.className = "status-message error";
+      return;
+    }
+    const remarks = document.getElementById("cycleRemarks").value.trim();
+    const cycleId = `${fiscalYear}-${roundNumber}`;
+    const surveyModeEl = document.querySelector('input[name="cycleSurveyMode"]:checked');
+    const surveyMode = surveyModeEl ? surveyModeEl.value : "named";
+    const refCycleId = document.getElementById("refCycleSelect").value;
+    const selectedDeepDiveIds = getSelectedDeepDiveIds();
+    const deepDiveQuestions = buildDeepDiveQuestions(selectedDeepDiveIds);
+    const consultNoticeChecked = !!document.getElementById("consultNoticeCheck")?.checked;
+
+    // startDate・endDateはあくまで案内メールの文面に表示する予定期間であり、
+    // この日時になっても受付を自動的には締め切らない（status変更は行わない）。
+    // 受付を締め切るときは、実施履歴一覧の「受付終了にする」ボタンから手動で行う。
+    const cycleRef = doc(db, "companies", myCompanyId, "surveyCycles", cycleId);
+    await setDoc(cycleRef, {
+      fiscalYear, roundNumber, remarks, startDate, endDate, status: "open",
+      surveyMode, refCycleId: refCycleId || "", selectedDeepDiveIds, deepDiveQuestions,
+      harassmentNotice: consultNoticeChecked, mentalRiskNotice: consultNoticeChecked,
+      createdAt: serverTimestamp(), createdBy: auth.currentUser.uid, updatedAt: serverTimestamp(), updatedBy: auth.currentUser.uid,
+    });
+
+    const rosterSnap = await getDocs(collection(db, "companies", myCompanyId, "employeeRoster"));
+    const batch = writeBatch(db);
+    const results = [];
+    rosterSnap.forEach((d) => {
+      const r = d.data();
+      if (r.status === "inactive") return;
+      const dep = getDepartmentLevels(r);
+      const deptPath = formatDepartmentPath(r);
+      const inviteRef = doc(collection(db, "companies", myCompanyId, "surveyInvites"));
+      const link = `${location.origin}/survey-entry.html?company=${encodeURIComponent(myCompanyId)}&token=${encodeURIComponent(inviteRef.id)}`;
+      batch.set(inviteRef, {
+        cycleId, name: r.name || "", department: deptPath, department1: dep.department1, department2: dep.department2, department3: dep.department3,
+        position: r.position || "", employeeCode: r.employeeCode || "", email: r.email || "",
+        gender: r.gender || "", ageGroup: r.ageGroup || "", tenureGroup: r.tenureGroup || "", employmentType: r.employmentType || "",
+        mode: surveyMode, deepDiveQuestions,
+        harassmentNotice: consultNoticeChecked, mentalRiskNotice: consultNoticeChecked,
+        status: "not_started", anonUid: "", invitedAt: serverTimestamp(), completedAt: null, cancelledAt: null, cancelledBy: null,
+      });
+      results.push({ name: r.name || "", department1: dep.department1, department2: dep.department2, department3: dep.department3, position: r.position || "", employeeCode: r.employeeCode || "", email: r.email || "", link });
+    });
+    await batch.commit();
+
+    lastCreateResults = results;
+    lastCreateStartDate = startDate;
+    lastCreateEndDate = endDate;
+    el.textContent = `「${fiscalYear}年度 第${roundNumber}回」の従業員サーベイを実施し、${results.length}名分の回答リンクを発行しました。下の「配信リンク一覧」からもご確認いただけます。`;
+    el.className = "status-message ok";
+
+    document.getElementById("createResultSummary").textContent = `${results.length}件の回答リンクを発行しました。案内メールを送る場合は「招待メール作成（一括）」から文面を作成してください。まとめて送る場合は、そこに表示される「CSVでダウンロード（メール差し込み用データ）」で一覧を保存できます。`;
+    document.getElementById("createResultCard").classList.remove("hidden");
+    document.getElementById("cycleRemarks").value = "";
+    document.getElementById("cycleStartDate").value = "";
+    document.getElementById("cycleEndDate").value = "";
+    loadCycles();
+  } catch (e) { console.error(e); el.textContent = "実施に失敗しました。（同じ年度・回が既に存在する可能性があります）"; el.className = "status-message error"; }
+});
+
+document.getElementById("downloadResultCsvBtn").addEventListener("click", () => {
+  if (!lastCreateResults.length) { alert("出力できる結果がありません。"); return; }
+  const rows = [["氏名", "部署1", "部署2", "部署3", "役職", "社員コード", "メールアドレス", "回答リンク"], ...lastCreateResults.map((r) => [r.name, r.department1, r.department2, r.department3, r.position, r.employeeCode, r.email, r.link])];
+  downloadCsv("従業員サーベイ_発行結果.csv", rows);
+});
+
+// 「実施履歴一覧」の並び替え状態（クリックした列見出しのdata-sort-keyと昇順/降順）。
+let currentCycles = [];
+let cycleSort = { key: null, dir: 1 };
+
+function cyclesSortValue(c, key) {
+  if (key === "status") return c.status || "";
+  if (key === "startDate" || key === "endDate") return c[key] || "";
+  return c[key] || 0;
+}
+
+function sortedCycles() {
+  if (!cycleSort.key) return currentCycles;
+  const { key, dir } = cycleSort;
+  return [...currentCycles].sort((a, b) => {
+    const av = cyclesSortValue(a, key);
+    const bv = cyclesSortValue(b, key);
+    if (av < bv) return -1 * dir;
+    if (av > bv) return 1 * dir;
+    return 0;
+  });
+}
+
+function updateCyclesSortHeaders() {
+  document.querySelectorAll("#cyclesTableWrap th.sortable").forEach((th) => {
+    th.classList.remove("sort-asc", "sort-desc");
+    if (th.dataset.sortKey === cycleSort.key) th.classList.add(cycleSort.dir === 1 ? "sort-asc" : "sort-desc");
+  });
+}
+
+document.querySelectorAll("#cyclesTableWrap th.sortable").forEach((th) => {
+  th.addEventListener("click", () => {
+    const key = th.dataset.sortKey;
+    if (cycleSort.key === key) cycleSort.dir *= -1;
+    else { cycleSort.key = key; cycleSort.dir = 1; }
+    renderCyclesRows();
+  });
+});
+
+function deepDiveAreaLabel(c) {
+  if (!c.selectedDeepDiveIds || !c.selectedDeepDiveIds.length) return "なし";
+  return c.selectedDeepDiveIds.join("・");
+}
+
+function renderCyclesRows() {
+  const body = document.getElementById("cyclesBody");
+  if (!currentCycles.length) { body.innerHTML = '<tr><td colspan="13">まだ従業員サーベイを実施していません。</td></tr>'; updateCyclesSortHeaders(); return; }
+  const rows = sortedCycles().map((c) => {
+    const toggleLabel = c.status === "open" ? "受付終了にする" : "受付を再開する";
+    const nextStatus = c.status === "open" ? "closed" : "open";
+    const toggleClass = c.status === "open" ? "btn-orange" : "";
+    return `<tr>
+      <td><button class="btn ${toggleClass}" data-id="${esc(c.id)}" data-next="${nextStatus}" style="height:32px;padding:0 10px;font-size:12px">${toggleLabel}</button></td>
+      <td><span class="badge ${c.status === "open" ? "ok" : "warn"}">${esc(c.status)}</span></td>
+      <td>${c.fiscalYear}年度</td>
+      <td>第${c.roundNumber}回</td>
+      <td>${fmtLocalDateTime(c.startDate)}</td>
+      <td>${fmtLocalDateTime(c.endDate)}</td>
+      <td>${esc(c.remarks || "-")}</td>
+      <td>${c.surveyMode === "named" ? "記名式" : "無記名式"}</td>
+      <td style="font-size:12px">${esc(deepDiveAreaLabel(c))}</td>
+      <td>${c.issuedCount}</td>
+      <td>${c.notStartedCount}</td>
+      <td>${c.completedCount}</td>
+      <td>${c.cancelledCount}</td>
+    </tr>`;
+  });
+  body.innerHTML = rows.join("");
+  body.querySelectorAll("button[data-id]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (btn.dataset.next === "open") {
+        const ok = confirm("この実施を再度受付中に戻します。従業員は再びこのリンクから回答できるようになります。よろしいですか？");
+        if (!ok) return;
+      }
+      await updateDoc(doc(db, "companies", myCompanyId, "surveyCycles", btn.dataset.id), { status: btn.dataset.next, updatedAt: serverTimestamp() });
+      loadCycles();
+    });
+  });
+  updateCyclesSortHeaders();
+}
+
+document.getElementById("cycleSelect").addEventListener("change", () => { loadInvites(); });
+
+async function loadCycles() {
+  const body = document.getElementById("cyclesBody");
+  const select = document.getElementById("cycleSelect");
+  try {
+    const snap = await getDocs(query(collection(db, "companies", myCompanyId, "surveyCycles"), orderBy("createdAt", "desc")));
+    if (snap.empty) {
+      currentCycles = [];
+      cycleSort = { key: null, dir: 1 };
+      body.innerHTML = '<tr><td colspan="13">まだ従業員サーベイを実施していません。</td></tr>';
+      select.innerHTML = '<option value="">(実施履歴なし)</option>';
+      updateCyclesSortHeaders();
+      loadInvites();
+      return;
+    }
+
+    const invitesSnap = await getDocs(collection(db, "companies", myCompanyId, "surveyInvites"));
+    const countsByCycle = {};
+    invitesSnap.forEach((d) => {
+      const inv = d.data();
+      const cid = inv.cycleId;
+      if (!cid) return;
+      if (!countsByCycle[cid]) countsByCycle[cid] = { total: 0, not_started: 0, completed: 0, cancelled: 0 };
+      countsByCycle[cid].total++;
+      if (countsByCycle[cid][inv.status] !== undefined) countsByCycle[cid][inv.status]++;
+    });
+
+    const options = [];
+    currentCycles = [];
+    snap.forEach((d) => {
+      const c = d.data();
+      const title = `${c.fiscalYear}年度 第${c.roundNumber}回`;
+      options.push(`<option value="${esc(d.id)}">${esc(title)}</option>`);
+      const counts = countsByCycle[d.id] || { total: 0, not_started: 0, completed: 0, cancelled: 0 };
+      currentCycles.push({
+        id: d.id,
+        fiscalYear: c.fiscalYear,
+        roundNumber: c.roundNumber,
+        startDate: c.startDate || "",
+        endDate: c.endDate || "",
+        remarks: c.remarks,
+        surveyMode: c.surveyMode || "named",
+        selectedDeepDiveIds: c.selectedDeepDiveIds || [],
+        status: c.status,
+        issuedCount: counts.total,
+        notStartedCount: counts.not_started,
+        completedCount: counts.completed,
+        cancelledCount: counts.cancelled,
+      });
+    });
+    select.innerHTML = options.join("");
+    cycleSort = { key: null, dir: 1 };
+    renderCyclesRows();
+    loadInvites();
+  } catch (e) { console.error(e); body.innerHTML = '<tr><td colspan="13">読み込みに失敗しました。</td></tr>'; }
+}
+
+// 「選択中サイクルの配信リンク一覧」の並び替え状態。
+let inviteSort = { key: "invitedAt", dir: -1 };
+let lastLoadedCycleId = null;
+
+function invitesSortValue(inv, key) {
+  if (key === "invitedAt") {
+    const v = inv.invitedAt;
+    if (v && typeof v.toMillis === "function") return v.toMillis();
+    if (v && typeof v.seconds === "number") return v.seconds * 1000;
+    return 0;
+  }
+  if (key === "status") return INVITE_STATUS_LABEL[inv.status] || inv.status || "";
+  return (inv[key] || "").toString();
+}
+
+function sortedInvites() {
+  const { key, dir } = inviteSort;
+  return [...currentInvites].sort((a, b) => {
+    const av = invitesSortValue(a, key);
+    const bv = invitesSortValue(b, key);
+    if (av < bv) return -1 * dir;
+    if (av > bv) return 1 * dir;
+    const ac = invitesSortValue(a, "employeeCode");
+    const bc = invitesSortValue(b, "employeeCode");
+    if (ac < bc) return 1;
+    if (ac > bc) return -1;
+    return 0;
+  });
+}
+
+function updateInvitesSortHeaders() {
+  document.querySelectorAll("#invitesTableWrap th.sortable").forEach((th) => {
+    th.classList.remove("sort-asc", "sort-desc");
+    if (th.dataset.sortKey === inviteSort.key) th.classList.add(inviteSort.dir === 1 ? "sort-asc" : "sort-desc");
+  });
+}
+
+// ・未回答：招待対象から外す（対象外にする）
+// ・対象外：リンクを再度有効にする
+// ・回答済み：操作なし（回答内容を保護するため再有効化はできない）。
+function renderActionCell(inv) {
+  if (inv.status === "not_started") {
+    return `<button class="btn btn-orange exclude-invite-btn" data-token="${esc(inv.token)}" style="height:32px;padding:0 10px;font-size:12px">招待対象から外す</button>`;
+  }
+  if (inv.status === "cancelled") {
+    return `<button class="btn btn-teal reactivate-invite-btn" data-token="${esc(inv.token)}" style="height:32px;padding:0 10px;font-size:12px">リンクを再度有効にする</button>`;
+  }
+  return "－";
+}
+
+function renderInvitesRows() {
+  const body = document.getElementById("invitesBody");
+  if (!currentInvites.length) { body.innerHTML = '<tr><td colspan="12">対象者がいません。</td></tr>'; updateInvitesSortHeaders(); return; }
+  const selectedCycleId = document.getElementById("cycleSelect").value;
+  const selectedCycle = currentCycles.find((c) => c.id === selectedCycleId);
+  const rows = sortedInvites().map((inv) => {
+    const actionCell = renderActionCell(inv);
+    return `<tr>
+      <td>${actionCell}</td>
+      <td><button class="btn btn-muted copy-link-btn" data-link="${esc(inv.link)}" style="height:32px;padding:0 10px;font-size:12px">リンクのコピー</button></td>
+      <td><button class="btn btn-teal mail-invite-btn" data-name="${esc(inv.name)}" data-email="${esc(inv.email || "")}" data-link="${esc(inv.link)}" data-department1="${esc(inv.department1)}" data-department2="${esc(inv.department2)}" data-department3="${esc(inv.department3)}" style="height:32px;padding:0 10px;font-size:12px">招待メール作成（個別）</button></td>
+      <td><span class="badge ${esc(inv.status)}">${esc(INVITE_STATUS_LABEL[inv.status] || inv.status)}</span></td>
+      <td>${fmtDateTime(inv.invitedAt)}</td>
+      <td>${esc(inv.employeeCode || "")}</td>
+      <td>${esc(inv.name)}</td>
+      <td>${esc(inv.department1)}</td>
+      <td>${esc(inv.department2)}</td>
+      <td>${esc(inv.department3)}</td>
+      <td>${esc(inv.email || "")}</td>
+      <td class="linkcell">${esc(inv.link)}</td>
+    </tr>`;
+  });
+  body.innerHTML = rows.join("");
+  body.querySelectorAll(".exclude-invite-btn").forEach((btn) => {
+    btn.addEventListener("click", () => { excludeInvite(btn.dataset.token); });
+  });
+  body.querySelectorAll(".reactivate-invite-btn").forEach((btn) => {
+    btn.addEventListener("click", () => { reactivateInvite(btn.dataset.token); });
+  });
+  body.querySelectorAll(".copy-link-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(btn.dataset.link); btn.textContent = "コピー済み"; setTimeout(() => { btn.textContent = "リンクのコピー"; }, 1500); }
+      catch (e) { alert("コピーに失敗しました。手動で選択してコピーしてください。"); }
+    });
+  });
+  body.querySelectorAll(".mail-invite-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      showInviteMail({
+        name: btn.dataset.name, email: btn.dataset.email, link: btn.dataset.link,
+        department1: btn.dataset.department1, department2: btn.dataset.department2, department3: btn.dataset.department3,
+        startDate: selectedCycle ? selectedCycle.startDate : "",
+        endDate: selectedCycle ? selectedCycle.endDate : "",
+      });
+    });
+  });
+  updateInvitesSortHeaders();
+}
+
+document.querySelectorAll("#invitesTableWrap th.sortable").forEach((th) => {
+  th.addEventListener("click", () => {
+    const key = th.dataset.sortKey;
+    if (inviteSort.key === key) inviteSort.dir *= -1;
+    else { inviteSort.key = key; inviteSort.dir = 1; }
+    renderInvitesRows();
+  });
+});
+
+async function loadInvites() {
+  const cycleId = document.getElementById("cycleSelect").value;
+  const body = document.getElementById("invitesBody");
+  if (cycleId !== lastLoadedCycleId) {
+    inviteSort = { key: "invitedAt", dir: -1 };
+    lastLoadedCycleId = cycleId;
+  }
+  if (!cycleId) { body.innerHTML = '<tr><td colspan="12">サイクルを選択してください。</td></tr>'; currentInvites = []; updateInvitesSortHeaders(); return; }
+  try {
+    const snap = await getDocs(query(collection(db, "companies", myCompanyId, "surveyInvites"), where("cycleId", "==", cycleId)));
+    currentInvites = [];
+    snap.forEach((d) => {
+      const token = d.id;
+      const inv = d.data();
+      const dep = getDepartmentLevels(inv);
+      const link = `${location.origin}/survey-entry.html?company=${encodeURIComponent(myCompanyId)}&token=${encodeURIComponent(token)}`;
+      currentInvites.push({ token, employeeCode: inv.employeeCode || "", name: inv.name, department1: dep.department1, department2: dep.department2, department3: dep.department3, email: inv.email || "", status: inv.status, invitedAt: inv.invitedAt, link });
+    });
+    renderInvitesRows();
+  } catch (e) { console.error(e); body.innerHTML = '<tr><td colspan="12">読み込みに失敗しました。</td></tr>'; }
+}
+
+async function excludeInvite(token) {
+  const ok = confirm("この従業員サーベイの回答リンクを対象外にします。\n\n対象外にすると、一覧の「未回答」から外れ、このリンクからは回答できなくなります。\nよろしいですか？");
+  if (!ok) return;
+  try {
+    await updateDoc(doc(db, "companies", myCompanyId, "surveyInvites", token), {
+      status: "cancelled",
+      cancelledAt: serverTimestamp(),
+      cancelledBy: currentUid,
+    });
+    loadInvites();
+  } catch (e) {
+    console.error(e);
+    alert("対象外への変更に失敗しました。\n" + (e.code || "") + "\n" + (e.message || e));
+  }
+}
+
+async function reactivateInvite(token) {
+  const ok = confirm("この回答リンクを再度有効にします。\n\n状態を「未回答」に戻し、同じリンクから改めて回答できるようにします。\nよろしいですか？");
+  if (!ok) return;
+  try {
+    await updateDoc(doc(db, "companies", myCompanyId, "surveyInvites", token), {
+      status: "not_started",
+      anonUid: "",
+      cancelledAt: null,
+      cancelledBy: null,
+    });
+    loadInvites();
+  } catch (e) {
+    console.error(e);
+    alert("再有効化に失敗しました。\n" + (e.code || "") + "\n" + (e.message || e));
+  }
+}
+
+document.getElementById("downloadLinksCsvBtn").addEventListener("click", () => {
+  if (!currentInvites.length) { alert("出力できるリンクがありません。サイクルを選択してください。"); return; }
+  const rows = [["氏名", "部署1", "部署2", "部署3", "メールアドレス", "状態", "発行日", "回答リンク"], ...currentInvites.map((i) => [i.name, i.department1, i.department2, i.department3, i.email, INVITE_STATUS_LABEL[i.status] || i.status, fmtDateTime(i.invitedAt), i.link])];
+  downloadCsv("配信リンク一覧.csv", rows);
+});
+
+</script>
+</body>
+</html>

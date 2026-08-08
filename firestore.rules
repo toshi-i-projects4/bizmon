@@ -1,779 +1,334 @@
 rules_version = '2';
+
+// ビズけあ Firestoreセキュリティルール（v2：従業員ログイン廃止・トークン方式版）
+//
+// v2での方針変更点：
+// - 従業員はアカウントを持たない（employees / pendingEmployees を廃止）。
+//   ストレスチェック・従業員サーベイは、企業管理者が発行した「トークン付きURL」から
+//   Firebase Anonymous Auth でサインインして回答する（ビズてすの受検方式と同じ考え方）。
+// - 個人のストレスチェック結果（stressCheckResults）を読めるのは
+//   「運営（isOperator）」と「担当産業医（isDoctorOf）」のみ。企業管理者は読めない。
+//   本人も、回答送信後にFirestoreから読み戻すことはしない設計（アプリ側でその場だけ表示）。
+// - 本人が会社への共有に同意した場合のみ companyVisibleResults が作られ、
+//   企業管理者・産業医・運営が読める。
+// - 本人が産業医面談を希望した場合のみ interviewRequests が作られ、
+//   企業管理者・産業医が読める（運営には別途 stressCheckResults 経由で見える）。
+// - 従業員サーベイ（surveyResponses）は、記名式の場合のみ企業管理者が読める。
+//   無記名の場合は運営のみが読める。
+//
+// companyId・cycleId・トークン自体は「知っていれば読める」情報とは別に、
+// 個人の健康情報を含むドキュメントの読み取りは上記のロールに限定している。
+// 本番運用前に、セキュリティの専門家によるレビューを必ず受けてください。
+//
+// v3での修正点：
+// - pendingOperators / pendingCompanyAdmins / pendingDoctors の read を get/list に分割。
+//   旧v2の "allow read: if ... || isSignedIn()" は、operator-signup.html・
+//   company-admin-signup.html・doctor-signup.htmlのセルフサインアップ画面が「サインインする
+//   前」に招待の存在確認（getDoc）を行う設計と噛み合わず、常に permission-denied で
+//   「登録に失敗しました」になってしまうバグがあった。get（メールアドレス指定の1件読み取り）は
+//   未認証でも許可し、list（一覧取得・企業一覧画面などで使用）のみ運営・企業管理者に限定する形に
+//   修正した。
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    /************************************************************
-     * 共通関数
-     ************************************************************/
+
     function isSignedIn() {
       return request.auth != null;
     }
-    function hasUserDoc() {
-      return isSignedIn()
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+
+    function isOperator() {
+      return isSignedIn() && exists(/databases/$(database)/documents/operators/$(request.auth.uid));
     }
-    function myUser() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+
+    function isCompanyAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/companyAdmins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/companyAdmins/$(request.auth.uid)).data.status == "active";
     }
-    function isAdmin() {
-      return hasUserDoc()
-        && myUser().role == "admin";
+
+    function companyAdminData() {
+      return get(/databases/$(database)/documents/companyAdmins/$(request.auth.uid)).data;
     }
-    function isUser() {
-      return hasUserDoc()
-        && myUser().role == "user";
+
+    function isApplicantCompanyAdmin() {
+      return isCompanyAdmin() && companyAdminData().isApplicant == true;
     }
-    function isActiveUser() {
-      return hasUserDoc()
-        && myUser().status == "active";
+
+    function isCompanyAdminOf(companyId) {
+      return isCompanyAdmin() && companyAdminData().companyId == companyId;
     }
-    function isApplicant() {
-      return hasUserDoc()
-        && myUser().isApplicant == true;
+
+    function isDoctor() {
+      return isSignedIn() && exists(/databases/$(database)/documents/doctors/$(request.auth.uid))
+        && get(/databases/$(database)/documents/doctors/$(request.auth.uid)).data.status == "active";
     }
-    function myCompanyId() {
-      return myUser().companyId;
+
+    function doctorData() {
+      return get(/databases/$(database)/documents/doctors/$(request.auth.uid)).data;
     }
-    function sameCompany(companyId) {
-      return hasUserDoc()
-        && myCompanyId() == companyId;
+
+    function isDoctorOf(companyId) {
+      return isDoctor() && doctorData().companyId == companyId;
     }
-    function validRole(role) {
-      return role in ["admin", "user"];
+
+    // 産業医のセルフサインアップ（初回登録）完了時、本人が pendingDoctors の該当ドキュメントを
+    // 「registered」に更新できるようにする。status・registeredAt・registeredUid・updatedAt 以外の
+    // フィールドは変更不可にして、他社の招待内容を書き換えられないようにする。
+    function isSelfCompletingPendingDoctor() {
+      return isDoctor()
+        && request.resource.data.status == "registered"
+        && request.resource.data.registeredUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "registeredAt", "registeredUid", "updatedAt"]);
     }
-    function validUserStatus(status) {
-      return status in ["active", "inactive"];
-    }
-    function validPendingStatus(status) {
-      return status in ["pending", "registered", "cancelled"];
-    }
-    /************************************************************
-     * account-settings.html
-     * 本人によるメールアドレス更新
-     ************************************************************/
-    function canUpdateOwnAccountEmail(userId) {
-      return isSignedIn()
-        && request.auth.uid == userId
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          "email",
-          "updatedAt",
-          "updatedBy",
-          "emailSyncPending",
-          "pendingAuthEmail",
-          "emailSyncError",
-          "emailSyncFailedAt"
-        ])
-        && request.resource.data.email is string
-        && request.resource.data.updatedBy == request.auth.uid
-        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
-        && (!("emailSyncPending" in request.resource.data) || request.resource.data.emailSyncPending is bool)
-        && (!("pendingAuthEmail" in request.resource.data) || request.resource.data.pendingAuthEmail is string)
-        && (!("emailSyncError" in request.resource.data) || request.resource.data.emailSyncError is string)
-        && (!("emailSyncFailedAt" in request.resource.data) || request.resource.data.emailSyncFailedAt is timestamp);
-    }
-    /************************************************************
-     * user-edit-single.html
-     * 管理者による自社ユーザー編集
-     ************************************************************/
-    function canAdminUpdateCompanyUser() {
-      return isAdmin()
-        && isActiveUser()
-        && resource.data.companyId == myCompanyId()
-        && request.resource.data.companyId == myCompanyId()
-        && validRole(request.resource.data.role)
-        && validUserStatus(request.resource.data.status)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          "employeeCode",
-          "name",
-          "department",
-          "position",
-          "role",
-          "status",
-          "isApplicant",
-          "note",
-          "updatedAt",
-          "updatedBy"
-        ])
-        && (!("employeeCode" in request.resource.data) || request.resource.data.employeeCode is string)
-        && (!("name" in request.resource.data) || request.resource.data.name is string)
-        && (!("department" in request.resource.data) || request.resource.data.department is string)
-        && (!("position" in request.resource.data) || request.resource.data.position is string)
-        && (!("note" in request.resource.data) || request.resource.data.note is string)
-        && (!("isApplicant" in request.resource.data) || request.resource.data.isApplicant is bool)
-        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
-        && (!("updatedBy" in request.resource.data) || request.resource.data.updatedBy is string);
-    }
-    /************************************************************
-     * weatherSettings 形式チェック
-     *
-     * weather-settings.html で保存する天気予報・警報注意報の
-     * 表示地域設定。
-     *
-     * users/{uid}.weatherSettings に保存される。
-     ************************************************************/
-    function validWeatherSettings(setting) {
-      return setting is map
-        && setting.keys().hasAll([
-          "weatherOfficeCode",
-          "weatherOfficeName",
-          "weatherAreaCode",
-          "weatherAreaName"
-        ])
-        && setting.keys().hasOnly([
-          "weatherOfficeCode",
-          "weatherOfficeName",
-          "weatherAreaCode",
-          "weatherAreaName",
-          "weatherPrefectureName",
-          "weatherClass20Code",
-          "weatherClass20Name",
-          "weatherCityCode",
-          "weatherCityName",
-          "updatedAt",
-          "uid"
-        ])
-        && setting.weatherOfficeCode is string
-        && setting.weatherOfficeName is string
-        && setting.weatherAreaCode is string
-        && setting.weatherAreaName is string
-        && (!("weatherPrefectureName" in setting) || setting.weatherPrefectureName is string)
-        && (!("weatherClass20Code" in setting) || setting.weatherClass20Code is string)
-        && (!("weatherClass20Name" in setting) || setting.weatherClass20Name is string)
-        && (!("weatherCityCode" in setting) || setting.weatherCityCode is string)
-        && (!("weatherCityName" in setting) || setting.weatherCityName is string)
-        && (!("uid" in setting) || setting.uid is string)
-        && (!("updatedAt" in setting) || setting.updatedAt is timestamp);
-    }
-    function canUpdateOwnWeatherSettings(userId) {
-      return isSignedIn()
-        && request.auth.uid == userId
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          "weatherSettings"
-        ])
-        && validWeatherSettings(request.resource.data.weatherSettings);
-    }
-    /************************************************************
-     * companyQuizSettings 形式チェック
-     ************************************************************/
-    function validCompanyQuizSettings(companyId) {
-      return request.resource.data.keys().hasOnly([
-          "companyId",
-          "activeCategories",
-          "categoryMode",
-          "updatedAt",
-          "updatedBy",
-          "updatedByEmail",
-          "updatedByName",
-          "updatedByEmployeeCode",
-          "nextApplyDate",
-          "nextCategories"
-        ])
-        && request.resource.data.companyId == companyId
-        && request.resource.data.activeCategories is list
-        && request.resource.data.categoryMode == "category1"
-        && request.resource.data.updatedBy == request.auth.uid
-        && (!("updatedByEmail" in request.resource.data) || request.resource.data.updatedByEmail is string)
-        && (!("updatedByName" in request.resource.data) || request.resource.data.updatedByName is string)
-        && (!("updatedByEmployeeCode" in request.resource.data) || request.resource.data.updatedByEmployeeCode is string)
-        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
-        && (!("nextApplyDate" in request.resource.data) || request.resource.data.nextApplyDate is string)
-        && (!("nextCategories" in request.resource.data) || request.resource.data.nextCategories is list);
-    }
-    /************************************************************
-     * companyQuizSettings/changeLogs
-     * カテゴリー設定履歴 形式チェック
-     ************************************************************/
-    function validCompanyQuizSettingChangeLog(companyId) {
-      return request.resource.data.keys().hasOnly([
-          "companyId",
-          "action",
-          "beforeCategories",
-          "afterCategories",
-          "addedCategories",
-          "removedCategories",
-          "nextApplyDate",
-          "categoryMode",
-          "updatedAt",
-          "updatedBy",
-          "updatedByEmail",
-          "updatedByName",
-          "updatedByEmployeeCode",
-          "page"
-        ])
-        && request.resource.data.companyId == companyId
-        && request.resource.data.companyId == myCompanyId()
-        && request.resource.data.action == "updateCategorySettings"
-        && request.resource.data.beforeCategories is list
-        && request.resource.data.afterCategories is list
-        && request.resource.data.addedCategories is list
-        && request.resource.data.removedCategories is list
-        && request.resource.data.categoryMode == "category1"
-        && request.resource.data.updatedBy == request.auth.uid
-        && request.resource.data.page == "category-settings.html"
-        && (!("updatedByEmail" in request.resource.data) || request.resource.data.updatedByEmail is string)
-        && (!("updatedByName" in request.resource.data) || request.resource.data.updatedByName is string)
-        && (!("updatedByEmployeeCode" in request.resource.data) || request.resource.data.updatedByEmployeeCode is string)
-        && (!("nextApplyDate" in request.resource.data) || request.resource.data.nextApplyDate is string)
-        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp);
-    }
-    /************************************************************
-     * companyQuizSettings/changeLogs
-     * ユーザー編集履歴 形式チェック
-     ************************************************************/
-    function validUserEditChangeLog(companyId) {
-      return request.resource.data.keys().hasOnly([
-          "companyId",
-          "logType",
-          "targetUid",
-          "targetEmployeeCode",
-          "targetName",
-          "action",
-          "before",
-          "after",
-          "changes",
-          "updatedAt",
-          "updatedBy",
-          "updatedByEmail",
-          "updatedByName",
-          "updatedByEmployeeCode",
-          "page"
-        ])
-        && request.resource.data.companyId == companyId
-        && request.resource.data.companyId == myCompanyId()
-        && request.resource.data.logType == "userEdit"
-        && request.resource.data.page in [
-          "user-edit-single.html",
-          "user-edit-bulk.html"
-        ]
-        && request.resource.data.action in [
-          "updateUser",
-          "disableUser",
-          "bulkEditUser"
-        ]
-        && request.resource.data.targetUid is string
-        && request.resource.data.targetEmployeeCode is string
-        && request.resource.data.targetName is string
-        && request.resource.data.before is map
-        && request.resource.data.after is map
-        && request.resource.data.changes is list
-        && request.resource.data.updatedBy == request.auth.uid
-        && (!("updatedByEmail" in request.resource.data) || request.resource.data.updatedByEmail is string)
-        && (!("updatedByName" in request.resource.data) || request.resource.data.updatedByName is string)
-        && (!("updatedByEmployeeCode" in request.resource.data) || request.resource.data.updatedByEmployeeCode is string)
-        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp);
-    }
-    /************************************************************
-     * dailyQuizAssignments 形式チェック
-     ************************************************************/
-    function validDailyQuizAssignmentCreate() {
-      return request.resource.data.keys().hasOnly([
-          "companyId",
-          "companyName",
-          "dateKey",
-          "status",
-          "questionId",
-          "category1",
-          "category2",
-          "question",
-          "choiceA",
-          "choiceB",
-          "choiceC",
-          "correctAnswer",
-          "explanation",
-          "appliedQuizSettings",
-          "questionSelection",
-          "createdBy",
-          "createdAt",
-          "updatedAt",
-          "updatedBy"
-        ])
-        && request.resource.data.companyId is string
-        && request.resource.data.companyId == myCompanyId()
-        && request.resource.data.dateKey is string
-        && request.resource.data.status == "fixed"
-        && request.resource.data.questionId is string
-        && request.resource.data.category1 is string
-        && request.resource.data.category2 is string
-        && request.resource.data.question is string
-        && request.resource.data.choiceA is string
-        && request.resource.data.choiceB is string
-        && request.resource.data.choiceC is string
-        && request.resource.data.correctAnswer is string
-        && request.resource.data.explanation is string
-        && (!("companyName" in request.resource.data) || request.resource.data.companyName is string)
-        && (!("createdBy" in request.resource.data) || request.resource.data.createdBy is string)
-        && (!("createdAt" in request.resource.data) || request.resource.data.createdAt is timestamp)
-        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
-        && (!("updatedBy" in request.resource.data) || request.resource.data.updatedBy is string)
-        && (!("appliedQuizSettings" in request.resource.data) || request.resource.data.appliedQuizSettings is map)
-        && (!("questionSelection" in request.resource.data) || request.resource.data.questionSelection is map);
-    }
-    function validDailyQuizAssignmentUpdate() {
-      return request.resource.data.keys().hasOnly([
-          "companyId",
-          "companyName",
-          "dateKey",
-          "status",
-          "questionId",
-          "category1",
-          "category2",
-          "question",
-          "choiceA",
-          "choiceB",
-          "choiceC",
-          "correctAnswer",
-          "explanation",
-          "appliedQuizSettings",
-          "questionSelection",
-          "createdBy",
-          "createdAt",
-          "updatedAt",
-          "updatedBy"
-        ])
-        && request.resource.data.companyId == resource.data.companyId
-        && request.resource.data.dateKey == resource.data.dateKey
-        && request.resource.data.status == resource.data.status
-        && request.resource.data.companyId == myCompanyId()
-        && request.resource.data.questionId is string
-        && request.resource.data.category1 is string
-        && request.resource.data.category2 is string
-        && request.resource.data.question is string
-        && request.resource.data.choiceA is string
-        && request.resource.data.choiceB is string
-        && request.resource.data.choiceC is string
-        && request.resource.data.correctAnswer is string
-        && request.resource.data.explanation is string
-        && (!("companyName" in request.resource.data) || request.resource.data.companyName is string)
-        && (!("createdBy" in request.resource.data) || request.resource.data.createdBy is string)
-        && (!("createdAt" in request.resource.data) || request.resource.data.createdAt is timestamp)
-        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp)
-        && (!("updatedBy" in request.resource.data) || request.resource.data.updatedBy is string)
-        && (!("appliedQuizSettings" in request.resource.data) || request.resource.data.appliedQuizSettings is map)
-        && (!("questionSelection" in request.resource.data) || request.resource.data.questionSelection is map);
-    }
-    /************************************************************
-     * companyQuizProgress 形式チェック
-     ************************************************************/
-    function validCompanyQuizProgressCreate(companyId) {
-      return request.resource.data.keys().hasOnly([
-          "companyId",
-          "lastAssignedDate",
-          "lastQuestionId",
-          "lastCategory1",
-          "remainingQuestionIds",
-          "cycleQuestionIds",
-          "ruleVersion",
-          "updatedAt",
-          "updatedBy"
-        ])
-        && request.resource.data.companyId == companyId
-        && request.resource.data.companyId == myCompanyId()
-        && request.resource.data.lastAssignedDate is string
-        && request.resource.data.lastQuestionId is string
-        && request.resource.data.lastCategory1 is string
-        && request.resource.data.remainingQuestionIds is list
-        && request.resource.data.cycleQuestionIds is list
-        && request.resource.data.ruleVersion == "BIZMON_COMPANY_FULL_CYCLE_MERGE_NO_SAME_CATEGORY1_V2"
-        && request.resource.data.updatedBy == request.auth.uid
-        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp);
-    }
-    function validCompanyQuizProgressUpdate(companyId) {
-      return request.resource.data.keys().hasOnly([
-          "companyId",
-          "lastAssignedDate",
-          "lastQuestionId",
-          "lastCategory1",
-          "remainingQuestionIds",
-          "cycleQuestionIds",
-          "ruleVersion",
-          "updatedAt",
-          "updatedBy"
-        ])
-        && resource.data.companyId == companyId
-        && request.resource.data.companyId == resource.data.companyId
-        && request.resource.data.companyId == myCompanyId()
-        && request.resource.data.lastAssignedDate is string
-        && request.resource.data.lastQuestionId is string
-        && request.resource.data.lastCategory1 is string
-        && request.resource.data.remainingQuestionIds is list
-        && request.resource.data.cycleQuestionIds is list
-        && request.resource.data.ruleVersion == "BIZMON_COMPANY_FULL_CYCLE_MERGE_NO_SAME_CATEGORY1_V2"
-        && request.resource.data.updatedBy == request.auth.uid
-        && (!("updatedAt" in request.resource.data) || request.resource.data.updatedAt is timestamp);
-    }
-    /************************************************************
-     * 企業利用規約・初回登録関連
-     ************************************************************/
+
     function canAcceptCompanyTerms(companyId) {
-      return isSignedIn()
-        && hasUserDoc()
-        && isAdmin()
-        && isApplicant()
-        && isActiveUser()
-        && sameCompany(companyId);
-    }
-    function pendingUser(email) {
-      return get(/databases/$(database)/documents/pendingUsers/$(email)).data;
-    }
-    function pendingUserExists(email) {
-      return exists(/databases/$(database)/documents/pendingUsers/$(email));
-    }
-    function isOwnPendingUser(pendingEmail) {
-      return isSignedIn()
-        && request.auth.token.email == pendingEmail;
-    }
-    function canCreateOwnUserFromPending(userId) {
-      return isSignedIn()
-        && request.auth.uid == userId
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.email == request.auth.token.email
-        && pendingUserExists(request.resource.data.email)
-        && pendingUser(request.resource.data.email).email == request.auth.token.email
-        && pendingUser(request.resource.data.email).status == "pending"
-        && request.resource.data.employeeCode == pendingUser(request.resource.data.email).employeeCode
-        && request.resource.data.name == pendingUser(request.resource.data.email).name
-        && request.resource.data.companyId == pendingUser(request.resource.data.email).companyId
-        && request.resource.data.companyName == pendingUser(request.resource.data.email).companyName
-        && request.resource.data.department == pendingUser(request.resource.data.email).department
-        && request.resource.data.position == pendingUser(request.resource.data.email).position
-        && request.resource.data.role == pendingUser(request.resource.data.email).role
-        && request.resource.data.isApplicant == pendingUser(request.resource.data.email).isApplicant
-        && request.resource.data.status == "active"
-        && validRole(request.resource.data.role)
-        && request.resource.data.keys().hasOnly([
-          "uid",
-          "employeeCode",
-          "name",
-          "email",
-          "companyId",
-          "companyName",
-          "department",
-          "position",
-          "role",
-          "status",
-          "isApplicant",
-          "note",
-          "createdAt",
-          "createdBy",
-          "updatedAt",
-          "updatedBy"
-        ]);
-    }
-    /************************************************************
-     * users
-     ************************************************************/
-    match /users/{userId} {
-      allow read: if isSignedIn()
-        && (
-          request.auth.uid == userId
-          || (
-            isAdmin()
-            && resource.data.companyId == myCompanyId()
-          )
-        );
-      allow create: if
-        (
-          isAdmin()
-          && request.resource.data.companyId == myCompanyId()
-          && validRole(request.resource.data.role)
-          && request.resource.data.status == "active"
-        )
-        ||
-        (
-          canCreateOwnUserFromPending(userId)
-        );
-      allow update: if isSignedIn()
-        && (
-          canUpdateOwnWeatherSettings(userId)
-          ||
-          canUpdateOwnAccountEmail(userId)
-          ||
-          canAdminUpdateCompanyUser()
-        );
-      allow delete: if isSignedIn()
-        && isAdmin()
-        && isActiveUser()
-        && resource.data.companyId == myCompanyId()
-        && request.auth.uid != userId;
-    }
-    /************************************************************
-     * pendingUsers
-     ************************************************************/
-    match /pendingUsers/{pendingEmail} {
-      allow read: if isSignedIn()
-        && (
-          (
-            isAdmin()
-            && resource.data.companyId == myCompanyId()
-          )
-          ||
-          (
-            isOwnPendingUser(pendingEmail)
-            && resource.data.email == request.auth.token.email
-          )
-        );
-      allow create: if isAdmin()
-        && isActiveUser()
-        && request.resource.data.companyId == myCompanyId()
-        && request.resource.data.email == pendingEmail
-        && request.resource.data.status == "pending"
-        && validRole(request.resource.data.role)
-        && request.resource.data.keys().hasOnly([
-          "email",
-          "employeeCode",
-          "name",
-          "companyId",
-          "companyName",
-          "department",
-          "position",
-          "role",
-          "status",
-          "isApplicant",
-          "note",
-          "createdAt",
-          "createdBy",
-          "updatedAt",
-          "updatedBy",
-          "registeredAt",
-          "registeredUid"
-        ]);
-      allow update: if
-        (
-          isAdmin()
-          && isActiveUser()
-          && resource.data.companyId == myCompanyId()
-          && request.resource.data.companyId == myCompanyId()
-          && request.resource.data.email == resource.data.email
-          && validRole(request.resource.data.role)
-          && validPendingStatus(request.resource.data.status)
-        )
-        ||
-        (
-          isOwnPendingUser(pendingEmail)
-          && resource.data.email == request.auth.token.email
-          && resource.data.status == "pending"
-          && request.resource.data.email == resource.data.email
-          && request.resource.data.companyId == resource.data.companyId
-          && request.resource.data.employeeCode == resource.data.employeeCode
-          && request.resource.data.name == resource.data.name
-          && request.resource.data.companyName == resource.data.companyName
-          && request.resource.data.department == resource.data.department
-          && request.resource.data.position == resource.data.position
-          && request.resource.data.role == resource.data.role
-          && request.resource.data.isApplicant == resource.data.isApplicant
-          && request.resource.data.status == "registered"
-          && request.resource.data.registeredUid == request.auth.uid
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            "status",
-            "registeredAt",
-            "registeredUid",
-            "updatedAt",
-            "updatedBy"
-          ])
-        );
-      allow delete: if false;
-    }
-    /************************************************************
-     * companies
-     ************************************************************/
-    match /companies/{companyId} {
-      allow read: if isSignedIn()
-        && sameCompany(companyId);
-      allow create: if false;
-      allow update: if canAcceptCompanyTerms(companyId)
-        && request.resource.data.companyId == resource.data.companyId
-        && request.resource.data.companyName == resource.data.companyName
-        && request.resource.data.status == resource.data.status
+      return isApplicantCompanyAdmin() && companyAdminData().companyId == companyId
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          "termsAccepted",
-          "termsAcceptedAt",
-          "termsAcceptedBy",
-          "termsAcceptedByName",
-          "termsAcceptedSource",
-          "termsAcceptedNote",
-          "termsVersion",
-          "serviceEnabled",
-          "updatedAt"
-        ])
-        && request.resource.data.termsAccepted == true
-        && request.resource.data.serviceEnabled == true
-        && request.resource.data.termsAcceptedBy == request.auth.uid
-        && request.resource.data.termsAcceptedSource == "applicant_web_agreement"
-        && request.resource.data.termsVersion == "2026-06-11";
+          "termsAccepted", "termsAcceptedAt", "termsAcceptedBy", "termsAcceptedByName",
+          "termsAcceptedSource", "termsAcceptedNote", "termsVersion", "serviceEnabled", "updatedAt"
+        ]);
+    }
+
+    // ---------------------------------------------------------------
+    // 運営・企業管理者・産業医 各アカウント（従業員アカウントは廃止）
+    // ---------------------------------------------------------------
+    match /operators/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isOperator());
+      allow create: if isOperator() || (isSignedIn() && request.auth.uid == uid);
+      allow update, delete: if isOperator();
+    }
+
+    match /pendingOperators/{email} {
+      // get（メールアドレスを指定した1件読み取り）は、セルフサインアップ画面
+      // （operator-signup.html）がサインイン前（招待の存在確認の段階）に読む必要があるため、
+      // 未認証でも許可する（招待メールを受け取った本人しかドキュメントID＝メールアドレスを
+      // 知り得ないため、一覧化さえ防げば実害は小さい）。list（一覧取得）は運営のみに限定する。
+      allow get: if true;
+      allow list: if isOperator();
+      allow create, update: if isOperator();
+      allow delete: if isOperator();
+    }
+
+    match /companyAdmins/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isOperator() || isCompanyAdminOf(resource.data.companyId));
+      allow create: if isOperator() || (isSignedIn() && request.auth.uid == uid);
+      allow update: if isOperator() || isCompanyAdminOf(resource.data.companyId) || (isSignedIn() && request.auth.uid == uid);
+      allow delete: if isOperator();
+    }
+
+    match /pendingCompanyAdmins/{email} {
+      // get は company-admin-signup.html がサインイン前に招待の存在確認をするため未認証でも許可
+      // （理由はpendingOperatorsのコメント参照）。listは運営・企業管理者のみに限定する。
+      allow get: if true;
+      allow list: if isOperator() || isCompanyAdmin();
+      allow create, update: if isOperator() || isCompanyAdmin();
+      allow delete: if isOperator() || isCompanyAdmin();
+    }
+
+    match /doctors/{uid} {
+      // 医師は個人結果の閲覧権があるため、読み取り可能な相手は限定する
+      allow read: if isSignedIn() && (request.auth.uid == uid || isOperator() || isCompanyAdminOf(resource.data.companyId));
+      allow create: if isOperator() || isCompanyAdmin() || (isSignedIn() && request.auth.uid == uid);
+      allow update: if isOperator() || isCompanyAdminOf(resource.data.companyId) || (isSignedIn() && request.auth.uid == uid);
+      allow delete: if isOperator() || isCompanyAdminOf(resource.data.companyId);
+    }
+
+    match /pendingDoctors/{email} {
+      // get は doctor-signup.html がサインイン前に招待の存在確認をするため未認証でも許可
+      // （理由はpendingOperatorsのコメント参照）。listは運営・企業管理者のみに限定する。
+      allow get: if true;
+      allow list: if isOperator() || isCompanyAdmin();
+      allow create, delete: if isOperator() || isCompanyAdmin();
+      allow update: if isOperator() || isCompanyAdmin() || isSelfCompletingPendingDoctor();
+    }
+
+    // ---------------------------------------------------------------
+    // 企業マスタ
+    // ---------------------------------------------------------------
+    match /companies/{companyId} {
+      // get はサインイン済み（匿名受検者を含む）なら可。受検導線で企業名を表示するため。
+      // list（企業一覧の取得）は運営のみ。
+      allow get: if isOperator() || isSignedIn();
+      allow list: if isOperator();
+      allow create: if isOperator();
+      allow update: if isOperator() || isCompanyAdminOf(companyId) || canAcceptCompanyTerms(companyId);
+      allow delete: if isOperator();
+    }
+
+    // 従業員名簿（アカウントではなく単なる名簿データ。運営・企業管理者・産業医のみ扱う）
+    match /companies/{companyId}/employeeRoster/{rosterId} {
+      allow read: if isOperator() || isCompanyAdminOf(companyId) || isDoctorOf(companyId);
+      allow write: if isOperator() || isCompanyAdminOf(companyId);
+    }
+
+    // 実施サイクル（実施回）：質問票種別など、匿名受検者の受検導線でも参照するため
+    // get/list はサインイン済みなら可。作成・変更は運営・企業管理者のみ。
+    match /companies/{companyId}/stressCheckCycles/{cycleId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if isOperator() || isCompanyAdminOf(companyId);
+    }
+
+    // ストレスチェック受検招待（トークンがドキュメントID）。個人の健康情報は含まない。
+    // ビズてすの examInvites と同じ「トークン所有権」パターンで、匿名受検者が
+    // not_started→in_progress（自分のanonUidを紐付け）、in_progress→completed の
+    // 2段階の自己更新だけを行える。
+    match /companies/{companyId}/stressCheckInvites/{token} {
+      allow get: if isOperator() || isCompanyAdminOf(companyId) || isDoctorOf(companyId) ||
+        (isSignedIn() && (resource.data.anonUid == request.auth.uid || resource.data.status == "not_started"));
+      allow list: if isOperator() || isCompanyAdminOf(companyId) || isDoctorOf(companyId);
+      allow create, delete: if isOperator() || isCompanyAdminOf(companyId);
+      allow update: if isOperator() || isCompanyAdminOf(companyId) || (
+        isSignedIn() &&
+        resource.data.status == "not_started" &&
+        request.resource.data.anonUid == request.auth.uid &&
+        request.resource.data.status == "in_progress" &&
+        request.resource.data.name == resource.data.name &&
+        request.resource.data.cycleId == resource.data.cycleId
+      ) || (
+        isSignedIn() &&
+        resource.data.status == "in_progress" &&
+        resource.data.anonUid == request.auth.uid &&
+        request.resource.data.anonUid == resource.data.anonUid &&
+        request.resource.data.status == "completed" &&
+        request.resource.data.name == resource.data.name &&
+        request.resource.data.cycleId == resource.data.cycleId
+      );
+    }
+
+    // ストレスチェック個人結果（回答・尺度得点・高ストレス判定）。
+    // 読めるのは運営と担当産業医のみ。企業管理者・本人（送信後の読み戻し）は不可。
+    // 本人は、招待トークンの anonUid が自分と一致する場合に「1回だけ」作成できる。
+    match /companies/{companyId}/stressCheckResults/{token} {
+      allow get, list: if isOperator() || isDoctorOf(companyId);
+      allow create: if isSignedIn() &&
+        get(/databases/$(database)/documents/companies/$(companyId)/stressCheckInvites/$(token)).data.anonUid == request.auth.uid &&
+        request.resource.data.companyId == companyId;
+      allow update: if isOperator();
       allow delete: if false;
     }
-    /************************************************************
-     * companySettings
-     * 旧カテゴリー設定・既存互換用
-     ************************************************************/
-    match /companySettings/{docId} {
+
+    // 本人が「会社に共有する」に同意した場合のみ作成される要約。
+    // 企業管理者・産業医・運営が読める。
+    match /companies/{companyId}/companyVisibleResults/{token} {
+      allow get, list: if isOperator() || isCompanyAdminOf(companyId) || isDoctorOf(companyId);
+      allow create: if isSignedIn() &&
+        get(/databases/$(database)/documents/companies/$(companyId)/stressCheckInvites/$(token)).data.anonUid == request.auth.uid;
+      allow update, delete: if isOperator() || isCompanyAdminOf(companyId);
+    }
+
+    // 面接指導〜医師意見書〜就業上の措置（本人が申出た場合のみ作成。企業管理者(事務担当)・産業医のみ）
+    match /companies/{companyId}/interviewRequests/{token} {
+      allow read: if isCompanyAdminOf(companyId) || isDoctorOf(companyId);
+      allow create: if isSignedIn() &&
+        get(/databases/$(database)/documents/companies/$(companyId)/stressCheckInvites/$(token)).data.anonUid == request.auth.uid;
+      allow update: if isCompanyAdminOf(companyId) || isDoctorOf(companyId);
+      allow delete: if isCompanyAdminOf(companyId);
+    }
+
+    // 労基署への報告書控え・職場環境改善計画（統計情報のみ。個人結果は含まない）
+    match /companies/{companyId}/laborBureauReports/{reportId} {
+      allow read: if isOperator() || isCompanyAdminOf(companyId) || isDoctorOf(companyId);
+      allow write: if isCompanyAdminOf(companyId);
+    }
+    // 職場環境改善提案：面接指導措置管理と同様の役割分担にする。
+    // 産業医が集団分析結果を踏まえてストレス要因を特定し、新規の提案（作成）を行う。
+    // 企業管理者は提案を確認し、実施した措置の内容（措置中／措置済）を記入する（更新のみ・新規作成は不可）。
+    // 措置済になった提案は産業医が確認する（doctorConfirmedAt等の更新も、update権限の範囲で行う）。
+    // 削除は企業管理者のみ（interviewRequestsと同様の扱い）。
+    match /companies/{companyId}/workplaceImprovementPlans/{planId} {
+      allow read: if isOperator() || isCompanyAdminOf(companyId) || isDoctorOf(companyId);
+      allow create: if isDoctorOf(companyId);
+      allow update: if isCompanyAdminOf(companyId) || isDoctorOf(companyId);
+      allow delete: if isCompanyAdminOf(companyId);
+    }
+
+    // 従業員サーベイの設問（定点観測・深堀・自由記述）：匿名受検者が読めるようサインイン済みなら可。
+    match /companies/{companyId}/surveyFixedQuestions/{itemId} {
       allow read: if isSignedIn();
-      allow write: if isAdmin();
+      allow write: if isOperator() || isCompanyAdminOf(companyId);
     }
-    /************************************************************
-     * companyQuizSettings
-     * 会社別カテゴリー設定
-     ************************************************************/
-    match /companyQuizSettings/{companyId} {
-      allow read: if isSignedIn()
-        && isActiveUser()
-        && sameCompany(companyId);
+    match /companies/{companyId}/surveyDeepDiveQuestions/{itemId} {
+      allow read: if isSignedIn();
+      allow write: if isOperator() || isCompanyAdminOf(companyId);
+    }
+    // 自由記述ブロック（毎回共通・全員に聞くオープン質問）の企業カスタム上書き用。
+    // 単独配信の深堀質問（surveyInvitesにキャンペーン作成時点で確定・保存する）とは異なり、
+    // 定点観測質問と同様に「企業が独自の質問を用意していない場合のデフォルト」を上書きする位置づけ。
+    match /companies/{companyId}/surveyOpenQuestions/{itemId} {
+      allow read: if isSignedIn();
+      allow write: if isOperator() || isCompanyAdminOf(companyId);
+    }
+
+    // 従業員サーベイ実施サイクル（従業員サーベイ実施：survey-manage.html）。
+    // ストレスチェックのstressCheckCyclesと同じ役割分担（作成・変更は運営・企業管理者のみ）。
+    match /companies/{companyId}/surveyCycles/{cycleId} {
+      allow get, list: if isOperator() || isCompanyAdminOf(companyId) || isDoctorOf(companyId);
+      allow create, update, delete: if isOperator() || isCompanyAdminOf(companyId);
+    }
+
+    // 従業員サーベイの配信用招待（トークン）。ストレスチェックに続けて回答する場合は
+    // stressCheckInvites のトークンをそのまま使うため、ここには従業員サーベイ実施（surveyCycles）
+    // で発行した分のみが入る。
+    match /companies/{companyId}/surveyInvites/{token} {
+      allow get: if isOperator() || isCompanyAdminOf(companyId) ||
+        (isSignedIn() && (resource.data.anonUid == request.auth.uid || resource.data.status == "not_started"));
+      allow list: if isOperator() || isCompanyAdminOf(companyId);
+      allow create, delete: if isOperator() || isCompanyAdminOf(companyId);
+      allow update: if isOperator() || isCompanyAdminOf(companyId) || (
+        isSignedIn() &&
+        resource.data.status == "not_started" &&
+        request.resource.data.anonUid == request.auth.uid &&
+        request.resource.data.status == "completed"
+      );
+    }
+
+    // 従業員サーベイ回答。記名式（mode=="named"）の場合のみ企業管理者が読める。
+    // 無記名の場合は運営のみが読める（産業医は結果を踏まえた深堀質問の性質上、両方読める）。
+    // source=="chained" はストレスチェックのトークンを、source=="standalone" は
+    // surveyInvites のトークンを、それぞれ所有権チェックに使う。
+    match /companies/{companyId}/surveyResponses/{token} {
+      allow get, list: if isOperator() || isDoctorOf(companyId) ||
+        (isCompanyAdminOf(companyId) && resource.data.mode == "named");
+      allow create: if isSignedIn() && (
+        (request.resource.data.source == "chained" &&
+          get(/databases/$(database)/documents/companies/$(companyId)/stressCheckInvites/$(token)).data.anonUid == request.auth.uid)
+        ||
+        (request.resource.data.source == "standalone" &&
+          get(/databases/$(database)/documents/companies/$(companyId)/surveyInvites/$(token)).data.anonUid == request.auth.uid)
+      );
+      allow update, delete: if isOperator();
+    }
+
+    // ---------------------------------------------------------------
+    // 匿名集団分析データ（努力義務の集団分析用。個人特定情報は含めない）
+    // ---------------------------------------------------------------
+    match /groupAnalysisContributions/{cycleId}/items/{itemId} {
+      allow read: if isOperator() || isCompanyAdminOf(resource.data.companyId) || isDoctorOf(resource.data.companyId);
       allow create: if isSignedIn()
-        && isAdmin()
-        && isActiveUser()
-        && sameCompany(companyId)
-        && validCompanyQuizSettings(companyId);
-      allow update: if isSignedIn()
-        && isAdmin()
-        && isActiveUser()
-        && sameCompany(companyId)
-        && resource.data.companyId == companyId
-        && request.resource.data.companyId == companyId
-        && validCompanyQuizSettings(companyId);
-      allow delete: if false;
-      match /changeLogs/{logId} {
-        allow read: if isSignedIn()
-          && isAdmin()
-          && isActiveUser()
-          && sameCompany(companyId);
-        allow create: if isSignedIn()
-          && isAdmin()
-          && isActiveUser()
-          && sameCompany(companyId)
-          && (
-            validCompanyQuizSettingChangeLog(companyId)
-            || validUserEditChangeLog(companyId)
-          );
-        allow update, delete: if false;
-      }
+        && !request.resource.data.keys().hasAny(["employeeUid", "uid", "anonUid", "name", "email"]);
+      allow update, delete: if false;
     }
-    /************************************************************
-     * dailyQuizAssignments
-     ************************************************************/
-    match /dailyQuizAssignments/{assignmentId} {
-      allow get: if isSignedIn()
-        && isActiveUser()
-        && assignmentId.matches(myCompanyId() + "_.*");
-      allow list: if isSignedIn()
-        && isActiveUser()
-        && resource.data.companyId == myCompanyId();
+
+    // 従業員サーベイ実施（surveyCycles）用の匿名集団分析データ（サーベイ分析結果画面で使用）。
+    // groupAnalysisContributionsと同じ考え方：氏名・メールアドレス等の個人特定情報は含めない。
+    match /surveyGroupAnalysisContributions/{cycleId}/items/{itemId} {
+      allow read: if isOperator() || isCompanyAdminOf(resource.data.companyId) || isDoctorOf(resource.data.companyId);
       allow create: if isSignedIn()
-        && isActiveUser()
-        && validDailyQuizAssignmentCreate()
-        && assignmentId == request.resource.data.companyId + "_" + request.resource.data.dateKey;
-      allow update: if isSignedIn()
-        && isAdmin()
-        && isActiveUser()
-        && resource.data.companyId == myCompanyId()
-        && validDailyQuizAssignmentUpdate()
-        && assignmentId == resource.data.companyId + "_" + resource.data.dateKey;
-      allow delete: if false;
+        && !request.resource.data.keys().hasAny(["employeeUid", "uid", "anonUid", "name", "email"]);
+      allow update, delete: if false;
     }
-    /************************************************************
-     * companyQuizProgress
-     ************************************************************/
-    match /companyQuizProgress/{companyId} {
-      allow get: if isSignedIn()
-        && isActiveUser()
-        && sameCompany(companyId);
-      allow list: if false;
-      allow create: if isSignedIn()
-        && isActiveUser()
-        && sameCompany(companyId)
-        && validCompanyQuizProgressCreate(companyId);
-      allow update: if isSignedIn()
-        && isActiveUser()
-        && sameCompany(companyId)
-        && validCompanyQuizProgressUpdate(companyId);
-      allow delete: if false;
+
+    // ---------------------------------------------------------------
+    // 運営レポート用：collectionGroupクエリで全社横断の個人結果・サーベイ回答を閲覧する。
+    // 上の companies/{companyId}/stressCheckResults・surveyResponses の match ブロック内の
+    // allow list はそのサブコレクションへの直接クエリにしか適用されず、collectionGroup()
+    // クエリには別途「/{path=**}/コレクション名」形式のトップレベルの match が必要
+    // （Firestoreセキュリティルールの仕様）。運営のみに限定して許可する。
+    // ---------------------------------------------------------------
+    match /{path=**}/stressCheckResults/{token} {
+      allow list: if isOperator();
     }
-    /************************************************************
-     * quizResults
-     ************************************************************/
-    match /quizResults/{docId} {
-      allow get: if isSignedIn()
-        && hasUserDoc()
-        && (
-          docId.matches(request.auth.uid + "_.*")
-          ||
-          (
-            isAdmin()
-            && resource.data.companyId == myCompanyId()
-          )
-        );
-      allow list: if isSignedIn()
-        && hasUserDoc()
-        && (
-          resource.data.uid == request.auth.uid
-          ||
-          (
-            isAdmin()
-            && resource.data.companyId == myCompanyId()
-          )
-        );
-      allow create: if isSignedIn()
-        && hasUserDoc()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.companyId == myCompanyId()
-        && docId == request.auth.uid + "_" + request.resource.data.dateKey;
-      allow update: if isSignedIn()
-        && hasUserDoc()
-        && (
-          (
-            resource.data.uid == request.auth.uid
-            && request.resource.data.uid == request.auth.uid
-            && request.resource.data.companyId == myCompanyId()
-          )
-          ||
-          (
-            isAdmin()
-            && resource.data.companyId == myCompanyId()
-            && request.resource.data.companyId == myCompanyId()
-          )
-        );
-      allow delete: if isSignedIn()
-        && isAdmin()
-        && isActiveUser()
-        && resource.data.companyId == myCompanyId();
-    }
-    /************************************************************
-     * reminderSettings
-     ************************************************************/
-    match /reminderSettings/{userId} {
-      allow read: if isSignedIn()
-        && (
-          request.auth.uid == userId
-          ||
-          (
-            isAdmin()
-            && resource.data.companyId == myCompanyId()
-          )
-        );
-      allow create, update: if isSignedIn()
-        && request.auth.uid == userId
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.companyId == myCompanyId();
-      allow delete: if isSignedIn()
-        && isAdmin()
-        && isActiveUser()
-        && resource.data.companyId == myCompanyId();
-    }
-    /************************************************************
-     * news
-     * news.html：お知らせ（企業ごと）
-     ************************************************************/
-    match /news/{newsId} {
-      allow read: if isSignedIn()
-        && hasUserDoc()
-        && resource.data.companyId == myCompanyId();
-      allow create, update: if isAdmin()
-        && request.resource.data.companyId == myCompanyId();
-      allow delete: if false;
-    }
-    /************************************************************
-     * その他はすべて拒否
-     ************************************************************/
-    match /{document=**} {
-      allow read, write: if false;
+    match /{path=**}/surveyResponses/{token} {
+      allow list: if isOperator();
     }
   }
 }

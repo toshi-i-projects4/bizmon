@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>従業員サーベイ｜ビズけあ</title>
+<link rel="icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="stylesheet" href="shared-panel.css">
+<style>
+.q-item{border-bottom:1px solid var(--line);padding:14px 0}
+.q-text{font-size:14px;margin-bottom:10px}
+.q-choices{display:flex;gap:8px;flex-wrap:wrap}
+.q-choice input{display:none}
+.q-choice label{display:block;text-align:center;padding:9px 10px;border:1px solid #d1d5db;border-radius:9px;font-size:12.5px;cursor:pointer;background:#fff;min-width:70px}
+.q-choice input:checked + label{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:bold}
+.q-group-label{font-size:11.5px;color:var(--muted);font-weight:800;margin-bottom:4px}
+.notice-box.consult{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>従業員サーベイ</h1>
+  <div class="notice-box" id="modeNotice">読み込み中...</div>
+  <div id="formSection" class="hidden">
+    <div class="panel" id="formPanel"></div>
+    <div id="consultNoticePanel" class="hidden"><div class="notice-box consult" id="consultNoticeText"></div></div>
+    <div class="panel">
+      <div class="row"><button class="btn" id="submitBtn">回答を送信する</button></div>
+      <div id="statusMessage" class="status-message"></div>
+    </div>
+  </div>
+  <div id="doneSection" class="hidden">
+    <div class="panel">
+      <h2>ご協力ありがとうございました</h2>
+      <div class="desc">回答を送信しました。このページは閉じていただいて構いません。</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, updateDoc, collection, getDocs, query, orderBy, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  labelsForQuantType, DEFAULT_FIXED_QUESTIONS, DEFAULT_OPEN_QUESTIONS,
+  HARASSMENT_MENTALRISK_NOTICE_TEXT, buildDeepDiveQuestions,
+} from "./survey-shared.js";
+
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function setStatus(msg, type) { const el = document.getElementById("statusMessage"); el.textContent = msg; el.className = "status-message " + (type || ""); }
+
+const params = new URLSearchParams(location.search);
+const isChained = !!params.get("cycle");
+const companyId = params.get("company") || sessionStorage.getItem(isChained ? "bizukea_company" : "bizukea_survey_company");
+const token = params.get("token") || sessionStorage.getItem(isChained ? "bizukea_token" : "bizukea_survey_token");
+// 単独配信の場合は招待ドキュメントのcycleId（従業員サーベイ実施のサイクルID）を後から埋める。
+// 連結配信（実運用では未使用）の場合はURLの?cycleパラメータをそのまま使う。
+let cycleId = params.get("cycle") || "";
+
+let surveyMode = "named";
+let fixedQuestions = [], deepDiveQuestions = [], openQuestions = [];
+let showHarassmentNotice = false, showMentalRiskNotice = false;
+let myName = "", myDepartment = "";
+// サーベイ分析結果（集団分析）の匿名集計に使う属性（氏名・メールアドレス等の個人特定情報は含めない）。
+let myDepartment1 = "", myDepartment2 = "", myDepartment3 = "";
+let myGender = "", myAgeGroup = "", myTenureGroup = "", myEmploymentType = "";
+
+onAuthStateChanged(auth, async (user) => {
+  if (!companyId || !token) { setStatus("サーベイのリンクが正しくありません。", "error"); return; }
+  let currentUser = user;
+  if (!currentUser) {
+    try { const cred = await signInAnonymously(auth); currentUser = cred.user; }
+    catch (e) { setStatus("認証に失敗しました。ご案内のURLから改めて開始してください。", "error"); return; }
+  }
+
+  try {
+    if (isChained) {
+      const inviteSnap = await getDoc(doc(db, "companies", companyId, "stressCheckInvites", token));
+      if (!inviteSnap.exists() || inviteSnap.data().anonUid !== currentUser.uid) {
+        setStatus("このサーベイを開始できません。ストレスチェックの受検からやり直してください。", "error");
+        return;
+      }
+      myName = sessionStorage.getItem("bizukea_name") || "";
+      myDepartment = sessionStorage.getItem("bizukea_department") || "";
+      myDepartment1 = sessionStorage.getItem("bizukea_department1") || "";
+      myDepartment2 = sessionStorage.getItem("bizukea_department2") || "";
+      myDepartment3 = sessionStorage.getItem("bizukea_department3") || "";
+
+      // 記名/無記名は、このストレスチェックのサイクル単位で決める（実施の都度、企業管理者が選択。デフォルトは記名）。
+      const cycleSnap = cycleId ? await getDoc(doc(db, "companies", companyId, "stressCheckCycles", cycleId)) : null;
+      surveyMode = (cycleSnap && cycleSnap.exists() && cycleSnap.data().surveyMode) || "named";
+    } else {
+      const inviteSnap = await getDoc(doc(db, "companies", companyId, "surveyInvites", token));
+      if (!inviteSnap.exists()) { setStatus("サーベイのリンクが正しくありません。survey-entry.html から改めて開始してください。", "error"); return; }
+      const invite = inviteSnap.data();
+      if (invite.status === "completed") { setStatus("このリンクでのサーベイ回答はすでに完了しています。", "error"); return; }
+      if (invite.status === "cancelled") { setStatus("このリンクは対象外となり、現在は回答できません。", "error"); return; }
+      myName = sessionStorage.getItem("bizukea_survey_name") || "";
+      myDepartment = sessionStorage.getItem("bizukea_survey_department") || "";
+      myDepartment1 = sessionStorage.getItem("bizukea_survey_department1") || "";
+      myDepartment2 = sessionStorage.getItem("bizukea_survey_department2") || "";
+      myDepartment3 = sessionStorage.getItem("bizukea_survey_department3") || "";
+      myGender = sessionStorage.getItem("bizukea_survey_gender") || "";
+      myAgeGroup = sessionStorage.getItem("bizukea_survey_ageGroup") || "";
+      myTenureGroup = sessionStorage.getItem("bizukea_survey_tenureGroup") || "";
+      myEmploymentType = sessionStorage.getItem("bizukea_survey_employmentType") || "";
+      // サーベイ分析結果（集団分析）で「どの実施回か」を区別するため、招待ドキュメントに
+      // 保存されているcycleId（従業員サーベイ実施のサイクルID）を引き継ぐ。
+      cycleId = invite.cycleId || "";
+
+      // 記名/無記名・深堀質問・相談窓口案内の要否は、配信（キャンペーン）作成時に企業管理者が
+      // survey-manage.htmlで確定した内容を、招待ドキュメントにそのまま保存してある（実施の都度選択、デフォルト記名）。
+      surveyMode = invite.mode || "named";
+      deepDiveQuestions = Array.isArray(invite.deepDiveQuestions) ? invite.deepDiveQuestions : [];
+      showHarassmentNotice = !!invite.harassmentNotice;
+      showMentalRiskNotice = !!invite.mentalRiskNotice;
+    }
+
+    document.getElementById("modeNotice").textContent = surveyMode === "named"
+      ? "このサーベイは今回「記名式」で実施されます。回答は担当者・産業医が個人ごとに確認できます。"
+      : "このサーベイは今回「無記名」で実施されます。個人が特定されない形で集計されます。";
+
+    const fixedSnap = await getDocs(query(collection(db, "companies", companyId, "surveyFixedQuestions"), orderBy("order", "asc")));
+    fixedQuestions = fixedSnap.empty ? DEFAULT_FIXED_QUESTIONS : fixedSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+    const openSnap = await getDocs(query(collection(db, "companies", companyId, "surveyOpenQuestions"), orderBy("order", "asc")));
+    openQuestions = openSnap.empty ? DEFAULT_OPEN_QUESTIONS : openSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+    if (isChained) {
+      // 連結配信（ストレスチェックに続けて回答）：本人自身のA/B/C尺度のバンドを起点に、
+      // 深堀質問バンク（定量＋自由記述のペア）から該当する領域だけを出す。
+      const bands = {
+        A: sessionStorage.getItem("bizukea_bandA") || "",
+        B: sessionStorage.getItem("bizukea_bandB") || "",
+        C: sessionStorage.getItem("bizukea_bandC") || "",
+      };
+      const ddSnap = await getDocs(query(collection(db, "companies", companyId, "surveyDeepDiveQuestions"), orderBy("order", "asc")));
+      if (!ddSnap.empty) {
+        deepDiveQuestions = ddSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
+          .filter((q) => q.triggerCategory === "any" || bands[q.triggerCategory] === "high");
+      } else {
+        const triggeredIds = ["A", "B", "C"].filter((cat) => bands[cat] === "high");
+        deepDiveQuestions = buildDeepDiveQuestions(triggeredIds);
+      }
+    }
+
+    document.getElementById("formSection").classList.remove("hidden");
+    renderForm();
+  } catch (e) {
+    console.error(e);
+    setStatus("読み込みに失敗しました。時間をおいて再度お試しください。", "error");
+  }
+});
+
+// type: "likert5" | "freq4" | "freeText"
+function renderQuestionItem(q, keyPrefix) {
+  if (q.type === "freeText") {
+    return `<div class="q-item" data-item-id="${esc(q.id)}">
+      ${q.groupLabel ? `<div class="q-group-label">${esc(q.groupLabel)}</div>` : ""}
+      <div class="q-text">${esc(q.questionText)}</div>
+      <textarea id="${keyPrefix}_${esc(q.id)}" placeholder="任意でご記入ください"></textarea>
+    </div>`;
+  }
+  const labels = labelsForQuantType(q.type);
+  return `<div class="q-item" data-item-id="${esc(q.id)}">
+    ${q.groupLabel ? `<div class="q-group-label">${esc(q.groupLabel)}</div>` : ""}
+    <div class="q-text">${esc(q.questionText)}</div>
+    <div class="q-choices">
+      ${labels.map((label, idx) => `<div class="q-choice"><input type="radio" name="${keyPrefix}_${esc(q.id)}" id="${keyPrefix}_${esc(q.id)}_${idx}" value="${idx + 1}"><label for="${keyPrefix}_${esc(q.id)}_${idx}">${esc(label)}</label></div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderForm() {
+  let html = '<h2 style="font-size:15px;margin:0 0 8px">定点観測の質問（毎回共通）</h2>';
+  fixedQuestions.forEach((q) => { html += renderQuestionItem({ ...q, type: q.type || "likert5" }, "fx"); });
+
+  if (deepDiveQuestions.length) {
+    html += '<h2 style="font-size:15px;margin:20px 0 8px">今回の結果を踏まえた深堀質問</h2>';
+    deepDiveQuestions.forEach((q) => { html += renderQuestionItem(q, "dd"); });
+  }
+
+  if (openQuestions.length) {
+    html += '<h2 style="font-size:15px;margin:20px 0 8px">自由記述（毎回共通）</h2>';
+    openQuestions.forEach((q) => { html += renderQuestionItem({ ...q, type: "freeText" }, "op"); });
+  }
+
+  document.getElementById("formPanel").innerHTML = html;
+
+  if (showHarassmentNotice || showMentalRiskNotice) {
+    document.getElementById("consultNoticeText").textContent = HARASSMENT_MENTALRISK_NOTICE_TEXT;
+    document.getElementById("consultNoticePanel").classList.remove("hidden");
+  }
+}
+
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  setStatus("", "");
+  const missing = [];
+
+  const fixedAnswers = [];
+  fixedQuestions.forEach((q) => {
+    const checked = document.querySelector(`input[name="fx_${q.id}"]:checked`);
+    if (!checked) { missing.push(q.id); return; }
+    fixedAnswers.push({ itemId: q.id, value: Number(checked.value) });
+  });
+
+  const deepDiveAnswers = [];
+  deepDiveQuestions.forEach((q) => {
+    if (q.type === "freeText") {
+      deepDiveAnswers.push({ itemId: q.id, value: (document.getElementById(`dd_${q.id}`)?.value || "").trim() });
+    } else {
+      const checked = document.querySelector(`input[name="dd_${q.id}"]:checked`);
+      if (!checked) { missing.push(q.id); return; }
+      deepDiveAnswers.push({ itemId: q.id, value: Number(checked.value) });
+    }
+  });
+
+  if (missing.length) { setStatus("すべての選択式の質問にお答えください（自由記述は任意です）。", "error"); return; }
+
+  const openAnswers = openQuestions.map((q) => ({ itemId: q.id, value: (document.getElementById(`op_${q.id}`)?.value || "").trim() }));
+
+  const btn = document.getElementById("submitBtn");
+  try {
+    btn.disabled = true; btn.textContent = "送信中...";
+
+    // surveyResponsesの作成権限（firestore.rules）は、招待ドキュメント（surveyInvites／
+    // stressCheckInvites）のanonUidが自分のuidと一致していることを条件にget()で確認する。
+    // この確認は「そのとき既にFirestoreへ保存済みの内容」を見るため、招待のanonUid更新は
+    // 先に単独で確定させてから、回答本体の書き込みに進む（同じバッチに入れて同時に書き込むと、
+    // ルール側のget()が更新前の内容を参照してしまい、権限エラーになるため分けている）。
+    if (!isChained) {
+      await updateDoc(doc(db, "companies", companyId, "surveyInvites", token), {
+        anonUid: auth.currentUser.uid, status: "completed", completedAt: serverTimestamp(),
+      });
+    }
+
+    // 回答本体と、サーベイ分析結果（集団分析）用の匿名集計データはまとめて1つのバッチで書き込み、
+    // 一部だけ書き込まれてしまう事態を防ぐ。
+    const batch = writeBatch(db);
+
+    const payload = {
+      companyId, cycleId, token, source: isChained ? "chained" : "standalone",
+      mode: surveyMode, fixedAnswers, deepDiveAnswers, openAnswers, completedAt: serverTimestamp(),
+    };
+    if (surveyMode === "named") { payload.respondentName = myName; payload.department = myDepartment; }
+
+    batch.set(doc(db, "companies", companyId, "surveyResponses", token), payload);
+
+    // サーベイ分析結果（集団分析）用の匿名集計データ。氏名・メールアドレス等の個人特定情報は含めない
+    // （記名式サーベイであっても、集団分析側は匿名の集計データとして別に積み上げる）。
+    // cycleIdが取れない古い招待（実施サイクルに紐づかない）の場合は集計対象にしない。
+    if (cycleId) {
+      const numericDeepDive = deepDiveAnswers.filter((a) => typeof a.value === "number");
+      batch.set(doc(collection(db, "surveyGroupAnalysisContributions", cycleId, "items")), {
+        cycleId, companyId,
+        department1: myDepartment1 || "", department2: myDepartment2 || "", department3: myDepartment3 || "",
+        gender: myGender || "", ageGroup: myAgeGroup || "", tenureGroup: myTenureGroup || "", employmentType: myEmploymentType || "",
+        fixedAnswers, deepDiveAnswers: numericDeepDive,
+        hasOpenAnswer: openAnswers.some((a) => a.value), createdAt: serverTimestamp(),
+      });
+    }
+
+    await batch.commit();
+
+    document.getElementById("formSection").classList.add("hidden");
+    document.getElementById("consultNoticePanel").classList.add("hidden");
+    document.getElementById("doneSection").classList.remove("hidden");
+    setStatus("", "");
+  } catch (e) {
+    console.error(e);
+    setStatus("送信に失敗しました。", "error");
+    btn.disabled = false; btn.textContent = "回答を送信する";
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>従業員サーベイ回答結果（個別）｜ビズけあ</title>
+<link rel="icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico?v=20260723" type="image/x-icon">
+<link rel="stylesheet" href="shared-panel.css">
+<style>
+.detail-box{font-size:12.5px;color:#374151;background:#f9fafb;border-radius:8px;padding:8px 10px;margin-top:6px;white-space:pre-wrap}
+.resp-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
+.resp-name{font-weight:800;color:var(--navy)}
+.resp-meta{font-weight:400;color:var(--muted);font-size:12px}
+.resp-fixed{font-size:12.5px;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header-row"><h1>従業員サーベイ回答結果（個別）</h1><a class="back" id="backLink" href="company-admin-home.html">← 企業管理者ホームへ戻る</a></div>
+  <div class="notice-box">
+    記名式で実施したサイクルの個人別の回答一覧です。無記名式で実施したサイクルの回答は、個人が特定されないようこの画面には表示されません（運営管理画面でのみ確認できます）。
+  </div>
+
+  <div class="panel">
+    <h2>対象サイクルの選択</h2>
+    <label class="field-label">対象サイクル</label>
+    <select class="text-input" id="cycleSelect"><option value="">サイクルを選択してください</option></select>
+    <div class="row"><button class="btn" id="loadBtn">回答一覧を表示する</button></div>
+    <div id="statusMessage" class="status-message"></div>
+  </div>
+
+  <div class="panel hidden" id="resultsPanel">
+    <h2>回答一覧</h2>
+    <div id="resultsArea"></div>
+  </div>
+
+  <a class="back bottom-back" id="backLinkBottom" href="company-admin-home.html">← 企業管理者ホームへ戻る</a>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function setStatus(msg, type) { const el = document.getElementById("statusMessage"); el.textContent = msg; el.className = "status-message " + (type || ""); }
+function setBackLink(href, text) {
+  ["backLink", "backLinkBottom"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) { el.href = href; el.textContent = text; }
+  });
+}
+
+function summarize(fixedAnswers, deepDiveAnswers, openAnswers) {
+  const fx = (fixedAnswers || []).map((a, i) => `Q${i + 1}:${a.value}`).join(" ");
+  const ddQuant = (deepDiveAnswers || []).filter((a) => typeof a.value === "number").map((a, i) => `深堀Q${i + 1}:${a.value}`).join(" ");
+  const ddFree = (deepDiveAnswers || []).filter((a) => typeof a.value === "string" && a.value).map((a) => `［深堀・自由記述］${a.value}`).join("\n");
+  const op = (openAnswers || []).filter((a) => a.value).map((a) => `［自由記述］${a.value}`).join("\n");
+  const dd = [ddFree, op].filter(Boolean).join("\n");
+  return { fx: [fx, ddQuant].filter(Boolean).join("  "), dd };
+}
+
+let myCompanyId = "";
+let cyclesById = {};
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { location.href = "login.html"; return; }
+  const caSnap = await getDoc(doc(db, "companyAdmins", user.uid));
+  if (caSnap.exists() && caSnap.data().status === "active") {
+    myCompanyId = caSnap.data().companyId;
+  } else {
+    const drSnap = await getDoc(doc(db, "doctors", user.uid));
+    if (drSnap.exists() && drSnap.data().status === "active") {
+      myCompanyId = drSnap.data().companyId;
+      setBackLink("doctor-home.html", "← 産業医ホームへ戻る");
+    } else { alert("企業管理者または産業医のアカウントでのログインが必要です。"); location.href = "login.html"; return; }
+  }
+  await loadCycles();
+});
+
+async function loadCycles() {
+  const select = document.getElementById("cycleSelect");
+  const snap = await getDocs(query(collection(db, "companies", myCompanyId, "surveyCycles"), orderBy("createdAt", "desc")));
+  cyclesById = {};
+  if (snap.empty) {
+    select.innerHTML = '<option value="">(実施履歴なし)</option>';
+    return;
+  }
+  select.innerHTML = snap.docs.map((d) => {
+    const c = d.data();
+    cyclesById[d.id] = c;
+    return `<option value="${esc(d.id)}">${esc(c.fiscalYear)}年度 第${esc(c.roundNumber)}回（${c.surveyMode === "named" ? "記名式" : "無記名式"}）</option>`;
+  }).join("");
+
+  const urlCycleId = new URLSearchParams(location.search).get("cycle");
+  if (urlCycleId && cyclesById[urlCycleId]) {
+    select.value = urlCycleId;
+    loadResponses();
+  }
+}
+
+async function loadResponses() {
+  const cycleId = document.getElementById("cycleSelect").value;
+  const panel = document.getElementById("resultsPanel");
+  const area = document.getElementById("resultsArea");
+  if (!cycleId) { setStatus("対象サイクルを選択してください。", "error"); return; }
+  const cycle = cyclesById[cycleId];
+  panel.classList.add("hidden");
+  setStatus("読み込み中...", "");
+
+  if (cycle && cycle.surveyMode !== "named") {
+    panel.classList.remove("hidden");
+    area.innerHTML = '<div class="notice-box">このサイクルは無記名設定のため、個人別の回答は件数も含め企業管理画面では確認できません。運営管理画面でのみ確認できます。</div>';
+    setStatus("", "");
+    return;
+  }
+
+  try {
+    const snap = await getDocs(query(
+      collection(db, "companies", myCompanyId, "surveyResponses"),
+      where("cycleId", "==", cycleId), where("mode", "==", "named")
+    ));
+    if (snap.empty) {
+      area.innerHTML = '<div class="desc">まだ回答がありません。</div>';
+    } else {
+      const rows = [];
+      snap.forEach((d) => {
+        const r = d.data();
+        const sum = summarize(r.fixedAnswers, r.deepDiveAnswers, r.openAnswers);
+        rows.push(`<div class="resp-card">
+          <div class="resp-name">${esc(r.respondentName || "(氏名なし)")}　<span class="resp-meta">${esc(r.department || "")}</span></div>
+          <div class="resp-fixed">定点観測：${esc(sum.fx)}</div>
+          ${sum.dd ? `<div class="detail-box">${esc(sum.dd)}</div>` : ""}
+        </div>`);
+      });
+      area.innerHTML = rows.join("");
+    }
+    panel.classList.remove("hidden");
+    setStatus(`${snap.size}件の回答を表示しました。`, "ok");
+  } catch (e) {
+    console.error(e);
+    setStatus("読み込みに失敗しました。", "error");
+  }
+}
+
+document.getElementById("loadBtn").addEventListener("click", loadResponses);
+</script>
+</body>
+</html>
