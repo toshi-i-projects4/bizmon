@@ -88,8 +88,7 @@ function enterLinks(companyId){
     ["user-invite-single.html","招待(個別)"],
     ["user-invite-bulk.html","招待(一括)"],
     ["user-edit-single.html","編集(個別)"],
-    ["user-edit-bulk.html","編集(一括)"],
-    ["news.html","お知らせ"]
+    ["user-edit-bulk.html","編集(一括)"]
   ];
   return '<div class="enter-links">'+items.map(it=>'<a href="'+it[0]+'?opCompanyId='+cid+'">'+esc(it[1])+'</a>').join("")+'</div>';
 }

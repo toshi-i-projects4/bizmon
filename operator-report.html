@@ -82,8 +82,6 @@ function updatePeriodHelp(r){
   if(isValidRange(r)){$("periodHelp").textContent="対象期間："+r.start+" 〜 "+r.end;}
   else{$("periodHelp").textContent="開始日・終了日を指定してください（開始日は終了日以前の日付にしてください）。";}
 }
-function defaultRange(){const d=new Date();return{start:'2026-06-11',end:dateKey(d)}}
-
 async function loadCompanyOptions(){
   const snap=await getDocs(collection(db,"companies"));
   allCompanies=[];companyNameMap={};
@@ -109,10 +107,11 @@ async function loadReport(){
   const range=getDateRange();
   updatePeriodHelp(range);
   if(!isValidRange(range)){
-    setStatus("開始日・終了日を正しく指定してください（開始日は終了日以前の日付にしてください）。","error");
+    setStatus(range.start||range.end?"開始日・終了日を正しく指定してください（開始日は終了日以前の日付にしてください）。":"","error");
     $("resultBody").innerHTML='<tr><td colspan="15" class="empty">開始日・終了日を指定してください。</td></tr>';
     $("csvBtn").disabled=true;
     rows=[];
+    hideLoading();
     return;
   }
   setStatus("","");
@@ -168,11 +167,13 @@ onAuthStateChanged(auth,async user=>{
       location.href="index.html";
       return;
     }
-    const dr=defaultRange();
-    $("startDate").value=dr.start;
-    $("endDate").value=dr.end;
+    $("startDate").value="";
+    $("endDate").value="";
+    updatePeriodHelp(getDateRange());
+    $("resultBody").innerHTML='<tr><td colspan="15" class="empty">開始日・終了日を指定してください。</td></tr>';
+    $("csvBtn").disabled=true;
     await loadCompanyOptions();
-    await loadReport();
+    hideLoading();
   }catch(e){
     console.error(e);
     setStatus("読み込みに失敗しました。\n"+(e.message||e),"error");

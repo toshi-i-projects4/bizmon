@@ -128,8 +128,6 @@ function updatePeriodHelp(r){
   if(isValidRange(r)){$("periodHelp").textContent="対象期間："+r.start+" 〜 "+r.end+"　※指定した期間の quizResults を集計します。";}
   else{$("periodHelp").textContent="開始日・終了日を指定してください（開始日は終了日以前の日付にしてください）。";}
 }
-function defaultRange(){const d=new Date();return{start:'2026-06-11',end:dateKey(d)}}
-
 async function loadCompanyOptions(){
   const snap=await getDocs(collection(db,"companies"));
   allCompanies=[];
@@ -145,12 +143,13 @@ async function loadData(){
   const r=getDateRange();
   updatePeriodHelp(r);
   if(!isValidRange(r)){
-    setStatus("開始日・終了日を正しく指定してください（開始日は終了日以前の日付にしてください）。","error");
+    setStatus(r.start||r.end?"開始日・終了日を正しく指定してください（開始日は終了日以前の日付にしてください）。":"","error");
     $("summaryCardsTop").style.display="none";
     $("summaryCardsAvg").style.display="none";
     $("summaryCardsMedian").style.display="none";
     $("companyPanel").style.display="none";
     $("categoryPanel").style.display="none";
+    hideLoading();
     return;
   }
   currentRange=r;
@@ -283,7 +282,7 @@ function render(){
 
 $("startDate").addEventListener("change",loadData);
 $("endDate").addEventListener("change",loadData);
-$("companyFilter").addEventListener("change",render);
+$("companyFilter").addEventListener("change",()=>{if(currentRange)render()});
 $("reloadBtn").addEventListener("click",loadData);
 
 onAuthStateChanged(auth,async user=>{
@@ -295,11 +294,11 @@ onAuthStateChanged(auth,async user=>{
       location.href="index.html";
       return;
     }
-    const dr=defaultRange();
-    $("startDate").value=dr.start;
-    $("endDate").value=dr.end;
+    $("startDate").value="";
+    $("endDate").value="";
+    updatePeriodHelp(getDateRange());
     await loadCompanyOptions();
-    await loadData();
+    hideLoading();
   }catch(e){
     console.error(e);
     setStatus("読み込みに失敗しました。\n"+(e.message||e),"error");

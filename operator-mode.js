@@ -1,6 +1,6 @@
 /* operator-mode.js
  * 運営（オペレーター）が、各企業の管理者と同じ管理画面（dashboard.html／report.html／
- * category-settings.html／user-invite-*.html／user-edit-*.html／news.html）へ
+ * category-settings.html／user-invite-*.html／user-edit-*.html）へ
  * 「対象企業を指定して入室」するための共通ヘルパー。
  *
  * 使い方：
