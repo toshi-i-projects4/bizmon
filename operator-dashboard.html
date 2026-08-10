@@ -64,7 +64,6 @@ th{background:#fff7ed;color:#7c2d12;font-weight:bold;position:sticky;top:0;z-ind
       <div class="control-item"><label for="startDate">開始日</label><input type="date" id="startDate"></div>
       <div class="control-item"><label for="endDate">終了日</label><input type="date" id="endDate"></div>
       <div class="control-item"><label for="companyFilter">企業</label><select id="companyFilter"><option value="all">すべての企業</option></select></div>
-      <div class="control-item"><label>&nbsp;</label><button class="btn" id="reloadBtn" type="button">再読み込み</button></div>
     </div>
     <div class="note" id="periodHelp"></div>
   </div>
@@ -143,7 +142,7 @@ async function loadData(){
   const r=getDateRange();
   updatePeriodHelp(r);
   if(!isValidRange(r)){
-    setStatus(r.start||r.end?"開始日・終了日を正しく指定してください（開始日は終了日以前の日付にしてください）。":"","error");
+    setStatus(r.start&&r.end&&r.start>r.end?"開始日・終了日を正しく指定してください（開始日は終了日以前の日付にしてください）。":"","error");
     $("summaryCardsTop").style.display="none";
     $("summaryCardsAvg").style.display="none";
     $("summaryCardsMedian").style.display="none";
@@ -283,7 +282,6 @@ function render(){
 $("startDate").addEventListener("change",loadData);
 $("endDate").addEventListener("change",loadData);
 $("companyFilter").addEventListener("change",()=>{if(currentRange)render()});
-$("reloadBtn").addEventListener("click",loadData);
 
 onAuthStateChanged(auth,async user=>{
   if(!user){location.href="login.html";return}
