@@ -1061,30 +1061,6 @@ service cloud.firestore {
         );
     }
     /************************************************************
-     * reminderSettings
-     ************************************************************/
-    match /reminderSettings/{userId} {
-      allow read: if isSignedIn()
-        && (
-          request.auth.uid == userId
-          ||
-          (
-            isAdmin()
-            && resource.data.companyId == myCompanyId()
-          )
-          || isOperator()
-        );
-      allow create, update: if isSignedIn()
-        && request.auth.uid == userId
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.companyId == myCompanyId();
-      allow delete: if isSignedIn()
-        && (
-          (isAdmin() && isActiveUser() && resource.data.companyId == myCompanyId())
-          || (isOperator() && isActiveUser())
-        );
-    }
-    /************************************************************
      * news
      * news.html：お知らせ（企業ごと）
      ************************************************************/
